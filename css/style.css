@@ -611,6 +611,16 @@ h1 {
 
 .nav-links.active {
     display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    background: #0b0907;
+    padding: 20px;
+    gap: 20px;
+    z-index: 1000;
+    text-align: center;
 }
 
 .nav-container {
