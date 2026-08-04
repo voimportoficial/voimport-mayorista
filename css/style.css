@@ -607,7 +607,10 @@ h1 {
   }
   .nav-links {
     display: none;
-    
+}
+
+.nav-links.active {
+    display: flex;
 }
 
 .nav-container {
