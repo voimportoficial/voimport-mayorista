@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Producto | Vo Import</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+<header class="producto-detalle-header">
+    <a
+        href="index.html"
+        id="volver-marca"
+    >
+        ← Volver al catálogo
+    </a>
+</header>
+
+<main class="producto-detalle">
+
+    <div class="producto-detalle-contenido">
+
+        <div class="producto-detalle-imagen">
+
+            <img
+                id="producto-imagen"
+                src=""
+                alt=""
+            >
+
+        </div>
+
+        <div class="producto-detalle-info">
+
+            <p
+                class="producto-marca"
+                id="producto-marca"
+            ></p>
+
+            <h1 id="producto-nombre"></h1>
+
+            <p
+                class="detalle-precio minorista"
+                id="precio-minorista"
+            ></p>
+
+            <p
+                class="detalle-precio mayorista"
+                id="precio-mayorista"
+            ></p>
+
+            <p
+                class="condicion-mayorista"
+                id="condicion-mayorista"
+            >
+                Desde 3 perfumes surtidos
+            </p>
+
+            <div class="producto-descripcion">
+
+                <h2>Descripción</h2>
+
+                <p>
+                    <strong>Presentación:</strong>
+                    <span id="producto-presentacion"></span>
+                </p>
+
+                <p id="producto-descripcion"></p>
+
+            </div>
+
+            <div class="notas-olfativas">
+
+                <h2>Notas olfativas</h2>
+
+                <p>
+                    <strong>Salida:</strong>
+                    <span id="notas-salida"></span>
+                </p>
+
+                <p>
+                    <strong>Corazón:</strong>
+                    <span id="notas-corazon"></span>
+                </p>
+
+                <p>
+                    <strong>Fondo:</strong>
+                    <span id="notas-fondo"></span>
+                </p>
+
+            </div>
+
+            <div
+                class="producto-descripcion"
+                id="bloque-inspiracion"
+            >
+
+                <h2>Inspiración</h2>
+
+                <p id="producto-inspiracion"></p>
+
+                <p id="producto-recomendacion"></p>
+
+            </div>
+
+            <div class="producto-compra">
+
+                <label for="cantidad-producto">
+                    Cantidad
+                </label>
+
+                <input
+                    type="number"
+                    id="cantidad-producto"
+                    min="1"
+                    value="1"
+                >
+
+                <button
+                    type="button"
+                    class="agregar-carrito"
+                    id="agregar-producto"
+                >
+                    Agregar al carrito
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<script src="js/productos.js"></script>
+
+<script>
+
+    const parametros =
+        new URLSearchParams(window.location.search);
+
+    const slug =
+        parametros.get("slug");
+
+    const producto =
+        typeof productos !== "undefined" &&
+        Array.isArray(productos)
+            ? productos.find(
+                (item) => item.id === slug
+            )
+            : null;
+
+
+    function formatearPrecioLocal(precio) {
+
+        return new Intl.NumberFormat(
+            "es-AR",
+            {
+                style: "currency",
+                currency: "ARS",
+                maximumFractionDigits: 0
+            }
+        ).format(precio);
+
+    }
+
+
+    function crearSlugMarca(marca) {
+
+        return marca
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "-");
+
+    }
+
+
+    if (!producto) {
+
+        document.querySelector(
+            ".producto-detalle-contenido"
+        ).innerHTML = `
+            <div style="text-align:center; width:100%;">
+                <h1>Producto no encontrado</h1>
+                <p>No pudimos encontrar este perfume.</p>
+                <a href="index.html">
+                    ← Volver al inicio
+                </a>
+            </div>
+        `;
+
+    } else {
+
+        document.title =
+            `${producto.nombre} | Vo Import`;
+
+
+        const volverMarca =
+            document.getElementById("volver-marca");
+
+        volverMarca.href =
+            `${crearSlugMarca(producto.marca)}.html`;
+
+        volverMarca.textContent =
+            `← Volver a perfumes ${producto.marca}`;
+
+
+        const imagen =
+            document.getElementById("producto-imagen");
+
+        imagen.src =
+            producto.imagen;
+
+        imagen.alt =
+            `Perfume ${producto.nombre}`;
+
+
+        document.getElementById(
+            "producto-marca"
+        ).textContent =
+            producto.marca;
+
+
+        document.getElementById(
+            "producto-nombre"
+        ).textContent =
+            producto.nombre;
+
+
+        document.getElementById(
+            "precio-minorista"
+        ).textContent =
+            `Minorista: ${formatearPrecioLocal(
+                producto.precioMinorista
+            )}`;
+
+
+        document.getElementById(
+            "precio-mayorista"
+        ).textContent =
+            `Mayorista: ${formatearPrecioLocal(
+                producto.precioMayorista
+            )}`;
+
+
+        document.getElementById(
+            "producto-presentacion"
+        ).textContent =
+            producto.presentacion || "";
+
+
+        document.getElementById(
+            "producto-descripcion"
+        ).textContent =
+            producto.descripcion || "";
+
+
+        document.getElementById(
+            "notas-salida"
+        ).textContent =
+            producto.notasSalida || "";
+
+
+        document.getElementById(
+            "notas-corazon"
+        ).textContent =
+            producto.notasCorazon || "";
+
+
+        document.getElementById(
+            "notas-fondo"
+        ).textContent =
+            producto.notasFondo || "";
+
+
+        document.getElementById(
+            "producto-inspiracion"
+        ).textContent =
+            producto.inspiracion || "";
+
+
+        document.getElementById(
+            "producto-recomendacion"
+        ).textContent =
+            producto.recomendacion || "";
+
+
+        const boton =
+            document.getElementById(
+                "agregar-producto"
+            );
+
+
+        boton.dataset.slug =
+            producto.id;
+
+        boton.dataset.nombre =
+            producto.nombre;
+
+        boton.dataset.categoria =
+            producto.categoria;
+
+        boton.dataset.precioMinorista =
+            producto.precioMinorista;
+
+        boton.dataset.precioMayorista =
+            producto.precioMayorista;
+
+        boton.dataset.imagen =
+            producto.imagen;
+
+        boton.dataset.stock =
+            producto.stock ?? "";
+
+
+        if (producto.categoria === "decants") {
+
+            document.getElementById(
+                "precio-minorista"
+            ).textContent =
+                `Precio: ${formatearPrecioLocal(
+                    producto.precioMinorista
+                )}`;
+
+            document.getElementById(
+                "precio-mayorista"
+            ).style.display =
+                "none";
+
+            document.getElementById(
+                "condicion-mayorista"
+            ).style.display =
+                "none";
+
+        }
+
+    }
+
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/script.js"></script>
+
+</body>
+
+</html>
