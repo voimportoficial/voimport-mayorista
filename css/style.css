@@ -1971,3 +1971,213 @@ h1 {
         gap: 14px;
     }
 }
+/* =========================
+   PÁGINA MAYORISTA
+========================= */
+
+.mayorista {
+    padding: 70px 20px 90px;
+}
+
+.mayorista .container {
+    max-width: 1150px;
+    margin: 0 auto;
+}
+
+.mayorista-intro {
+    max-width: 760px;
+    margin: 0 auto 55px;
+    text-align: center;
+}
+
+.mayorista-etiqueta {
+    display: inline-block;
+    margin-bottom: 14px;
+    color: #d4af37;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.mayorista-intro h2 {
+    color: #d4af37;
+    font-size: 38px;
+    line-height: 1.15;
+    margin-bottom: 18px;
+}
+
+.mayorista-intro p {
+    color: #e5e5e5;
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0;
+}
+
+.mayorista-pasos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-bottom: 70px;
+}
+
+.mayorista-paso {
+    padding: 30px 24px;
+    background: #111111;
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 18px;
+    text-align: center;
+}
+
+.mayorista-numero {
+    width: 42px;
+    height: 42px;
+    margin: 0 auto 18px;
+    display: grid;
+    place-items: center;
+    background: #d4af37;
+    color: #080808;
+    border-radius: 50%;
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.mayorista-paso h3,
+.mayorista-categoria h3,
+.mayorista-importante h3 {
+    color: #d4af37;
+}
+
+.mayorista-paso h3 {
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.mayorista-paso p,
+.mayorista-categoria p,
+.mayorista-importante p {
+    color: #d7d7d7;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.mayorista-condiciones {
+    margin-bottom: 45px;
+}
+
+.mayorista-condiciones > h2 {
+    text-align: center;
+    color: #d4af37;
+    font-size: 30px;
+    margin-bottom: 30px;
+}
+
+.mayorista-categorias {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.mayorista-categoria {
+    padding: 24px;
+    background: #0f0f0f;
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 14px;
+}
+
+.mayorista-categoria h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.mayorista-importante {
+    max-width: 850px;
+    margin: 0 auto 50px;
+    padding: 22px 26px;
+    background: rgba(212, 175, 55, 0.06);
+    border: 1px solid rgba(212, 175, 55, 0.55);
+    border-radius: 14px;
+    text-align: center;
+}
+
+.mayorista-importante h3 {
+    margin-bottom: 8px;
+}
+
+.mayorista-beneficios {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 45px;
+}
+
+.mayorista-beneficios div {
+    text-align: center;
+    padding: 20px;
+}
+
+.mayorista-beneficios strong {
+    display: block;
+    color: #d4af37;
+    font-size: 17px;
+    margin-bottom: 7px;
+}
+
+.mayorista-beneficios span {
+    color: #cfcfcf;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.mayorista-acciones {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 700px) {
+
+    .mayorista {
+        padding: 45px 18px 65px;
+    }
+
+    .mayorista-intro {
+        margin-bottom: 38px;
+    }
+
+    .mayorista-intro h2 {
+        font-size: 30px;
+    }
+
+    .mayorista-intro p {
+        font-size: 14px;
+    }
+
+    .mayorista-pasos {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        margin-bottom: 50px;
+    }
+
+    .mayorista-condiciones > h2 {
+        font-size: 25px;
+    }
+
+    .mayorista-categorias {
+        grid-template-columns: 1fr;
+    }
+
+    .mayorista-beneficios {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+
+    .mayorista-acciones {
+        flex-direction: column;
+    }
+
+    .mayorista-acciones .btn {
+        width: 100%;
+        text-align: center;
+    }
+}

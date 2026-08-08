@@ -1,0 +1,269 @@
+<meta charset="UTF-8">
+<title>Mayorista | Vo Import</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<body>
+
+<header class="productos-header">
+    <a href="index.html">← Volver al inicio</a>
+    <h1>
+    Comprá mayorista en<br>
+    Vo Import
+</h1>
+</header>
+
+<main>
+
+    <section class="mayorista">
+    <div class="container">
+
+        <div class="mayorista-intro">
+            <span class="mayorista-etiqueta">VENTA MAYORISTA</span>
+
+            <h2>Precios mayoristas simples y claros</h2>
+
+            <p>
+                En Vo Import podés acceder al precio mayorista desde
+                3 unidades surtidas dentro de la misma categoría.
+                El sistema aplica el precio automáticamente cuando alcanzás el mínimo.
+            </p>
+        </div>
+
+        <div class="mayorista-pasos">
+
+            <div class="mayorista-paso">
+                <span class="mayorista-numero">1</span>
+                <h3>Elegí tus productos</h3>
+                <p>
+                    Podés combinar distintos perfumes dentro de una misma categoría.
+                    No hace falta llevar tres unidades iguales.
+                </p>
+            </div>
+
+            <div class="mayorista-paso">
+                <span class="mayorista-numero">2</span>
+                <h3>Llegá al mínimo</h3>
+                <p>
+                    Al sumar 3 unidades surtidas dentro de la categoría,
+                    accedés automáticamente al precio mayorista.
+                </p>
+            </div>
+
+            <div class="mayorista-paso">
+                <span class="mayorista-numero">3</span>
+                <h3>Finalizá tu pedido</h3>
+                <p>
+                    Armá tu carrito y enviá el pedido directamente por WhatsApp
+                    para coordinar pago, retiro o envío.
+                </p>
+            </div>
+
+        </div>
+
+        <div class="mayorista-condiciones">
+
+            <h2>¿Cómo funciona por categoría?</h2>
+
+            <div class="mayorista-categorias">
+
+                <div class="mayorista-categoria">
+                    <h3>Perfumes árabes</h3>
+                    <p>
+                        Precio mayorista desde 3 perfumes surtidos
+                        dentro de esta categoría.
+                    </p>
+                </div>
+
+                <div class="mayorista-categoria">
+                    <h3>Maison Alhambra 30 ml</h3>
+                    <p>
+                        Precio mayorista desde 3 unidades surtidas
+                        dentro de esta categoría.
+                    </p>
+                </div>
+
+                <div class="mayorista-categoria">
+                    <h3>Inspiraciones de diseñador</h3>
+                    <p>
+                        Precio mayorista desde 3 unidades surtidas
+                        dentro de esta categoría.
+                    </p>
+                </div>
+
+                <div class="mayorista-categoria">
+                    <h3>Decants 5 ml</h3>
+                    <p>
+                        Tienen precio único y no participan
+                        del mínimo mayorista.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="mayorista-importante">
+            <h3>Importante</h3>
+            <p>
+                Las categorías no se mezclan entre sí para alcanzar el mínimo.
+                Por ejemplo: 2 perfumes árabes + 1 Maison Alhambra 30 ml
+                no habilitan el precio mayorista.
+            </p>
+        </div>
+
+        <div class="mayorista-beneficios">
+
+            <div>
+                <strong>100% originales</strong>
+                <span>Productos originales garantizados</span>
+            </div>
+
+            <div>
+                <strong>Sin registro</strong>
+                <span>Comprás directamente desde la web</span>
+            </div>
+
+            <div>
+                <strong>Envíos a todo el país</strong>
+                <span>Coordinamos tu pedido por WhatsApp</span>
+            </div>
+
+        </div>
+
+        <div class="mayorista-acciones">
+
+            <a href="catalogo.html" class="btn btn-gold">
+                Ver catálogo mayorista
+            </a>
+
+            <a
+                href="https://wa.me/5491134293000?text=Hola%20Vo%20Import,%20quiero%20hacer%20una%20consulta%20sobre%20compras%20mayoristas."
+                class="btn btn-outline"
+                target="_blank"
+                rel="noopener"
+            >
+                Consultar por WhatsApp
+            </a>
+
+        </div>
+
+    </div>
+</section>
+
+</main>
+
+<button
+    type="button"
+    class="boton-carrito"
+    id="abrir-carrito"
+    aria-label="Abrir carrito"
+>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 3h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H7"></path>
+        <circle cx="10" cy="20" r="1"></circle>
+        <circle cx="18" cy="20" r="1"></circle>
+    </svg>
+
+    <span id="contador-carrito">0</span>
+</button>
+
+<div
+    class="carrito-overlay"
+    id="carrito-overlay"
+></div>
+
+<aside
+    class="carrito-panel"
+    id="carrito-panel"
+>
+
+    <div class="carrito-encabezado">
+
+        <h2>Mi carrito</h2>
+
+        <button
+            type="button"
+            class="cerrar-carrito"
+            id="cerrar-carrito"
+            aria-label="Cerrar carrito"
+        >
+            ×
+        </button>
+
+    </div>
+
+    <div
+        class="carrito-productos"
+        id="carrito-productos"
+    >
+        <p class="carrito-vacio">
+            Tu carrito está vacío.
+        </p>
+    </div>
+
+    <div class="carrito-resumen">
+
+        <p id="mensaje-mayorista">
+            Los mínimos mayoristas se calculan por categoría.
+        </p>
+
+        <div class="carrito-total">
+            <span>Total</span>
+            <strong id="carrito-total">$0</strong>
+        </div>
+
+        <button
+            type="button"
+            class="finalizar-pedido"
+            id="finalizar-pedido"
+        >
+            Finalizar pedido
+        </button>
+
+    </div>
+
+</aside>
+<!-- Filtros del catálogo -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/productos.js"></script>
+<script src="js/script.js"></script>
+<script>
+    const botonesCatalogo = document.querySelectorAll(".catalogo-filtro");
+    const textoPreciosCatalogo = document.getElementById("texto-precios-catalogo");
+    const buscadorCatalogo = document.getElementById("buscador-catalogo");
+const soloDisponiblesInput = document.getElementById("solo-disponibles");
+const ordenCatalogo = document.getElementById("orden-catalogo");
+
+ordenCatalogo?.addEventListener("change", () => {
+    generarCatalogo();
+});
+soloDisponiblesInput?.addEventListener("change", () => {
+    generarCatalogo();
+});
+buscadorCatalogo?.addEventListener("input", () => {
+    generarCatalogo();
+});
+    botonesCatalogo.forEach((boton) => {
+        boton.addEventListener("click", () => {
+
+            botonesCatalogo.forEach((item) => {
+                item.classList.remove("activo");
+            });
+
+            boton.classList.add("activo");
+
+            document.body.dataset.categoria = boton.dataset.categoria;
+if (boton.dataset.categoria === "decants") {
+    textoPreciosCatalogo.textContent =
+        "Los decants tienen precio único por unidad y no participan del mínimo mayorista.";
+} else {
+    textoPreciosCatalogo.textContent =
+        "El precio minorista se aplica por unidad. Desde 3 perfumes surtidos dentro de la misma categoría, se aplica automáticamente el precio mayorista.";
+}
+            generarCatalogo();
+        });
+    });
+</script>
+</body>
