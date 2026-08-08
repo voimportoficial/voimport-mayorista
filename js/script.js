@@ -429,16 +429,19 @@ function crearPrecioCatalogo(producto) {
         </p>
     `;
 }
-
-function generarCatalogo() {
+function generarCatalogo() {  
     if (!productosGrid) return;
-
-    const marcaActual = document.body.dataset.marca;
+const marcaActual = document.body.dataset.marca;
 const categoriaActual = document.body.dataset.categoria;
+
 const terminoBusqueda =
     document.getElementById("buscador-catalogo")?.value
         .trim()
         .toLowerCase() || "";
+
+const soloDisponibles =
+    document.getElementById("solo-disponibles")?.checked || false;
+
 const productosDeLaMarca = catalogoActualizado
     .filter((producto) => {
         const coincideMarca =
@@ -446,16 +449,24 @@ const productosDeLaMarca = catalogoActualizado
 
         const coincideCategoria =
             !categoriaActual || producto.categoria === categoriaActual;
-const coincideBusqueda =
-    !terminoBusqueda ||
-    producto.nombre.toLowerCase().includes(terminoBusqueda) ||
-    producto.marca.toLowerCase().includes(terminoBusqueda);
+
+        const coincideBusqueda =
+            !terminoBusqueda ||
+            producto.nombre.toLowerCase().includes(terminoBusqueda) ||
+            producto.marca.toLowerCase().includes(terminoBusqueda);
+
+        const coincideStock =
+    !soloDisponibles ||
+    producto.stock === null ||
+    Number(producto.stock) > 0;
+
         return (
-    coincideMarca &&
-    coincideCategoria &&
-    coincideBusqueda &&
-    producto.activo
-);
+            coincideMarca &&
+            coincideCategoria &&
+            coincideBusqueda &&
+            coincideStock &&
+            producto.activo
+        );
     })
         .sort((productoA, productoB) =>
             productoA.nombre.localeCompare(
@@ -531,10 +542,9 @@ const coincideBusqueda =
 
                 </div>
             `;
-        })
+         })
         .join("");
 }
-
 
 // =============================
 // FICHA INDIVIDUAL DEL PRODUCTO

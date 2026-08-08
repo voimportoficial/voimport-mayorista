@@ -30,6 +30,13 @@
     >
 </div>
 
+<div class="catalogo-stock-filtro">
+    <label>
+        <input type="checkbox" id="solo-disponibles">
+        <span>Mostrar solo disponibles</span>
+    </label>
+</div>
+
 <div class="catalogo-categorias">
     <button type="button" class="catalogo-filtro activo" data-categoria="perfumes-grandes">
         Perfumes árabes
@@ -147,7 +154,11 @@
     const botonesCatalogo = document.querySelectorAll(".catalogo-filtro");
     const textoPreciosCatalogo = document.getElementById("texto-precios-catalogo");
     const buscadorCatalogo = document.getElementById("buscador-catalogo");
+const soloDisponiblesInput = document.getElementById("solo-disponibles");
 
+soloDisponiblesInput?.addEventListener("change", () => {
+    generarCatalogo();
+});
 buscadorCatalogo?.addEventListener("input", () => {
     generarCatalogo();
 });
