@@ -468,16 +468,27 @@ const productosDeLaMarca = catalogoActualizado
             producto.activo
         );
     })
-        .sort((productoA, productoB) =>
-            productoA.nombre.localeCompare(
-                productoB.nombre,
-                "es",
-                {
-                    numeric: true,
-                    sensitivity: "base"
-                }
-            )
-        );
+        .sort((productoA, productoB) => {
+    const orden =
+        document.getElementById("orden-catalogo")?.value || "nombre";
+
+    if (orden === "precio-menor") {
+        return Number(productoA.precioMinorista) - Number(productoB.precioMinorista);
+    }
+
+    if (orden === "precio-mayor") {
+        return Number(productoB.precioMinorista) - Number(productoA.precioMinorista);
+    }
+
+    return productoA.nombre.localeCompare(
+        productoB.nombre,
+        "es",
+        {
+            numeric: true,
+            sensitivity: "base"
+        }
+    );
+});
 
     if (productosDeLaMarca.length === 0) {
         productosGrid.innerHTML = `

@@ -30,11 +30,25 @@
     >
 </div>
 
-<div class="catalogo-stock-filtro">
-    <label>
-        <input type="checkbox" id="solo-disponibles">
-        <span>Mostrar solo disponibles</span>
-    </label>
+<div class="catalogo-controles">
+
+    <div class="catalogo-stock-filtro">
+        <label>
+            <input type="checkbox" id="solo-disponibles">
+            <span>Mostrar solo disponibles</span>
+        </label>
+    </div>
+
+    <div class="catalogo-orden">
+        <label for="orden-catalogo">Ordenar por:</label>
+
+        <select id="orden-catalogo">
+            <option value="nombre">Nombre A–Z</option>
+            <option value="precio-menor">Menor precio</option>
+            <option value="precio-mayor">Mayor precio</option>
+        </select>
+    </div>
+
 </div>
 
 <div class="catalogo-categorias">
@@ -155,7 +169,11 @@
     const textoPreciosCatalogo = document.getElementById("texto-precios-catalogo");
     const buscadorCatalogo = document.getElementById("buscador-catalogo");
 const soloDisponiblesInput = document.getElementById("solo-disponibles");
+const ordenCatalogo = document.getElementById("orden-catalogo");
 
+ordenCatalogo?.addEventListener("change", () => {
+    generarCatalogo();
+});
 soloDisponiblesInput?.addEventListener("change", () => {
     generarCatalogo();
 });
