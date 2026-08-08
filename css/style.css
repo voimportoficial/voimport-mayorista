@@ -718,12 +718,16 @@ h1 {
 }
 .hero {
     overflow: hidden;
+    padding-top: 330px;
+    padding-bottom: 45px;
 }
 
 .hero-container {
     width: 100%;
     max-width: 100%;
-    gap: 20px;
+    gap: 25px;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 .hero-content {
@@ -734,12 +738,15 @@ h1 {
 .hero-image {
     width: 100%;
     max-width: 100%;
+    margin-top: 10px;
 }
 
 .hero-image img {
-    width: 100%;
-    max-width: 100%;
+    width: 82%;
+    max-width: 360px;
     height: auto;
+    display: block;
+    margin: 0 auto;
 }
 
 .hero h1 {
