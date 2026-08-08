@@ -435,7 +435,10 @@ function generarCatalogo() {
 
     const marcaActual = document.body.dataset.marca;
 const categoriaActual = document.body.dataset.categoria;
-
+const terminoBusqueda =
+    document.getElementById("buscador-catalogo")?.value
+        .trim()
+        .toLowerCase() || "";
 const productosDeLaMarca = catalogoActualizado
     .filter((producto) => {
         const coincideMarca =
@@ -443,8 +446,16 @@ const productosDeLaMarca = catalogoActualizado
 
         const coincideCategoria =
             !categoriaActual || producto.categoria === categoriaActual;
-
-        return coincideMarca && coincideCategoria && producto.activo;
+const coincideBusqueda =
+    !terminoBusqueda ||
+    producto.nombre.toLowerCase().includes(terminoBusqueda) ||
+    producto.marca.toLowerCase().includes(terminoBusqueda);
+        return (
+    coincideMarca &&
+    coincideCategoria &&
+    coincideBusqueda &&
+    producto.activo
+);
     })
         .sort((productoA, productoB) =>
             productoA.nombre.localeCompare(

@@ -1733,4 +1733,141 @@ h1 {
     text-align: center;
     margin-bottom: 0;
 }
+/* =========================
+   CATÁLOGO PRINCIPAL
+========================= */
+}
+.catalogo-intro {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.catalogo-intro h2 {
+    color: #d4af37;
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.catalogo-intro p {
+    color: #e5e5e5;
+    font-size: 16px;
+}
+
+.catalogo-buscador {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto 24px;
+}
+
+.catalogo-buscador input {
+    width: 100%;
+    padding: 16px 20px;
+    background: #111111;
+    color: #ffffff;
+    border: 1px solid rgba(212, 175, 55, 0.55);
+    border-radius: 12px;
+    font-size: 16px;
+    outline: none;
+}
+
+.catalogo-buscador input:focus {
+    border-color: #d4af37;
+}
+
+.catalogo-buscador input::placeholder {
+    color: #8f8f8f;
+}
+
+.catalogo-categorias {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 40px;
+}
+
+.catalogo-filtro {
+    padding: 12px 20px;
+    background: #111111;
+    color: #d4af37;
+    border: 1px solid #d4af37;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.catalogo-filtro:hover,
+.catalogo-filtro.activo {
+    background: #d4af37;
+    color: #050505;
+}
+
+@media (max-width: 700px) {
+
+    .catalogo-intro h2 {
+        font-size: 27px;
+    }
+
+    .catalogo-intro p {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .catalogo-buscador input {
+        padding: 14px 16px;
+        font-size: 15px;
+    }
+
+    .catalogo-categorias {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 30px;
+    }
+
+    .catalogo-filtro {
+        width: 100%;
+        padding: 12px 8px;
+        font-size: 12px;
+    }
+    }
+    .catalogo-info-precios {
+    max-width: 720px;
+    margin: 0 auto 35px;
+    padding: 20px 24px;
+    background: #111111;
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    border-radius: 14px;
+    text-align: center;
+}
+
+.catalogo-info-precios h3 {
+    color: #d4af37;
+    font-size: 20px;
+    margin-bottom: 8px;
+}
+
+.catalogo-info-precios p {
+    color: #e5e5e5;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+@media (max-width: 700px) {
+    .catalogo-info-precios {
+        padding: 16px;
+        margin-bottom: 28px;
+    }
+
+    .catalogo-info-precios h3 {
+        font-size: 18px;
+    }
+
+    .catalogo-info-precios p {
+        font-size: 13px;
+    }
+}
 }
