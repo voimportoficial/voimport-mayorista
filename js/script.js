@@ -434,14 +434,18 @@ function generarCatalogo() {
     if (!productosGrid) return;
 
     const marcaActual = document.body.dataset.marca;
+const categoriaActual = document.body.dataset.categoria;
 
-    const productosDeLaMarca = catalogoActualizado
-        .filter((producto) => {
-            const coincideMarca =
-                !marcaActual || producto.marca === marcaActual;
+const productosDeLaMarca = catalogoActualizado
+    .filter((producto) => {
+        const coincideMarca =
+            !marcaActual || producto.marca === marcaActual;
 
-            return coincideMarca && producto.activo;
-        })
+        const coincideCategoria =
+            !categoriaActual || producto.categoria === categoriaActual;
+
+        return coincideMarca && coincideCategoria && producto.activo;
+    })
         .sort((productoA, productoB) =>
             productoA.nombre.localeCompare(
                 productoB.nombre,

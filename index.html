@@ -8,14 +8,22 @@
 </head>
 
 <body>
+
+    <div class="mobile-topbar">
+        <span>◆</span>
+        <p>MAYORISTA DESDE 3 PERFUMES SURTIDOS</p>
+        <span>◆</span>
+    </div>
+
     <nav class="navbar">
-    <div class="nav-container">
-        <a href="#" class="logo">
-    <img src="images/742EDEF7-08B5-4219-BC81-C48021D60480.PNG" alt="Vo Import">
-</a>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <img src="images/742EDEF7-08B5-4219-BC81-C48021D60480.PNG" alt="Vo Import">
+            </a>
 
 <div class="menu-toggle">
-    ☰
+    <span class="menu-icon">☰</span>
+    <span class="menu-texto">MENÚ</span>
 </div>
 
 <div class="nav-links">
@@ -44,18 +52,6 @@
             <div class="hero-container">
 
             <div class="hero-content">
-                <p class="eyebrow">PERFUMERÍA ÁRABE</p>
-
-               <h1>
-  Tu próximo negocio<br>
-  <span class="titulo-segunda-linea">empieza con Vo Import.</span>
-</h1>
-
-                <p class="hero-text">
-                    Perfumes árabes 100% originales. Comprá desde una unidad<br>
-                    o accedé al precio mayorista desde 3 perfumes.
-                    
-                </p>
 
                 <div class="hero-buttons">
                     <a href="#" class="btn btn-gold">Ver catálogo</a>
@@ -70,49 +66,42 @@
         </div>
     </header>
 
-    <section class="features">
-        <div class="container">
+    <section class="categorias" id="categorias">
+    <div class="container">
+        <h2>Explorá nuestras categorías</h2>
 
-            <h2>¿Por qué elegir Vo Import?</h2>
+        <div class="categorias-grid">
 
-            <div class="features-grid">
+            <div class="categoria-card" onclick="window.location.href='categoria.html?categoria=perfumes-grandes'" style="cursor: pointer;">
+                <img src="images/khamrah.PNG" alt="Perfumes árabes">
+                <h3>Perfumes árabes</h3>
+            </div>
 
-    <div class="feature-card">
-        <span class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-        </span>
-        <h3>100% originales</h3>
-        <p>Perfumes árabes originales de las mejores marcas.</p>
-    </div>
+            <div class="categoria-card"
+     onclick="window.location.href='categoria.html?categoria=decants'"
+     style="cursor: pointer;">
+    <img src="images/decants.PNG" alt="Decants 5ml">
+    <h3>Decants 5ml</h3>
+</div>
 
-    <div class="feature-card">
-        <span class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="7" width="15" height="10" rx="1.5"/><path d="M16 10h3.5l3.5 3.5V17h-7"/><circle cx="6" cy="19" r="1.7"/><circle cx="17.5" cy="19" r="1.7"/></svg>
-        </span>
-        <h3>Envíos a todo el país</h3>
-        <p>Despachamos tu pedido a cualquier punto de Argentina.</p>
-    </div>
+            <div class="categoria-card"
+     onclick="window.location.href='categoria.html?categoria=maison-30ml'"
+     style="cursor: pointer;">
+    <img src="images/maison.PNG" alt="Maison Alhambra 30ml">
+    <h3>Maison Alhambra 30ml</h3>
+</div>
 
-    <div class="feature-card">
-        <span class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M15 9.5c0-1.4-1.3-2.5-3-2.5s-3 1-3 2.3c0 3 6 1.3 6 4.2 0 1.4-1.3 2.5-3 2.5s-3-1-3-2.5"/></svg>
-        </span>
-        <h3>Precio mayorista desde 3 unidades</h3>
-        <p>Comprando 3 o más perfumes accedés automáticamente al precio mayorista.</p>
-    </div>
-
-    <div class="feature-card">
-        <span class="feature-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-12.4 7.5L3 20l1.1-5.4A8.5 8.5 0 1 1 21 11.5Z"/></svg>
-        </span>
-        <h3>Atención personalizada</h3>
-        <p>Te ayudamos a elegir el perfume ideal o a comenzar tu negocio.</p>
-    </div>
-
+            <div class="categoria-card"
+     onclick="window.location.href='categoria.html?categoria=inspiraciones'"
+     style="cursor: pointer;">
+    <img src="images/scandal.PNG" alt="Inspiraciones de diseñador">
+    <h3>Inspiraciones de diseñador</h3>
 </div>
 
         </div>
-    </section>
+    </div>
+</section>
+
 <section class="steps" id="como-comprar">
     <div class="container">
 
@@ -140,34 +129,6 @@
 
         </div>
 
-    </div>
-</section>
-
-<section class="categorias" id="categorias">
-    <div class="container">
-        <h2>Explorá nuestras categorías</h2>
-
-        <div class="categorias-grid">
-            <div class="categoria-card">
-                <img src="images/khamrah.PNG" alt="Perfumes árabes">
-                <h3>Perfumes árabes</h3>
-            </div>
-
-            <div class="categoria-card">
-                <img src="images/decants.PNG" alt="Decants 5ml">
-                <h3>Decants 5ml</h3>
-            </div>
-
-            <div class="categoria-card">
-                <img src="images/maison.PNG" alt="Maison Alhambra 30ml">
-                <h3>Maison Alhambra 30ml</h3>
-            </div>
-
-            <div class="categoria-card">
-                <img src="images/scandal.PNG" alt="Inspiraciones de diseñador">
-                <h3>Inspiraciones de diseñador</h3>
-            </div>
-        </div>
     </div>
 </section>
 
