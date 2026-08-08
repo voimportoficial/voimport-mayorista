@@ -119,17 +119,21 @@ h1 {
 }
 
 @media (max-width: 700px) {
+
     .hero {
-        padding: 60px 24px;
+        padding: 25px 24px 50px;
     }
 
     h1 {
-        font-size: 42px;
+        font-size: 36px;
+        line-height: 1.08;
     }
 
     .hero-text {
-        font-size: 18px;
+        font-size: 16px;
+        line-height: 1.55;
     }
+
 }
 
 .hero-container {
