@@ -58,8 +58,34 @@ const botonFinalizarPedido = document.getElementById("finalizar-pedido");
 // MENÚ HAMBURGUESA
 // =============================
 
-menuToggle?.addEventListener("click", () => {
+menuToggle?.addEventListener("click", (evento) => {
+    evento.stopPropagation();
     navLinks?.classList.toggle("active");
+});
+
+navLinks?.querySelectorAll("a").forEach((enlace) => {
+    enlace.addEventListener("click", () => {
+        navLinks.classList.remove("active");
+    });
+});
+
+document.addEventListener("click", (evento) => {
+    if (!navLinks?.classList.contains("active")) return;
+
+    if (
+        navLinks.contains(evento.target) ||
+        menuToggle?.contains(evento.target)
+    ) {
+        return;
+    }
+
+    navLinks.classList.remove("active");
+});
+
+document.addEventListener("keydown", (evento) => {
+    if (evento.key === "Escape") {
+        navLinks?.classList.remove("active");
+    }
 });
 
 
