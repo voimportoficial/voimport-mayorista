@@ -918,4 +918,1311 @@ const productos = [
     recomendacion:
         "Ideal para quienes buscan una fragancia dulce, elegante y seductora. Perfecta para citas, salidas o climas frescos."
 }
+,
+{
+    id: "lattafa-afeef",
+    nombre: "Lattafa Afeef",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-afeef.PNG",
+    precioMinorista: 161460,
+    precioMayorista: 119600,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia fresca, elegante y equilibrada, con un perfil cítrico aromático moderno que combina luminosidad con un fondo suave y sofisticado. Es un perfume limpio, versátil y muy agradable. La apertura es brillante y refrescante, con notas cítricas que aportan un inicio limpio, chispeante y energizante. En el corazón, aparecen acordes aromáticos y ligeramente especiados que le dan carácter y un toque refinado sin perder frescura. El fondo es suave y envolvente, con almizcle, maderas y matices ambarados que dejan una estela limpia, elegante y muy versátil.",
+
+    notasSalida: "Cítricos, notas frescas",
+    notasCorazon: "Notas aromáticas, especias suaves",
+    notasFondo: "Almizcle, maderas, ámbar",
+
+    inspiracion:
+        "Inspirado en Chanel Allure Homme Sport, con un perfil fresco, limpio y elegante.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia versátil y sofisticada. Perfecta para uso diario, oficina o climas cálidos."
+},
+{
+    id: "lattafa-ajwad",
+    nombre: "Lattafa Ajwad",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-ajwad.PNG",
+    precioMinorista: 50220,
+    precioMayorista: 37200,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 60 ML – UNISEX",
+
+    descripcion:
+        "Fragancia dulce, suave y envolvente, con un perfil floral frutal moderno que combina delicadeza con un fondo cálido y cremoso. Es un perfume elegante, agradable y muy fácil de usar. La apertura es frutal y levemente dulce, con notas jugosas que generan un inicio suave, femenino y atractivo. En el corazón, aparecen flores delicadas que aportan elegancia y un aire limpio, equilibrando la dulzura con un toque sofisticado. El fondo es cremoso y reconfortante, con vainilla, almizcle y maderas suaves que dejan una estela cálida, dulce y muy agradable.",
+
+    notasSalida: "Notas frutales",
+    notasCorazon: "Flores suaves",
+    notasFondo: "Vainilla, almizcle, maderas",
+
+    inspiracion:
+        "Inspirado en Maison Francis Kurkdjian Baccarat Rouge 540, con un perfil dulce, limpio y envolvente.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia dulce y elegante, fácil de usar en cualquier ocasión. Perfecta para uso diario o salidas."
+},
+{
+    id: "lattafa-ajwad-pink-to-pink",
+    nombre: "Lattafa Ajwad Pink to Pink",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-ajwad-pink-to-pink.PNG",
+    precioMinorista: 48600,
+    precioMayorista: 36000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 60 ML – UNISEX",
+
+    descripcion:
+        "Fragancia dulce, frutal y moderna, con un perfil juvenil y vibrante que combina notas jugosas con un fondo cremoso y adictivo. Es un perfume llamativo, femenino y muy fácil de amar. La apertura es fresca y chispeante, con frutas dulces que generan un inicio jugoso, divertido y muy atractivo. En el corazón, aparecen acordes florales suaves combinados con matices dulces, aportando feminidad y un toque delicado sin perder su carácter juvenil. El fondo es cálido y envolvente, con vainilla, almizcle y maderas suaves que dejan una estela dulce, cremosa y muy agradable.",
+
+    notasSalida: "Frutas dulces",
+    notasCorazon: "Flores suaves, acordes dulces",
+    notasFondo: "Vainilla, almizcle, maderas",
+
+    inspiracion:
+        "Inspirado en Burberry Her, con un perfil frutal dulce, moderno y adictivo.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina, dulce y llamativa. Perfecta para uso diario, salidas o climas templados."
+},
+{
+    id: "lattafa-al-noble-ameer",
+    nombre: "Lattafa Al Noble Ameer",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-al-noble-ameer.PNG",
+    precioMinorista: 63180,
+    precioMayorista: 46800,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia intensa, cálida y sofisticada, con un perfil oriental amaderado que combina especias, maderas y un fondo dulce envolvente. Es un perfume con carácter, elegante y muy llamativo. La apertura es especiada y profunda, con notas cálidas que generan un inicio potente, exótico y muy atractivo. En el corazón, aparecen acordes amaderados y resinosos que aportan cuerpo y una sensación elegante, manteniendo un aire misterioso y refinado. El fondo es denso y seductor, con vainilla, ámbar y almizcle que dejan una estela cálida, envolvente y de gran presencia.",
+
+    notasSalida: "Especias, notas cálidas",
+    notasCorazon: "Maderas, resinas",
+    notasFondo: "Vainilla, ámbar, almizcle",
+
+    inspiracion:
+        "Inspirado en Initio Oud for Greatness, con un perfil oscuro, especiado y altamente seductor.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa y con personalidad. Perfecta para la noche, eventos o climas fríos."
+}
+,
+{
+    id: "lattafa-angham",
+    nombre: "Lattafa Angham",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-angham.PNG",
+    precioMinorista: 68040,
+    precioMayorista: 50400,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia elegante, dulce y envolvente, con un perfil oriental gourmand que combina cremosidad y calidez en perfecta armonía. Es un perfume moderno, atractivo y muy versátil, ideal para destacar con sutileza. La apertura es suave y ligeramente dulce, con notas que generan una primera impresión delicada pero cautivante. En el corazón, se desarrollan acordes más cremosos y gourmand, aportando una sensación reconfortante, elegante y muy adictiva. El fondo es cálido y seductor, con vainilla, ámbar y almizcle que dejan una estela envolvente, duradera y muy agradable.",
+
+    notasSalida: "Notas dulces, acordes suaves",
+    notasCorazon: "Notas cremosas, gourmand",
+    notasFondo: "Vainilla, ámbar, almizcle",
+
+    inspiracion:
+        "Inspirado en Burberry Goddess, con un perfil más dulce, gourmand y envolvente, ideal para quienes buscan una versión más intensa y seductora.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia dulce, elegante y versátil. Perfecta para uso diario, salidas o climas frescos."
+},
+{
+    id: "lattafa-asad",
+    nombre: "Lattafa Asad",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-asad.PNG",
+    precioMinorista: 69552,
+    precioMayorista: 51520,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia intensa, especiada y elegante, con un perfil oriental ambarado que transmite fuerza y carácter. Es un perfume moderno, seductor y con mucha presencia, ideal para quienes buscan destacar. La apertura es potente y especiada, con un toque picante que genera una primera impresión fuerte, masculina y muy llamativa. En el corazón, aparecen acordes cálidos y ligeramente dulces que equilibran la intensidad inicial, aportando profundidad y sofisticación. El fondo es denso y envolvente, con vainilla, ámbar y maderas que dejan una estela duradera, sensual y muy adictiva.",
+
+    notasSalida: "Pimienta negra, especias",
+    notasCorazon: "Café, vainilla, notas cálidas",
+    notasFondo: "Ámbar, maderas, vainilla",
+
+    inspiracion:
+        "Inspirado en Dior Sauvage Elixir, con un perfil especiado, oscuro y altamente seductor.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa y con personalidad. Perfecta para la noche, salidas o climas fríos."
+},
+{
+    id: "lattafa-asad-bourbon",
+    nombre: "Lattafa Asad Bourbon",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-asad-bourbon.PNG",
+    precioMinorista: 83160,
+    precioMayorista: 61600,
+    stock: 2,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia cálida, dulce y especiada, con un perfil oriental gourmand que mezcla intensidad y elegancia en un estilo moderno y adictivo. Es un perfume con mucha presencia, ideal para quienes buscan algo envolvente y distinto. La apertura es intensa y especiada, con un toque dulce que recuerda al licor, generando un inicio potente y muy atractivo. En el corazón, se desarrollan acordes cálidos y gourmand que aportan cremosidad y profundidad, manteniendo un perfil seductor y elegante. El fondo es denso y envolvente, con vainilla, ámbar y maderas que dejan una estela dulce, cálida y duradera, con un aire sofisticado.",
+
+    notasSalida: "Especias, notas dulces, acorde licoroso",
+    notasCorazon: "Notas gourmand, vainilla, acordes cálidos",
+    notasFondo: "Ámbar, maderas, vainilla",
+
+    inspiracion:
+        "Inspirado en fragancias gourmand licorosas de alta gama, con un perfil dulce, cálido y especiado.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa, dulce y seductora. Perfecta para la noche, salidas o climas fríos."
+},
+{
+    id: "lattafa-asad-elixir",
+    nombre: "Lattafa Asad Elixir",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-asad-elixir.PNG",
+    precioMinorista: 87696,
+    precioMayorista: 64960,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia intensa, especiada y sofisticada, con un perfil oriental ambarado que combina frescura aromática con un fondo cálido y envolvente. Es un perfume elegante, moderno y con mucha presencia. La apertura es fresca y especiada, con un contraste atractivo que genera una salida potente pero refinada. En el corazón, se desarrollan acordes aromáticos y ligeramente dulces que aportan equilibrio, elegancia y profundidad. El fondo es cálido y seductor, con vainilla, ámbar y maderas que dejan una estela duradera, envolvente y muy masculina.",
+
+    notasSalida: "Especias, notas aromáticas",
+    notasCorazon: "Lavanda, acordes dulces, notas cálidas",
+    notasFondo: "Vainilla, ámbar, maderas",
+
+    inspiracion:
+        "Inspirado en Dior Sauvage Elixir, con un perfil especiado, aromático y profundamente seductor.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia elegante, intensa y versátil. Perfecta para la noche, salidas o climas frescos."
+}
+,
+{
+    id: "lattafa-asad-zanzibar",
+    nombre: "Lattafa Asad Zanzibar",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-asad-zanzibar.PNG",
+    precioMinorista: 61992,
+    precioMayorista: 45920,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, exótica y envolvente, con un perfil oriental aromático que combina notas marinas, dulzura cremosa y un fondo cálido. Es un perfume moderno, distinto y muy llamativo, ideal para quienes buscan salir de lo común. La apertura es fresca y especiada, con un contraste entre lo aromático y lo picante que genera un inicio vibrante y atractivo. En el corazón, aparece un acorde tropical y salado con coco e iris, aportando una sensación exótica, cremosa y ligeramente dulce que lo hace único. El fondo es cálido y envolvente, con vainilla e incienso que le dan profundidad, sensualidad y una estela duradera.",
+
+    notasSalida: "Pimienta negra, lavanda",
+    notasCorazon: "Coco salado, iris",
+    notasFondo: "Vainilla, incienso",
+
+    inspiracion:
+        "Inspirado en Jean Paul Gaultier Le Beau Le Parfum, con un perfil tropical, dulce y seductor, ideal para quienes buscan una fragancia fresca pero con personalidad.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia fresca pero intensa, con un toque dulce y exótico. Perfecta para verano, salidas o uso diario."
+},
+{
+    id: "lattafa-badee-al-oud-amethyst",
+    nombre: "Lattafa Bade'e Al Oud Amethyst",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-badee-al-oud-amethyst.PNG",
+    precioMinorista: 58968,
+    precioMayorista: 43680,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia intensa, elegante y envolvente, con un perfil oriental floral ambarado que combina rosas profundas, especias y un fondo dulce con oud. Es un perfume sofisticado, llamativo y con mucha personalidad. La apertura es especiada y vibrante, con pimienta rosa y bergamota que generan un inicio fresco pero potente, captando la atención desde el primer momento. En el corazón, la rosa toma protagonismo con un carácter intenso y elegante, acompañada por jazmín, aportando un perfil floral profundo, seductor y refinado. El fondo es cálido y denso, con oud, ámbar y vainilla que dejan una estela dulce, envolvente y muy duradera, con un aire oscuro y lujoso.",
+
+    notasSalida: "Pimienta rosa, bergamota",
+    notasCorazon: "Rosa turca, rosa búlgara, jazmín",
+    notasFondo: "Oud, ámbar, vainilla",
+
+    inspiracion:
+        "Inspirado en Initio Atomic Rose, con un perfil rosado, intenso y seductor, combinado con un fondo más oscuro y oriental.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia potente, elegante y con mucha presencia. Perfecta para la noche, ocasiones especiales o climas frescos."
+},
+{
+    id: "lattafa-badee-al-oud-for-glory",
+    nombre: "Lattafa Bade'e Al Oud For Glory",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-badee-al-oud-for-glory.PNG",
+    precioMinorista: 58968,
+    precioMayorista: 43680,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia intensa, oscura y sofisticada, con un perfil oriental amaderado que combina especias, oud y un fondo dulce envolvente. Es un perfume con mucha presencia, elegante y altamente seductor. La apertura es potente y especiada, con un carácter cálido que genera un inicio profundo, exótico y muy llamativo. En el corazón, el oud toma protagonismo junto a acordes amaderados, aportando cuerpo, misterio y una sensación lujosa. El fondo es denso y envolvente, con vainilla, ámbar y notas dulces que equilibran la intensidad, dejando una estela duradera y adictiva.",
+
+    notasSalida: "Azafrán, nuez moscada, lavanda",
+    notasCorazon: "Oud, notas amaderadas",
+    notasFondo: "Pachulí, ámbar, vainilla",
+
+    inspiracion:
+        "Inspirado en Initio Oud for Greatness, con un perfil oscuro, especiado y altamente seductor.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa y con carácter. Perfecta para la noche, eventos o climas fríos."
+},
+{
+    id: "lattafa-badee-al-oud-honor-and-glory",
+    nombre: "Lattafa Bade'e Al Oud Honor & Glory",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-badee-al-oud-honor-and-glory.PNG",
+    precioMinorista: 58968,
+    precioMayorista: 43680,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia dulce, exótica y envolvente, con un perfil oriental gourmand que mezcla notas frutales cremosas, especias y un fondo cálido irresistible. Es un perfume moderno, llamativo y muy adictivo. La apertura es intensa y gourmand, con una combinación de piña y crème brûlée que genera un inicio dulce, jugoso y totalmente diferente. En el corazón, aparecen especias cálidas como canela y pimienta, junto a resinas que aportan profundidad, cuerpo y un toque sofisticado. El fondo es cremoso y envolvente, con vainilla, sándalo y notas amaderadas que dejan una estela dulce, cálida y duradera.",
+
+    notasSalida: "Piña, crème brûlée",
+    notasCorazon: "Canela, benjuí, cúrcuma, pimienta negra",
+    notasFondo: "Vainilla, sándalo, cachemira, musgo",
+
+    inspiracion:
+        "Inspirado en fragancias niche gourmand modernas, con un perfil dulce, cremoso y especiado, destacándose por su ADN único y adictivo.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia dulce, intensa y diferente. Perfecta para la noche, salidas o climas frescos."
+}
+,
+{
+    id: "lattafa-badee-al-oud-noble-blush",
+    nombre: "Lattafa Bade'e Al Oud Noble Blush",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-badee-al-oud-noble-blush.PNG",
+    precioMinorista: 61992,
+    precioMayorista: 45920,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia dulce, cremosa y elegante, con un perfil floral gourmand que combina delicadeza y calidez en una composición moderna y adictiva. Es un perfume suave pero con presencia, ideal para quienes buscan algo femenino y diferente. La apertura es delicada y aterciopelada, con un acorde de rosa lechosa que genera una sensación suave, romántica y envolvente desde el primer momento. En el corazón, aparecen notas gourmand de merengue y almendra, aportando una dulzura cremosa, ligera y muy elegante, sin volverse pesada. El fondo es cálido y seductor, con vainilla, sándalo y almizcle que dejan una estela suave, limpia y duradera, con un aire sofisticado.",
+
+    notasSalida: "Rose milk",
+    notasCorazon: "Merengue, almendra",
+    notasFondo: "Vainilla, sándalo, almizcle",
+
+    inspiracion:
+        "No tiene un clon directo confirmado, pero se acerca a fragancias niche tipo Amouage Guidance por su perfil cremoso, floral y sofisticado con un toque gourmand.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia dulce, femenina y elegante. Perfecta para uso diario, citas o climas frescos."
+},
+{
+    id: "lattafa-badee-al-oud-sublime",
+    nombre: "Lattafa Bade'e Al Oud Sublime",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-badee-al-oud-sublime.PNG",
+    precioMinorista: 60480,
+    precioMayorista: 44800,
+    stock: 2,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia fresca, frutal y elegante, con un perfil amaderado aromático que combina notas jugosas con un fondo cálido y sofisticado. Es un perfume moderno, llamativo y muy versátil, ideal para destacar con un estilo diferente. La apertura es vibrante y afrutada, con manzana verde, lichi y rosa que generan un inicio dulce, fresco y muy atractivo. En el corazón, aparecen notas de ciruela y jazmín, aportando un toque más profundo, elegante y ligeramente floral que equilibra la frescura inicial. El fondo es cálido y envolvente, con vainilla, musgo y pachulí que dejan una estela dulce, limpia y duradera, con un aire sofisticado.",
+
+    notasSalida: "Manzana verde, lichi, rosa",
+    notasCorazon: "Ciruela, jazmín",
+    notasFondo: "Vainilla, musgo, pachulí",
+
+    inspiracion:
+        "Inspirado en Kayali Eden Juicy Apple, con un perfil más fresco, frutal y ligeramente más amaderado.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia fresca, dulce y elegante. Perfecta para uso diario, primavera/verano o climas cálidos."
+},
+{
+    id: "lattafa-confidential-private-gold",
+    nombre: "Lattafa Confidential Private Gold",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-confidential-private-gold.PNG",
+    precioMinorista: 48600,
+    precioMayorista: 36000,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia intensa, dulce y exótica, con un perfil oriental frutal que mezcla notas tropicales, acordes cálidos y un fondo envolvente. Es un perfume llamativo, moderno y con mucha presencia, ideal para quienes buscan destacar con un aroma diferente y adictivo. La apertura es explosiva y jugosa, con notas frutales tropicales, maracuyá, durazno y pera que aportan un inicio dulce, vibrante y muy atractivo. En el corazón aparecen notas florales y cálidas que suavizan la salida frutal y le dan un aire elegante, sensual y sofisticado. El fondo es cremoso y envolvente, con vainilla, almizcle, sándalo y heliotropo que dejan una estela dulce, intensa y duradera, con un toque oriental muy marcado.",
+
+    notasSalida: "Maracuyá, durazno, pera, frambuesa, casis",
+    notasCorazon: "Lirio de los valles, notas florales",
+    notasFondo: "Vainilla, almizcle, sándalo, heliotropo",
+
+    inspiracion:
+        "Inspirado en Erba Pura Eau de Parfum de Xerjoff, con un perfil tropical, dulce y ligeramente más intenso.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia frutal, dulce y con mucha proyección. Perfecta para salidas, noches, clima fresco o para dejar una estela que destaque."
+},
+{
+    id: "lattafa-eclaire",
+    nombre: "Lattafa Eclaire",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-eclaire.PNG",
+    precioMinorista: 89208,
+    precioMayorista: 66080,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia dulce, cremosa y ultra gourmand, con un perfil avainillado y caramelizado que transmite calidez, feminidad y mucha elegancia. Es un perfume envolvente y adictivo, ideal para quienes aman los aromas dulces con presencia y una sensación reconfortante. La apertura es deliciosa y suave, con notas de caramelo, leche y azúcar que generan un inicio cremoso, cálido y muy tentador. En el corazón aparecen flores blancas y miel, aportando un toque elegante y femenino que equilibra perfectamente la dulzura gourmand. El fondo es intenso y aterciopelado, con vainilla, praliné y almizcle que dejan una estela dulce, sofisticada y duradera, con un aire elegante y moderno.",
+
+    notasSalida: "Caramelo, leche, azúcar",
+    notasCorazon: "Flores blancas, miel",
+    notasFondo: "Vainilla, praliné, almizcle",
+
+    inspiracion:
+        "Inspirado en Bianco Latte Eau de Parfum de Giardini di Toscana, con un perfil dulce, cremoso y gourmand muy similar.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia cálida, dulce y femenina. Perfecta para otoño/invierno, salidas, noches o para amantes de los perfumes gourmand intensos."
+}
+,
+{
+    id: "lattafa-eclaire-pistache",
+    nombre: "Lattafa Eclaire Pistache",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-eclaire-pistache.PNG",
+    precioMinorista: 61992,
+    precioMayorista: 45920,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia cremosa, dulce y sofisticada, con un perfil gourmand avainillado donde el pistacho toma protagonismo junto a acordes lactónicos y un fondo cálido irresistible. Es un perfume moderno, elegante y muy adictivo, ideal para quienes aman los aromas dulces con un toque diferente y refinado. La apertura es suave y deliciosa, con pistacho cremoso, notas dulces y un toque gourmand que generan un inicio cálido, envolvente y muy atractivo. En el corazón aparecen acordes florales y cremosos que equilibran la dulzura y aportan un aire elegante y femenino, sin perder la sensación gourmand. El fondo es intenso y aterciopelado, con vainilla, almizcle y maderas suaves que dejan una estela cálida, dulce y duradera, con mucha presencia.",
+
+    notasSalida: "Pistacho, notas gourmand, acordes dulces",
+    notasCorazon: "Flores blancas, notas cremosas",
+    notasFondo: "Vainilla, almizcle, maderas suaves",
+
+    inspiracion:
+        "Inspirado en Yum Pistachio Gelato | 33 Eau de Parfum de Kayali, con un perfil más cremoso, cálido y envolvente.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia dulce, cremosa y elegante. Perfecta para clima fresco, salidas, noches o para amantes de los perfumes gourmand con pistacho y vainilla."
+},
+{
+    id: "lattafa-emaan",
+    nombre: "Lattafa Emaan",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-emaan.PNG",
+    precioMinorista: 63180,
+    precioMayorista: 46800,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia elegante, fresca y sofisticada, con un perfil floral almizclado que combina flores blancas, notas cítricas y un fondo limpio y cremoso. Es un perfume refinado, femenino y muy versátil, ideal para quienes buscan un aroma delicado pero con presencia. La apertura es luminosa y fresca, con bergamota, grosellas negras y flor de azahar que aportan un inicio limpio, femenino y muy agradable. En el corazón aparecen jazmín, nardos y caléndula, creando un acorde floral elegante y envolvente que transmite sofisticación y suavidad. El fondo es cálido y delicado, con vainilla, almizcle, pachulí y cedro que dejan una estela cremosa, limpia y duradera, con un aire moderno y refinado.",
+
+    notasSalida: "Bergamota, grosellas negras, flor de azahar",
+    notasCorazon: "Jazmín, nardos, caléndula",
+    notasFondo: "Vainilla, almizcle, pachulí, cedro",
+
+    inspiracion:
+        "Inspirado en My Way Eau de Parfum de Giorgio Armani, con un perfil más suave, limpio y ligeramente más dulce.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia floral elegante y fácil de usar todos los días. Perfecta para oficina, salidas, primavera/verano o climas templados."
+},
+{
+    id: "lattafa-emeer",
+    nombre: "Lattafa Emeer",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-emeer.PNG",
+    precioMinorista: 89856,
+    precioMayorista: 66560,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia fresca, elegante y sofisticada, con un perfil amaderado aromático que combina notas cítricas, especiadas y un fondo limpio y moderno. Es un perfume refinado, versátil y con mucha presencia, ideal para quienes buscan un aroma distinguido y fácil de usar en cualquier ocasión. La apertura es vibrante y fresca, con limón, bergamota y enebro que aportan un inicio cítrico, limpio y energizante. En el corazón aparecen notas aromáticas y especiadas que le dan profundidad y elegancia, manteniendo una sensación fresca y sofisticada durante toda la evolución. El fondo es cálido y refinado, con ámbar, cedro, sándalo y almizcle que dejan una estela amaderada, limpia y duradera, con un aire moderno y masculino.",
+
+    notasSalida: "Limón, bergamota, enebro",
+    notasCorazon: "Notas aromáticas, especias suaves",
+    notasFondo: "Ámbar, cedro, sándalo, almizcle",
+
+    inspiracion:
+        "Inspirado en L’Immensité Eau de Parfum de Louis Vuitton, con un perfil fresco, amaderado y ligeramente más cálido.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia elegante, fresca y versátil. Perfecta para uso diario, oficina, salidas o clima templado/cálido."
+},
+{
+    id: "lattafa-haya",
+    nombre: "Lattafa Haya",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-haya.PNG",
+    precioMinorista: 74088,
+    precioMayorista: 54880,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia femenina, chispeante y elegante, con un perfil floral frutal dulce que combina notas frescas, acordes suaves y un fondo cremoso y sofisticado. Es un perfume moderno, delicado y muy versátil, ideal para quienes buscan un aroma juvenil pero refinado. La apertura es fresca y luminosa, con champagne rosado, frutas rojas y mandarina que generan un inicio dulce, frutal y muy atractivo. En el corazón aparecen gardenia, jazmín y vainilla, aportando un toque floral elegante y femenino que equilibra perfectamente la frescura inicial. El fondo es suave y envolvente, con ámbar, sándalo y castañas que dejan una estela cremosa, cálida y duradera, con un aire sofisticado y moderno.",
+
+    notasSalida: "Champagne rosado, frutas rojas, mandarina",
+    notasCorazon: "Gardenia, jazmín, vainilla",
+    notasFondo: "Ámbar, sándalo, castañas",
+
+    inspiracion:
+        "Inspirado en Viva La Juicy Rosé Eau de Parfum de Juicy Couture, con un perfil más cremoso, elegante y ligeramente más cálido.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina, dulce y sofisticada. Perfecta para uso diario, salidas, primavera/verano o para quienes aman los perfumes frutales elegantes."
+}
+,
+{
+    id: "lattafa-hayaati",
+    nombre: "Lattafa Hayaati",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-hayaati.PNG",
+    precioMinorista: 46980,
+    precioMayorista: 34800,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia moderna, fresca y especiada, con un perfil amaderado aromático que combina notas frutales, cítricas y cálidas sobre un fondo sensual y masculino. Un perfume versátil, elegante y con excelente presencia, ideal para el uso diario o para quienes buscan un aroma limpio pero seductor. La apertura es fresca y vibrante, donde la manzana y la bergamota aportan una salida frutal, cítrica y energizante, con un toque moderno y atractivo. En el corazón aparecen notas especiadas y amaderadas que le dan profundidad y carácter, manteniendo un equilibrio entre frescura y calidez masculina. El fondo es envolvente y duradero, con almizcle, vainilla y maderas que dejan una estela limpia, sensual y muy agradable, con un estilo moderno y elegante.",
+
+    notasSalida: "Manzana, bergamota",
+    notasCorazon: "Canela, notas amaderadas",
+    notasFondo: "Vainilla, almizcle",
+
+    inspiracion:
+        "Inspirado en Invictus, con un perfil fresco, frutal y especiado, acompañado de un fondo cálido y masculino.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina fresca, moderna y versátil. Perfecta para uso diario, oficina, salidas o para quienes disfrutan perfumes equilibrados con buena duración y proyección."
+},
+{
+    id: "lattafa-hayaati-al-maleky",
+    nombre: "Lattafa Hayaati Al Maleky",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-hayaati-al-maleky.PNG",
+    precioMinorista: 46980,
+    precioMayorista: 34800,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia intensa, moderna y seductora, con un perfil amaderado especiado que mezcla notas frescas, acordes cálidos y un fondo dulce y envolvente. Es un perfume masculino, elegante y con mucha personalidad, ideal para quienes buscan destacar con un aroma fuerte y sofisticado. La apertura es fresca y vibrante, con cítricos, pimienta rosa y notas aromáticas que aportan un inicio energético, limpio y muy atractivo. En el corazón aparecen acordes especiados y amaderados que le dan profundidad y una sensación elegante y masculina, manteniendo un perfil moderno y versátil. El fondo es cálido y seductor, con ámbar, almizcle, cedro y notas dulces que dejan una estela intensa, sofisticada y duradera.",
+
+    notasSalida: "Cítricos, pimienta rosa, notas aromáticas",
+    notasCorazon: "Especias, notas amaderadas",
+    notasFondo: "Ámbar, almizcle, cedro, acordes dulces",
+
+    inspiracion:
+        "Inspirado en 1 Million Lucky Eau de Toilette de Paco Rabanne, con un perfil más especiado, amaderado y menos empalagoso.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina, intensa y moderna. Perfecta para noches, salidas, clima fresco o para dejar una estela elegante y llamativa."
+},
+{
+    id: "lattafa-her-confession",
+    nombre: "Lattafa Her Confession",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-her-confession.PNG",
+    precioMinorista: 81648,
+    precioMayorista: 60480,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia envolvente, cremosa y sofisticada, con un perfil floral gourmand que mezcla acordes dulces, especiados y un fondo cálido muy elegante. Es un perfume femenino, moderno y seductor, ideal para quienes buscan un aroma intenso y con mucha personalidad. La apertura es suave y adictiva, con notas especiadas y cremosas que generan un inicio cálido, elegante y muy atractivo. En el corazón aparecen flores blancas y acordes dulces que aportan feminidad y profundidad, logrando un equilibrio perfecto entre sensualidad y sofisticación. El fondo es intenso y aterciopelado, con vainilla, ámbar, almizcle y maderas suaves que dejan una estela dulce, envolvente y duradera, con un aire lujoso y moderno.",
+
+    notasSalida: "Acordes especiados, notas cremosas",
+    notasCorazon: "Flores blancas, acordes gourmand",
+    notasFondo: "Vainilla, ámbar, almizcle, maderas suaves",
+
+    inspiracion:
+        "Inspirado en Blanche Bête Eau de Parfum de Liquides Imaginaires, con un perfil más dulce, cremoso y cálido.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina, elegante y gourmand. Perfecta para noches, clima fresco, salidas o para amantes de los perfumes cremosos y sofisticados."
+},
+{
+    id: "lattafa-his-confession",
+    nombre: "Lattafa His Confession",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-his-confession.PNG",
+    precioMinorista: 83160,
+    precioMayorista: 61600,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia intensa, elegante y misteriosa, con un perfil amaderado especiado que combina notas cálidas, aromáticas y un fondo dulce y sofisticado. Es un perfume moderno, seductor y con mucha presencia, ideal para quienes buscan un aroma masculino que destaque y deje huella. La apertura es vibrante y especiada, con acordes aromáticos y notas frescas que generan un inicio elegante, moderno y muy atractivo. En el corazón aparecen maderas y especias cálidas que aportan profundidad y carácter, logrando una sensación masculina, refinada y envolvente. El fondo es cálido y seductor, con vainilla, ámbar, almizcle y notas amaderadas que dejan una estela intensa, sofisticada y duradera.",
+
+    notasSalida: "Notas aromáticas, especias frescas",
+    notasCorazon: "Maderas, especias cálidas",
+    notasFondo: "Vainilla, ámbar, almizcle, notas amaderadas",
+
+    inspiracion:
+        "Inspirado en Ani Eau de Parfum de Nishane, con un perfil más especiado, oscuro y masculino.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa, elegante y seductora. Perfecta para noches, clima fresco, salidas o para quienes disfrutan perfumes cálidos y con mucha personalidad."
+}
+,
+{
+    id: "lattafa-khamrah",
+    nombre: "Lattafa Khamrah",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-khamrah.PNG",
+    precioMinorista: 69552,
+    precioMayorista: 51520,
+    stock: 3,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia cálida, especiada y extremadamente adictiva, con un perfil oriental gourmand que mezcla canela, vainilla y acordes dulces con un fondo amaderado y sofisticado. Es un perfume intenso, elegante y con muchísima presencia, ideal para quienes buscan destacar con una estela envolvente y lujosa. La apertura es dulce y especiada, con canela, nuez moscada y bergamota que generan un inicio cálido, llamativo y muy atractivo. En el corazón aparecen dátiles, praliné y notas florales que aportan profundidad, cremosidad y una sensación gourmand sofisticada y elegante. El fondo es intenso y envolvente, con vainilla, benjuí, ámbar, haba tonka y maderas que dejan una estela dulce, cálida y duradera, con un aire oriental moderno y lujoso.",
+
+    notasSalida: "Canela, nuez moscada, bergamota",
+    notasCorazon: "Dátiles, praliné, nardos, mahonial",
+    notasFondo: "Vainilla, benjuí, ámbar, haba tonka, mirra, akigalawood",
+
+    inspiracion:
+        "Inspirado en Angels’ Share Eau de Parfum de By Kilian, con un perfil más dulce, especiado y gourmand.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa, cálida y seductora. Perfecta para noches, otoño/invierno, salidas o para amantes de los perfumes dulces con gran duración y proyección."
+},
+{
+    id: "lattafa-khamrah-qahwa",
+    nombre: "Lattafa Khamrah Qahwa",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-khamrah-qahwa.PNG",
+    precioMinorista: 66528,
+    precioMayorista: 49280,
+    stock: 4,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia cálida, intensa y extremadamente adictiva, con un perfil oriental gourmand donde el café, las especias y la vainilla se combinan de manera sofisticada y envolvente. Un perfume elegante, dulce y con muchísima presencia, ideal para quienes buscan aromas profundos, cálidos y seductores. La apertura es especiada y vibrante, con canela, jengibre y cardamomo que crean un inicio cálido, exótico y muy atractivo. En el corazón aparece el café acompañado de notas dulces y gourmand, aportando profundidad, cremosidad y una sensación intensa y reconfortante. El fondo es dulce, amaderado y duradero, con vainilla, haba tonka, benjuí y maderas que dejan una estela cálida, sofisticada y lujosa, con un aire oriental moderno irresistible.",
+
+    notasSalida: "Canela, jengibre, cardamomo",
+    notasCorazon: "Café, praliné, notas dulces",
+    notasFondo: "Vainilla, haba tonka, benjuí, maderas",
+
+    inspiracion:
+        "Inspirado en Angels’ Share Eau de Parfum de By Kilian, con un perfil más intenso, gourmand y especiado, donde el café aporta un carácter cálido y adictivo.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa, cálida y seductora. Perfecta para noches, otoño/invierno, salidas o para amantes de los perfumes dulces, especiados y con gran duración y proyección."
+},
+{
+    id: "lattafa-khamrah-waha",
+    nombre: "Lattafa Khamrah Waha",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-khamrah-waha.PNG",
+    precioMinorista: 137592,
+    precioMayorista: 101920,
+    stock: 3,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia fresca, aromática y sofisticada, con un perfil cítrico amaderado que reinterpreta el ADN Khamrah desde un lado mucho más luminoso y energizante. La apertura combina bergamota, yuzu, enebro y jengibre, creando una salida cítrica, vibrante y especiada. En el corazón aparecen iris, pepino, salvia y un acorde de sal marina que aportan una sensación mineral, fresca y elegante. El fondo combina haba tonka, vainilla, almizcle, Akigalawood y Ambrofix, dejando una estela cálida, amaderada y sensual que contrasta con la frescura inicial.",
+
+    notasSalida: "Bergamota, enebro, yuzu, jengibre",
+    notasCorazon: "Iris, pepino, salvia, acorde de sal marina",
+    notasFondo: "Akigalawood, haba tonka, vainilla, almizcle, Ambrofix",
+
+    inspiracion:
+        "Inspirado en Jean Paul Gaultier Le Beau EDT, con un perfil fresco, aromático y dulce, acompañado por un fondo cremoso y amaderado.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia fresca pero con profundidad y personalidad. Perfecta para uso diario, salidas, primavera/verano o climas templados."
+},
+{
+    id: "lattafa-maahir",
+    nombre: "Lattafa Maahir",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-maahir.PNG",
+    precioMinorista: 66528,
+    precioMayorista: 49280,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia fresca, tropical y sofisticada, con un perfil afrutado aromático que combina cítricos, frutas exóticas y notas cremosas sobre un fondo cálido y elegante. Un perfume moderno, llamativo y versátil, ideal para quienes buscan un aroma diferente, fresco y con mucha personalidad. La apertura es vibrante y tropical, donde la piña, los cítricos y las notas afrutadas crean un inicio jugoso, refrescante y muy atractivo. En el corazón aparecen acordes florales y especiados que aportan profundidad y equilibrio, manteniendo una sensación elegante y moderna. El fondo es cálido y envolvente, con vainilla, almizcle y maderas que dejan una estela cremosa, sofisticada y duradera, con un aire tropical elegante.",
+
+    notasSalida: "Piña, bergamota, frutas tropicales",
+    notasCorazon: "Jazmín, notas florales, especias suaves",
+    notasFondo: "Vainilla, almizcle, sándalo, maderas",
+
+    inspiracion:
+        "Inspirado en Bond No. 9 Greenwich Village, con un perfil más tropical, dulce y fresco.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia fresca, tropical y sofisticada. Perfecta para primavera/verano, uso diario, salidas o para quienes disfrutan perfumes frutales modernos con excelente duración y proyección."
+}
+,
+{
+    id: "lattafa-maahir-black-edition",
+    nombre: "Lattafa Maahir Black Edition",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-maahir-black-edition.PNG",
+    precioMinorista: 66528,
+    precioMayorista: 49280,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia oscura, intensa y sofisticada, con un perfil amaderado especiado que combina humo, cuero y notas orientales sobre un fondo cálido y profundo. Un perfume elegante, misterioso y con muchísima presencia, ideal para quienes buscan aromas fuertes, masculinos y diferentes. La apertura es especiada y ahumada, donde la pimienta negra, las especias y las notas oscuras crean un inicio potente, elegante y muy llamativo. En el corazón aparecen acordes de cuero, incienso y maderas que aportan profundidad, carácter y una sensación cálida y envolvente. El fondo es intenso y duradero, con ámbar, oud y notas amaderadas que dejan una estela sofisticada, masculina y con un aire oriental moderno.",
+
+    notasSalida: "Pimienta negra, especias, notas ahumadas",
+    notasCorazon: "Cuero, incienso, maderas",
+    notasFondo: "Oud, ámbar, almizcle, notas amaderadas",
+
+    inspiracion:
+        "Inspirado en Terroni, con un perfil más oriental, ahumado y especiado.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa, oscura y sofisticada. Perfecta para noches, clima frío, salidas o para amantes de perfumes fuertes con gran duración y proyección."
+},
+{
+    id: "lattafa-mayar",
+    nombre: "Lattafa Mayar",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-mayar.PNG",
+    precioMinorista: 60480,
+    precioMayorista: 44800,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia femenina, fresca y delicadamente dulce, con un perfil floral afrutado que combina frutas jugosas, flores suaves y un fondo cremoso y elegante. Un perfume moderno, romántico y versátil, ideal para quienes buscan un aroma femenino, limpio y encantador. La apertura es fresca y vibrante, donde las frutas rojas y los acordes cítricos crean un inicio jugoso, dulce y muy atractivo. En el corazón aparecen notas florales delicadas que aportan feminidad, suavidad y una sensación elegante y luminosa. El fondo es cremoso y envolvente, con vainilla, almizcle y maderas suaves que dejan una estela dulce, limpia y sofisticada, con un aire moderno y romántico.",
+
+    notasSalida: "Frutas rojas, lichi, cítricos",
+    notasCorazon: "Rosa, jazmín, flores blancas",
+    notasFondo: "Vainilla, almizcle, maderas suaves",
+
+    inspiracion:
+        "Inspirado en Angel Nova, con un perfil más suave, fresco y floral afrutado.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina fresca, dulce y elegante. Perfecta para uso diario, primavera/verano, salidas o para amantes de perfumes florales modernos con buena duración y proyección."
+},
+{
+    id: "lattafa-mayar-cherry-intense",
+    nombre: "Lattafa Mayar Cherry Intense",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-mayar-cherry-intense.PNG",
+    precioMinorista: 58968,
+    precioMayorista: 43680,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia intensa, dulce y seductora, con un perfil gourmand afrutado donde la cereza, las notas licorosas y la vainilla se combinan de manera sofisticada y envolvente. Un perfume moderno, llamativo y con muchísima personalidad, ideal para quienes aman los aromas dulces, intensos y adictivos. La apertura es vibrante y provocativa, donde la cereza y los acordes frutales crean un inicio jugoso, oscuro y extremadamente atractivo. En el corazón aparecen notas florales y gourmand que aportan profundidad, cremosidad y una sensación elegante y sensual. El fondo es cálido y envolvente, con vainilla, ámbar y maderas que dejan una estela dulce, intensa y duradera, con un aire lujoso y moderno.",
+
+    notasSalida: "Cereza, frutas rojas, acordes licorosos",
+    notasCorazon: "Jazmín, rosa, notas gourmand",
+    notasFondo: "Vainilla, ámbar, almizcle, maderas",
+
+    inspiracion:
+        "Inspirado en Lost Cherry, con un perfil más dulce, intenso y gourmand.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa, dulce y seductora. Perfecta para noches, clima fresco, salidas o para amantes de perfumes gourmand con gran duración y proyección."
+},
+{
+    id: "lattafa-mayar-natural-intense",
+    nombre: "Lattafa Mayar Natural Intense",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-mayar-natural-intense.PNG",
+    precioMinorista: 57456,
+    precioMayorista: 42560,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia fresca, tropical y luminosa, con un perfil floral afrutado que combina frutas exóticas, flores suaves y un fondo cremoso y limpio. Un perfume femenino, moderno y versátil, ideal para quienes buscan un aroma refrescante, elegante y con un toque tropical sofisticado. La apertura es jugosa y vibrante, donde las frutas tropicales y los acordes cítricos crean un inicio fresco, dulce y muy atractivo. En el corazón aparecen notas florales delicadas que aportan feminidad, suavidad y una sensación luminosa y elegante. El fondo es cremoso y envolvente, con vainilla, almizcle y maderas suaves que dejan una estela fresca, dulce y duradera, con un aire tropical moderno.",
+
+    notasSalida: "Frutas tropicales, mandarina, coco",
+    notasCorazon: "Jazmín, flor de loto, flores blancas",
+    notasFondo: "Vainilla, almizcle, sándalo",
+
+    inspiracion:
+        "Inspirado en Alien Goddess, con un perfil más fresco, tropical y suave.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina fresca, tropical y elegante. Perfecta para primavera/verano, uso diario, vacaciones o para amantes de perfumes luminosos con buena duración y proyección."
+}
+,
+{
+    id: "lattafa-musamam",
+    nombre: "Lattafa Musamam",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-musamam.PNG",
+    precioMinorista: 66528,
+    precioMayorista: 49280,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia cálida, especiada y sofisticada, con un perfil oriental amaderado que combina especias intensas, notas ahumadas y maderas profundas sobre un fondo elegante y envolvente. Un perfume moderno, lujoso y con muchísima presencia, ideal para quienes buscan aromas refinados, intensos y diferentes. La apertura es especiada y vibrante, donde el azafrán, las especias cálidas y los acordes cítricos crean un inicio elegante, llamativo y muy atractivo. En el corazón aparecen notas amaderadas y aromáticas que aportan profundidad, carácter y una sensación cálida y sofisticada. El fondo es intenso y duradero, con oud, ámbar, almizcle y maderas que dejan una estela envolvente, lujosa y moderna, con un aire oriental refinado.",
+
+    notasSalida: "Azafrán, mandarina, especias",
+    notasCorazon: "Cedro, lavanda, notas amaderadas",
+    notasFondo: "Oud, ámbar, almizcle, incienso",
+
+    inspiracion:
+        "Inspirado en Oud Wood, con un perfil más especiado, cálido y oriental.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa, elegante y sofisticada. Perfecta para noches, clima fresco, eventos o para amantes de perfumes orientales con gran duración y proyección."
+},
+{
+    id: "lattafa-musamam-white-intense",
+    nombre: "Lattafa Musamam White Intense",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-musamam-white-intense.PNG",
+    precioMinorista: 101304,
+    precioMayorista: 75040,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia fresca, cremosa y sofisticada, con un perfil amaderado aromático que combina especias suaves, cítricos y notas limpias sobre un fondo cálido y elegante. Un perfume moderno, refinado y versátil, ideal para quienes buscan un aroma distintivo, fresco y con excelente presencia. La apertura es luminosa y especiada, donde los cítricos y las notas aromáticas crean un inicio fresco, elegante y muy atractivo. En el corazón aparecen acordes cremosos y amaderados que aportan profundidad, suavidad y una sensación sofisticada y envolvente. El fondo es cálido y duradero, con sándalo, almizcle y ámbar que dejan una estela limpia, cremosa y moderna, con un aire lujoso y refinado.",
+
+    notasSalida: "Bergamota, especias suaves, cítricos",
+    notasCorazon: "Coco, ylang-ylang, notas aromáticas",
+    notasFondo: "Sándalo, almizcle, ámbar, maderas suaves",
+
+    inspiracion:
+        "Inspirado en Le Beau Le Parfum, con un perfil más cremoso, limpio y sofisticado.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia fresca, elegante y moderna. Perfecta para uso diario, primavera/verano, salidas o para amantes de perfumes cremosos y sofisticados con buena duración y proyección."
+},
+{
+    id: "lattafa-niche-emarati-khanjar",
+    nombre: "Lattafa Niche Emarati Khanjar",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-niche-emarati-khanjar.PNG",
+    precioMinorista: 110916,
+    precioMayorista: 82160,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 85 ML – UNISEX",
+
+    descripcion:
+        "Fragancia intensa, elegante y profundamente oriental, con un perfil especiado amaderado que combina cuero, incienso y maderas oscuras sobre un fondo cálido y sofisticado. Un perfume lujoso, refinado y con muchísima presencia, ideal para quienes buscan aromas árabes tradicionales con un estilo moderno y exclusivo. La apertura es especiada y poderosa, donde las especias cálidas y los acordes aromáticos crean un inicio intenso, elegante y muy llamativo. En el corazón aparecen notas de cuero, incienso y maderas que aportan profundidad, carácter y una sensación oscura y sofisticada. El fondo es cálido y envolvente, con oud, ámbar y almizcle que dejan una estela intensa, refinada y duradera, con un aire oriental lujoso y masculino.",
+
+    notasSalida: "Nuez moscada, jengibre, especias",
+    notasCorazon: "Cuero, incienso, cachemira",
+    notasFondo: "Oud, ámbar, almizcle, vetiver",
+
+    inspiracion:
+        "Inspirado en Halfeti, con un perfil más oriental, cuero-especiado y oscuro.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia intensa, elegante y sofisticada. Perfecta para noches, clima frío, eventos o para amantes de perfumes árabes con gran duración y proyección."
+},
+{
+    id: "lattafa-pride-fakhar-black",
+    nombre: "Lattafa Pride Fakhar Black",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-pride-fakhar-black.PNG",
+    precioMinorista: 69552,
+    precioMayorista: 51520,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, elegante y seductora, con un perfil aromático amaderado que combina cítricos, especias suaves y notas dulces sobre un fondo moderno y masculino. Un perfume versátil, sofisticado y con excelente presencia, ideal para quienes buscan un aroma limpio, atractivo y fácil de usar en cualquier ocasión. La apertura es fresca y vibrante, donde la bergamota, la manzana y las notas especiadas crean un inicio moderno, energizante y muy atractivo. En el corazón aparecen acordes aromáticos y florales que aportan profundidad, elegancia y una sensación masculina refinada. El fondo es cálido y envolvente, con haba tonka, ámbar y maderas que dejan una estela sensual, limpia y duradera, con un estilo moderno y sofisticado.",
+
+    notasSalida: "Bergamota, manzana, jengibre",
+    notasCorazon: "Lavanda, salvia, enebro",
+    notasFondo: "Haba tonka, cedro, ámbar, vetiver",
+
+    inspiracion:
+        "Inspirado en Y Eau de Parfum de Yves Saint Laurent, con un perfil fresco, aromático, dulce y moderno muy similar.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina moderna, fresca y seductora. Perfecta para uso diario, oficina, salidas o para quienes disfrutan perfumes versátiles con excelente duración y proyección."
+},
+{
+    id: "lattafa-pride-fakhar-gold-extrait",
+    nombre: "Lattafa Pride Fakhar Gold Extrait",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-pride-fakhar-gold-extrait.PNG",
+    precioMinorista: 58968,
+    precioMayorista: 43680,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia cálida, intensa y sofisticada, con un perfil ambarado especiado que combina notas dulces, cuero y acordes aromáticos sobre un fondo moderno y elegante. Un perfume con mucha presencia, seductor y envolvente, ideal para quienes buscan un aroma masculino lujoso y llamativo. La apertura es vibrante y especiada, donde el pomelo, el cardamomo y la pimienta rosa crean un inicio moderno, fresco y adictivo. En el corazón aparecen notas florales y solares que aportan profundidad, elegancia y un toque refinado muy distintivo. El fondo es cálido y sensual, con ámbar, cuero y cashmeran que dejan una estela intensa, sofisticada y duradera, con un estilo moderno y masculino.",
+
+    notasSalida: "Pomelo, pimienta rosa, cardamomo",
+    notasCorazon: "Nardos, notas solares, artemisia",
+    notasFondo: "Ámbar, cuero, cashmeran, ládano",
+
+    inspiracion:
+        "Inspirado en Paco Rabanne 1 Million Parfum, con un perfil dulce, especiado, ambarado y moderno muy similar.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina intensa, elegante y seductora. Perfecta para noches, eventos, salidas o para quienes disfrutan perfumes con excelente duración y gran proyección."
+},
+{
+    id: "lattafa-pride-fakhar-rose",
+    nombre: "Lattafa Pride Fakhar Rose",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-pride-fakhar-rose.PNG",
+    precioMinorista: 92232,
+    precioMayorista: 68320,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia floral frutal, elegante y seductora, con un perfil moderno que combina frutas jugosas, flores blancas y un fondo dulce y cremoso. Un perfume femenino, sofisticado y versátil, ideal para quienes buscan un aroma delicado pero con mucha presencia. La apertura es fresca y vibrante, donde las frutas y notas cítricas crean un inicio luminoso, dulce y muy atractivo. En el corazón aparecen flores blancas y acordes florales elegantes que aportan feminidad, suavidad y una sensación refinada y moderna. El fondo es cálido y envolvente, con vainilla, almizcle y maderas suaves que dejan una estela sensual, limpia y duradera, con un estilo sofisticado y femenino.",
+
+    notasSalida: "Frutas, granada, lirio, aldehídos",
+    notasCorazon: "Jazmín, nardos, gardenia, ylang-ylang, madreselva, rosa, peonía",
+    notasFondo: "Vainilla, almizcle blanco, sándalo, ambroxan",
+
+    inspiracion:
+        "Inspirado en Givenchy L’Interdit, con un perfil floral blanco, dulce, elegante y moderno muy similar.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina sofisticada, floral y seductora. Perfecta para uso diario, salidas, eventos o para quienes disfrutan perfumes elegantes con excelente duración y proyección."
+},
+{
+    id: "lattafa-pride-nebras",
+    nombre: "Lattafa Pride Nebras",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-pride-nebras.PNG",
+    precioMinorista: 86184,
+    precioMayorista: 63840,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia dulce, cremosa y adictiva, con un perfil avainillado gourmand que combina notas frutales, cacao y ámbar sobre un fondo cálido y envolvente. Un perfume moderno, elegante y con muchísima presencia, ideal para quienes aman los aromas dulces intensos y sofisticados. La apertura es deliciosa y vibrante, donde las frutas rojas y la mandarina crean un inicio dulce, jugoso y muy atractivo. En el corazón aparecen notas gourmand y cremosas que aportan profundidad, calidez y una sensación reconfortante y elegante. El fondo es intenso y sensual, con vainilla, haba tonka, ámbar y almizcle que dejan una estela dulce, cálida y duradera, con un estilo moderno y adictivo.",
+
+    notasSalida: "Frutas rojas, mandarina",
+    notasCorazon: "Vainilla, cacao, rosa",
+    notasFondo: "Haba tonka, ámbar, almizcle, azúcar",
+
+    inspiracion:
+        "Inspirado en Eilish by Billie Eilish, con un perfil dulce, avainillado, gourmand y cremoso muy similar.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia dulce, cálida y envolvente. Perfecta para noches, clima fresco, salidas o para quienes disfrutan perfumes gourmand con excelente duración y gran proyección."
+},
+{
+    id: "lattafa-pride-pisa",
+    nombre: "Lattafa Pride Pisa",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-pride-pisa.PNG",
+    precioMinorista: 98280,
+    precioMayorista: 72800,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, elegante y moderna, con un perfil cítrico aromático que combina notas acuáticas, especias suaves y maderas sobre un fondo limpio y sofisticado. Un perfume masculino versátil, refinado y muy atractivo, ideal para quienes buscan un aroma fresco con excelente presencia. La apertura es cítrica y vibrante, donde la bergamota, el limón y las notas frescas crean un inicio energizante, limpio y moderno. En el corazón aparecen acordes aromáticos y especiados que aportan profundidad, masculinidad y una sensación elegante y refinada. El fondo es amaderado y envolvente, con ámbar, almizcle y maderas suaves que dejan una estela fresca, sensual y duradera, con un estilo moderno y sofisticado.",
+
+    notasSalida: "Bergamota, limón, pomelo",
+    notasCorazon: "Lavanda, notas marinas, especias suaves",
+    notasFondo: "Cedro, ámbar, almizcle, vetiver",
+
+    inspiracion:
+        "Inspirado en Giorgio Armani Acqua di Giò, con un perfil fresco, acuático, cítrico y elegante muy similar.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina fresca, limpia y versátil. Perfecta para uso diario, oficina, verano o para quienes disfrutan perfumes modernos con excelente duración y proyección."
+}
+,
+{
+    id: "lattafa-pride-shaheen-gold",
+    nombre: "Lattafa Pride Shaheen Gold",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-pride-shaheen-gold.PNG",
+    precioMinorista: 65016,
+    precioMayorista: 48160,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia frutal, fresca y moderna, con un perfil dulce aromático que combina notas tropicales, acordes cremosos y un fondo cálido y elegante. Un perfume versátil, llamativo y muy adictivo, ideal para quienes buscan un aroma diferente, moderno y con excelente presencia. La apertura es vibrante y tropical, donde la piña y el pomelo crean una salida fresca, jugosa y ligeramente cítrica, con una sensación luminosa y energética. En el corazón aparecen notas aromáticas y suaves que aportan equilibrio y sofisticación. La lavanda se mezcla con el dulzor cremoso del higo, logrando un aroma elegante, moderno y con un toque ligeramente gourmand. El fondo es cálido y envolvente, con vainilla, haba tonka y patchouli que dejan una estela dulce, sensual y refinada, manteniendo una sensación fresca y limpia durante toda la evolución.",
+
+    notasSalida: "Piña, pomelo",
+    notasCorazon: "Higo, lavanda",
+    notasFondo: "Vainilla, haba tonka, patchouli",
+
+    inspiracion:
+        "Inspirado en Paco Rabanne Phantom, con un perfil tropical, dulce, cremoso y moderno, aunque mantiene una identidad propia.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia unisex fresca, dulce y sofisticada. Perfecta para primavera, verano, salidas, uso diario o para quienes disfrutan perfumes frutales modernos con excelente impacto y estilo elegante."
+},
+{
+    id: "lattafa-pride-tharwah-gold",
+    nombre: "Lattafa Pride Tharwah Gold",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-pride-tharwah-gold.PNG",
+    precioMinorista: 116532,
+    precioMayorista: 86320,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia floral oriental elegante y envolvente, con un perfil sofisticado que combina cítricos frescos, flores blancas y un fondo avainillado cálido y sensual. Un perfume femenino refinado, intenso y moderno, ideal para quienes buscan una fragancia con mucha presencia y excelente duración. La apertura es luminosa y aromática, donde la bergamota y la lavanda crean una salida fresca, elegante y ligeramente cítrica, aportando una sensación limpia y sofisticada desde el primer spray. En el corazón aparecen las flores blancas, con jazmín egipcio y flor de azahar que le dan feminidad, sensualidad y un estilo elegante muy moderno, logrando un equilibrio perfecto entre dulzura y sofisticación. El fondo es cálido, cremoso y envolvente, con vainilla, ámbar y vetiver que dejan una estela intensa, sensual y duradera, manteniendo un aroma elegante y adictivo durante horas.",
+
+    notasSalida: "Lavanda, bergamota",
+    notasCorazon: "Flor de azahar, jazmín egipcio",
+    notasFondo: "Vainilla, ámbar, vetiver",
+
+    inspiracion:
+        "Inspirado en Yves Saint Laurent Libre Intense, con un perfil floral avainillado elegante, intenso y muy similar al ADN sofisticado de la línea Libre.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina elegante, intensa y moderna. Perfecta para noches, salidas, clima fresco o para quienes disfrutan perfumes sofisticados con excelente proyección y duración."
+},
+{
+    id: "lattafa-qaed-al-fursan",
+    nombre: "Lattafa Qaed Al Fursan",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-qaed-al-fursan.PNG",
+    precioMinorista: 53460,
+    precioMayorista: 39600,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 90 ML – UNISEX",
+
+    descripcion:
+        "Fragancia frutal, intensa y moderna, con un perfil dulce amaderado que combina una explosión de piña tropical, acordes ahumados y un fondo cálido y sofisticado. Un perfume llamativo, adictivo y con mucha personalidad, ideal para quienes buscan un aroma diferente, potente y con excelente relación calidad-precio. La apertura es vibrante y extremadamente frutal, donde la piña jugosa se mezcla con el azafrán creando una salida dulce, tropical y ligeramente especiada, con una sensación fresca pero intensa desde el primer spray. En el corazón aparecen notas amaderadas y aromáticas que aportan profundidad y elegancia. El bálsamo de abeto junto al jazmín equilibran el dulzor inicial, logrando un aroma moderno, masculino y muy atractivo. El fondo es cálido, ahumado y envolvente, con oud, cedro y ámbar que dejan una estela sensual, amaderada y duradera, manteniendo el ADN tropical característico durante toda la evolución.",
+
+    notasSalida: "Piña, azafrán",
+    notasCorazon: "Bálsamo de abeto, jazmín",
+    notasFondo: "Oud, cedro, ámbar",
+
+    inspiracion:
+        "Inspirado en Creed Aventus, con un perfil más dulce, tropical y juvenil, y matices que también recuerdan a Black XS L’Exces de Paco Rabanne.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia unisex dulce, tropical y potente. Perfecta para salidas, noches, clima templado o para amantes de los perfumes con mucha piña, excelente presencia y estilo moderno."
+},
+{
+    id: "lattafa-qaed-al-fursan-unlimited",
+    nombre: "Lattafa Qaed Al Fursan Unlimited",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-qaed-al-fursan-unlimited.PNG",
+    precioMinorista: 48600,
+    precioMayorista: 36000,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 90 ML – UNISEX",
+
+    descripcion:
+        "Fragancia tropical, cremosa y adictiva, con un perfil dulce floral que combina coco, frutas exóticas y un fondo avainillado suave y envolvente. Un perfume moderno, veraniego y muy llamativo, ideal para quienes buscan un aroma diferente, dulce y con una vibra tropical elegante. La apertura es fresca y tropical, donde el coco y la piña crean una salida cremosa, frutal y luminosa, acompañada por notas cítricas que aportan frescura y una sensación energética desde el primer spray. En el corazón aparecen flores blancas exóticas que le dan un toque elegante, suave y sensual. El ylang-ylang, el jazmín y la frangipani aportan una sensación cremosa y floral muy veraniega, logrando un aroma cálido y sofisticado. El fondo es dulce, limpio y envolvente, con vainilla, almizcle y sándalo que dejan una estela cremosa, tropical y duradera, manteniendo un perfil suave pero muy atractivo durante toda la evolución.",
+
+    notasSalida: "Coco, piña, cítricos",
+    notasCorazon: "Ylang-ylang, jazmín, frangipani",
+    notasFondo: "Vainilla, almizcle, sándalo, notas dulces",
+
+    inspiracion:
+        "Inspirado en Mancera Coco Vanille, con un perfil tropical, cremoso y avainillado, aunque con una salida más fresca y frutal.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia unisex tropical, dulce y cremosa. Perfecta para primavera, verano, vacaciones, salidas o para amantes de los perfumes con vibra playera, excelente duración y estilo moderno."
+},
+{
+    id: "lattafa-qimmah-for-men",
+    nombre: "Lattafa Qimmah For Men",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-qimmah-for-men.PNG",
+    precioMinorista: 48600,
+    precioMayorista: 36000,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia aromática, elegante y moderna, con un perfil amaderado fresco que combina notas herbales, maderas refinadas y un fondo masculino limpio y sofisticado. Un perfume versátil, masculino y con mucha presencia, ideal para quienes buscan un aroma distinguido para uso diario o ambientes formales. La apertura es intensa y elegante, donde el oud y el cedro crean una salida amaderada, limpia y sofisticada, aportando una sensación masculina moderna desde el primer spray. En el corazón aparecen notas aromáticas y herbales que le dan frescura y profundidad. La lavanda, la salvia y el romero aportan un carácter refinado, fresco y ligeramente especiado, logrando un aroma muy equilibrado y atractivo. El fondo es cálido, terroso y envolvente, con patchouli y vetiver que dejan una estela elegante, masculina y duradera, manteniendo un perfil limpio y sofisticado durante toda la evolución.",
+
+    notasSalida: "Oud, cedro",
+    notasCorazon: "Lavanda, salvia, romero",
+    notasFondo: "Patchouli, vetiver",
+
+    inspiracion:
+        "Inspirado en Prada L’Homme, con un perfil limpio, elegante y refinado, aunque con un toque más amaderado y aromático.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina elegante, limpia y versátil. Perfecta para oficina, reuniones, salidas o para quienes disfrutan perfumes modernos con excelente presencia y estilo sofisticado."
+},
+{
+    id: "lattafa-qimmah-for-women",
+    nombre: "Lattafa Qimmah For Women",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-qimmah-for-women.PNG",
+    precioMinorista: 55080,
+    precioMayorista: 40800,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia dulce, elegante y seductora, con un perfil floral gourmand que combina café, almendra y flores blancas sobre un fondo cremoso y avainillado. Un perfume femenino sofisticado, intenso y muy atractivo, ideal para quienes buscan un aroma moderno con mucha personalidad y excelente presencia. La apertura es cálida y adictiva, donde la almendra y el café crean una salida dulce, cremosa y ligeramente tostada, aportando una sensación elegante y sensual desde el primer spray. En el corazón aparecen flores blancas y acordes suaves que le dan feminidad y sofisticación. El jazmín y la tuberosa se mezclan con la haba tonka logrando un aroma floral cremoso, moderno y muy envolvente. El fondo es cálido, avainillado y seductor, con cacao y sándalo que aportan profundidad y una estela dulce, elegante y duradera, manteniendo un perfil sofisticado y muy femenino durante toda la evolución.",
+
+    notasSalida: "Almendra, café",
+    notasCorazon: "Jazmín, tuberosa, haba tonka",
+    notasFondo: "Vainilla, cacao, sándalo",
+
+    inspiracion:
+        "Inspirado en Carolina Herrera Good Girl, con un perfil dulce, floral gourmand, elegante y sensual muy similar.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina dulce, sofisticada y seductora. Perfecta para noches, salidas, citas o para amantes de los perfumes intensos con excelente duración, proyección y estilo elegante."
+},
+{
+    id: "lattafa-sakeena",
+    nombre: "Lattafa Sakeena",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-sakeena.PNG",
+    precioMinorista: 61560,
+    precioMayorista: 45600,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia frutal, tropical y adictiva, con un perfil floral gourmand que combina frutas exóticas, notas dulces y un fondo cremoso y sensual. Un perfume moderno, femenino y muy llamativo, ideal para quienes buscan un aroma dulce pero fresco, con excelente presencia y una vibra elegante y divertida. La apertura es vibrante y tropical, donde el maracuyá y la mandarina se mezclan con notas ozónicas creando una salida jugosa, fresca y luminosa, con una sensación juvenil y muy atractiva desde el primer spray. En el corazón aparecen acordes florales y frutales que aportan feminidad y sofisticación. La frambuesa, la rosa y la flor de azahar se combinan con un toque salado que le da profundidad y un estilo moderno, logrando un aroma dulce pero equilibrado. El fondo es cálido, cremoso y envolvente, con vainilla, praliné, almizcle y toffee que dejan una estela gourmand suave, sensual y duradera, manteniendo un perfil tropical elegante durante toda la evolución.",
+
+    notasSalida: "Maracuyá, mandarina, notas ozónicas",
+    notasCorazon: "Frambuesa, rosa, flor de azahar, sal marina",
+    notasFondo: "Vainilla, praliné, almizcle, toffee",
+
+    inspiracion:
+        "Inspirado en Stricnina de V Canto, con un perfil frutal exótico, dulce y sofisticado, aunque Sakeena mantiene un estilo más fresco y tropical.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina dulce, tropical y moderna. Perfecta para primavera, verano, salidas, uso diario o para amantes de los perfumes frutales gourmand con excelente duración y un estilo elegante y divertido."
+},
+{
+    id: "lattafa-the-kingdom",
+    nombre: "Lattafa The Kingdom",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-the-kingdom.PNG",
+    precioMinorista: 69552,
+    precioMayorista: 51520,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia dulce, intensa y extremadamente seductora, con un perfil aromático avainillado que combina notas frescas, tabaco y un fondo cálido oriental muy moderno. Un perfume masculino elegante, llamativo y adictivo, ideal para quienes buscan un aroma con mucha presencia, excelente duración y estilo nocturno sofisticado. La apertura es fresca y aromática, donde la lavanda, la menta y la salvia crean una salida limpia, moderna y ligeramente especiada, aportando una sensación masculina elegante desde el primer spray. En el corazón aparecen notas dulces y envolventes que le dan profundidad y sensualidad. La vainilla se mezcla con el tabaco y la flor de azahar logrando un equilibrio perfecto entre dulzura, calidez y sofisticación, con un perfil moderno y muy atractivo. El fondo es cálido, cremoso y oriental, con haba tonka, benjuí y ládano que dejan una estela intensa, sensual y duradera, manteniendo un aroma elegante y adictivo durante toda la evolución.",
+
+    notasSalida: "Lavanda, menta, salvia",
+    notasCorazon: "Vainilla, tabaco, flor de azahar",
+    notasFondo: "Haba tonka, benjuí, ládano",
+
+    inspiracion:
+        "Inspirado en Jean Paul Gaultier Le Male Elixir, con un perfil dulce, avainillado y aromático extremadamente similar.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina intensa, elegante y seductora. Perfecta para noches, salidas, clima fresco o para amantes de los perfumes dulces modernos con excelente proyección, duración y un estilo sofisticado muy atractivo."
+}
+,
+{
+    id: "lattafa-the-kingdom-femenino",
+    nombre: "Lattafa The Kingdom Femenino",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-the-kingdom-femenino.PNG",
+    precioMinorista: 65016,
+    precioMayorista: 48160,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia dulce, femenina y sofisticada, con un perfil floral frutal gourmand que combina frutas jugosas, flores suaves y un fondo avainillado cremoso extremadamente elegante. Un perfume moderno, delicado y seductor, ideal para quienes buscan un aroma femenino con excelente duración, mucha presencia y una estela envolvente. La apertura es fresca, luminosa y afrutada, donde la pera, la peonía y el cassis crean una salida dulce y elegante con un toque floral moderno que se siente delicado y femenino desde el primer spray. En el corazón aparecen notas cálidas y gourmand que aportan sensualidad y profundidad. El praliné se mezcla con el jazmín y el haba tonka logrando un equilibrio perfecto entre dulzura cremosa, flores elegantes y un toque sofisticado muy adictivo. El fondo es suave, cálido y envolvente, con vainilla, almizcle, sándalo y ámbar que dejan una estela cremosa, femenina y duradera, manteniendo un aroma elegante y seductor durante toda la evolución.",
+
+    notasSalida: "Pera, peonía, cassis",
+    notasCorazon: "Praliné, jazmín, haba tonka",
+    notasFondo: "Vainilla, almizcle, sándalo, ámbar",
+
+    inspiracion:
+        "Inspirado en Lancôme La Vie Est Belle, con un perfil dulce, floral y gourmand muy similar, con matices que también recuerdan a Kayali Wedding Silk Santal.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina dulce, elegante y moderna. Perfecta para salidas, citas, clima fresco o para amantes de los perfumes gourmand florales con excelente proyección y duración."
+},
+{
+    id: "lattafa-victoria",
+    nombre: "Lattafa Victoria",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-victoria.PNG",
+    precioMinorista: 72576,
+    precioMayorista: 53760,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia cítrica, dulce y cremosa, con un perfil gourmand moderno que combina limón acaramelado, flores suaves y una vainilla envolvente extremadamente adictiva. Un perfume elegante, delicado y llamativo, ideal para quienes buscan un aroma dulce diferente, sofisticado y con excelente duración. La apertura es luminosa, golosa y refrescante, donde la tarta de limón con merengue crea una salida cítrica dulce muy realista y cremosa. En el corazón aparece el neroli, que suma un toque floral limpio, elegante y ligeramente jabonoso, equilibrando perfectamente la dulzura gourmand. El fondo es suave, cálido y avainillado, con una vainilla cremosa que deja una estela envolvente y muy adictiva.",
+
+    notasSalida: "Tarta de limón con merengue",
+    notasCorazon: "Neroli",
+    notasFondo: "Vainilla",
+
+    inspiracion:
+        "Inspirado en Dolce & Gabbana Devotion, con un perfil cítrico gourmand, cremoso y avainillado muy similar.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia dulce, cremosa y diferente. Perfecta para salidas, citas, clima fresco o para amantes de los perfumes gourmand avainillados con un toque cítrico elegante."
+},
+{
+    id: "lattafa-yara",
+    nombre: "Lattafa Yara",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-yara.PNG",
+    precioMinorista: 74088,
+    precioMayorista: 54880,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia dulce, cremosa y femenina, con un perfil tropical avainillado que combina frutas suaves, flores delicadas y un fondo cálido extremadamente adictivo. Un perfume moderno, elegante y muy versátil, ideal para quienes buscan un aroma gourmand femenino con excelente duración y una vibra delicada pero seductora. La apertura es suave, afrutada y ligeramente floral, donde la mandarina, la orquídea y el heliotropo crean una salida cremosa y femenina con un toque tropical dulce muy moderno. En el corazón aparecen notas gourmand y frutales que le aportan profundidad y sensualidad. Los acordes dulces se mezclan con frutas tropicales logrando un aroma cálido, envolvente y muy adictivo. El fondo es cremoso, avainillado y almizclado, con vainilla, sándalo y almizcle que dejan una estela suave, femenina y duradera.",
+
+    notasSalida: "Mandarina, heliotropo, orquídea",
+    notasCorazon: "Notas tropicales, acordes gourmand",
+    notasFondo: "Vainilla, sándalo, almizcle",
+
+    inspiracion:
+        "Inspirado en el estilo cremoso y femenino de Montblanc Signature, con un perfil tropical, dulce y avainillado.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina dulce, suave y elegante. Perfecta para uso diario, salidas, citas o para amantes de los perfumes gourmand cremosos."
+},
+{
+    id: "lattafa-yara-candy",
+    nombre: "Lattafa Yara Candy",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-yara-candy.PNG",
+    precioMinorista: 61992,
+    precioMayorista: 45920,
+    stock: 2,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia dulce, divertida y extremadamente femenina, con un perfil gourmand frutal que combina caramelos, frutas rojas y una vainilla cremosa muy adictiva. Un perfume moderno, juvenil y llamativo, ideal para quienes buscan un aroma dulce intenso con excelente duración y una vibra coqueta y seductora. La apertura es frutal y chispeante, donde las frutas rojas y los acordes cítricos crean una salida dulce, jugosa y divertida. En el corazón aparecen notas gourmand y suaves que le dan profundidad y cremosidad. Los caramelos y flores delicadas se mezclan perfectamente logrando un aroma dulce envolvente. El fondo es cálido, avainillado y almizclado, con vainilla cremosa, almizcle y sándalo que dejan una estela suave, dulce y duradera.",
+
+    notasSalida: "Frutas rojas, mandarina verde",
+    notasCorazon: "Caramelo, flores suaves, notas gourmand",
+    notasFondo: "Vainilla, almizcle, sándalo",
+
+    inspiracion:
+        "Inspirado en el estilo dulce y gourmand de Prada Candy, con un perfil más frutal, juvenil y cremoso.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina dulce, divertida y moderna. Perfecta para salidas, uso diario, citas o para amantes de los perfumes gourmand frutales."
+},
+{
+    id: "lattafa-yara-moi",
+    nombre: "Lattafa Yara Moi",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-yara-moi.PNG",
+    precioMinorista: 57456,
+    precioMayorista: 42560,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia cremosa, dulce y elegante, con un perfil gourmand floral que combina frutas suaves, flores delicadas y un fondo avainillado extremadamente femenino. Un perfume moderno, sofisticado y envolvente, ideal para quienes buscan un aroma delicado pero con mucha presencia, excelente duración y una vibra limpia y seductora. La apertura es suave y luminosa, donde las notas frutales y florales crean una salida femenina, cremosa y moderna. En el corazón aparecen acordes gourmand y flores blancas que le dan profundidad y sensualidad. La vainilla cremosa se mezcla con notas dulces y empolvadas logrando un equilibrio perfecto entre calidez, feminidad y sofisticación. El fondo es cálido, almizclado y envolvente, con vainilla, almizcle y maderas suaves que dejan una estela cremosa, elegante y duradera.",
+
+    notasSalida: "Frutas suaves, notas florales",
+    notasCorazon: "Flores blancas, acordes gourmand, vainilla",
+    notasFondo: "Almizcle, vainilla, maderas suaves",
+
+    inspiracion:
+        "Inspirado en el estilo cremoso y avainillado de Burberry Her Elixir, con un perfil dulce, suave y femenino.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina cremosa, dulce y sofisticada. Perfecta para uso diario, salidas, citas o para amantes de los perfumes gourmand suaves."
+},
+{
+    id: "lattafa-yara-tous",
+    nombre: "Lattafa Yara Tous",
+    marca: "Lattafa",
+    categoria: "perfumes-grandes",
+    imagen: "images/lattafa-yara-tous.PNG",
+    precioMinorista: 58968,
+    precioMayorista: 43680,
+    stock: 2,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia tropical, dulce y luminosa, con un perfil frutal floral cremoso que combina mango jugoso, coco suave y una vainilla cálida extremadamente femenina. Un perfume moderno, alegre y seductor, ideal para quienes buscan un aroma tropical elegante con excelente duración y una vibra veraniega muy adictiva. La apertura es fresca, exótica y frutal, donde el mango, el coco y la maracuyá crean una salida tropical dulce y cremosa. En el corazón aparecen flores delicadas y notas suaves que le dan equilibrio y sofisticación. El jazmín y el heliotropo se mezclan perfectamente con los acordes cremosos logrando un aroma tropical elegante, envolvente y muy atractivo. El fondo es cálido, avainillado y almizclado, con vainilla, almizcle y cachemira que dejan una estela cremosa, femenina y duradera.",
+
+    notasSalida: "Mango, coco, maracuyá",
+    notasCorazon: "Jazmín, heliotropo, flores suaves",
+    notasFondo: "Vainilla, almizcle, cachemira",
+
+    inspiracion:
+        "Inspirado en el estilo tropical gourmand de Sol de Janeiro Cheirosa, con un perfil de mango cremoso, dulce y avainillado.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina tropical, dulce y moderna. Perfecta para verano, salidas, vacaciones o para amantes de los perfumes frutales gourmand."
+}
 ];
