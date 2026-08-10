@@ -2224,5 +2224,304 @@ const productos = [
 
     recomendacion:
         "Ideal para quienes buscan una fragancia femenina tropical, dulce y moderna. Perfecta para verano, salidas, vacaciones o para amantes de los perfumes frutales gourmand."
-}
+},
+{
+    id: "maison-alhambra-jean-lowe-immortel",
+    nombre: "Maison Alhambra Jean Lowe Immortel",
+    marca: "Maison Alhambra",
+    categoria: "perfumes-grandes",
+    imagen: "images/maison-alhambra-jean-lowe-immortel.PNG",
+    precioMinorista: 63504,
+    precioMayorista: 47040,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, elegante y moderna, con un perfil cítrico aromático ambarado que combina notas cítricas vibrantes, especias frescas y un fondo cálido extremadamente sofisticado. La apertura combina pomelo, bergamota y jengibre, creando una salida cítrica, especiada y energética. En el corazón aparecen notas acuáticas, romero, salvia y geranio, aportando una sensación limpia y masculina. El fondo de ambroxan, ámbar y ládano aporta profundidad, elegancia y una estela moderna y duradera.",
+
+    notasSalida: "Pomelo, jengibre, bergamota",
+    notasCorazon: "Notas acuáticas, romero, salvia, geranio",
+    notasFondo: "Ambroxan, ámbar, ládano",
+
+    inspiracion:
+        "Inspirado en Louis Vuitton L’Immensité, con un perfil fresco, cítrico y ambarado muy similar, de estilo elegante, limpio y moderno.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina fresca, elegante y versátil. Perfecta para uso diario, oficina, salidas o clima cálido."
+},
+
+{
+    id: "maison-alhambra-libra-leonie",
+    nombre: "Maison Alhambra Libra Léonie",
+    marca: "Maison Alhambra",
+    categoria: "perfumes-grandes",
+    imagen: "images/maison-alhambra-libra-leonie.PNG",
+    precioMinorista: 81648,
+    precioMayorista: 60480,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia femenina, elegante y sofisticada, con un perfil floral avainillado que combina flores blancas cremosas, notas dulces suaves y un fondo cálido extremadamente delicado. La apertura es luminosa y floral, con cítricos suaves y flores blancas. En el corazón, el jazmín y la flor de azahar se mezclan con acordes gourmand que aportan sensualidad y feminidad. El fondo de vainilla, almizcle y maderas suaves deja una estela limpia, cremosa y duradera.",
+
+    notasSalida: "Cítricos suaves, flores blancas",
+    notasCorazon: "Jazmín, flor de azahar, acordes gourmand",
+    notasFondo: "Vainilla, almizcle, maderas suaves",
+
+    inspiracion:
+        "Inspirado en Yves Saint Laurent Libre, con un perfil floral avainillado elegante y moderno, combinando flores blancas, dulzura cremosa y una vibra femenina sofisticada.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina elegante, delicada y moderna. Perfecta para uso diario, oficina, salidas o clima fresco."
+},
+
+{
+    id: "maison-alhambra-no-2-men",
+    nombre: "Maison Alhambra No.2 Men",
+    marca: "Maison Alhambra",
+    categoria: "perfumes-grandes",
+    imagen: "images/maison-alhambra-no-2-men.PNG",
+    precioMinorista: 56700,
+    precioMayorista: 42000,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 80 ML – MEN",
+
+    descripcion:
+        "Fragancia elegante, intensa y sofisticada, con un perfil amaderado especiado que combina notas cálidas, maderas profundas y un fondo dulce extremadamente masculino. La apertura es cálida, especiada y envolvente, con acordes frescos que aportan sofisticación. En el corazón aparecen cedro, maderas nobles y notas aromáticas, generando profundidad y elegancia. El fondo de vainilla, ámbar y almizcle deja una estela cremosa, masculina y duradera.",
+
+    notasSalida: "Especias aromáticas, acordes frescos",
+    notasCorazon: "Cedro, maderas nobles, notas aromáticas",
+    notasFondo: "Vainilla, ámbar, almizcle",
+
+    inspiracion:
+        "Inspirado en Carolina Herrera 212 VIP Black, con un perfil cálido, especiado y avainillado, de vibra nocturna, elegante y seductora.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina elegante, intensa y moderna. Perfecta para noches, salidas, eventos o clima fresco."
+},
+
+{
+    id: "maison-alhambra-philos-pura",
+    nombre: "Maison Alhambra Philos Pura",
+    marca: "Maison Alhambra",
+    categoria: "perfumes-grandes",
+    imagen: "images/maison-alhambra-philos-pura.PNG",
+    precioMinorista: 65016,
+    precioMayorista: 48160,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia fresca, elegante y extremadamente sofisticada, con un perfil cítrico almizclado que combina frutas brillantes, notas limpias y un fondo suave y cremoso. La apertura mezcla naranja siciliana, bergamota y frutas cítricas, creando una salida vibrante y luminosa. En el corazón, el almizcle blanco y las notas aromáticas aportan una sensación limpia y refinada. El fondo de ámbar, vainilla y maderas suaves deja una estela cremosa, moderna y duradera.",
+
+    notasSalida: "Naranja siciliana, bergamota, frutas cítricas",
+    notasCorazon: "Almizcle blanco, notas aromáticas",
+    notasFondo: "Ámbar, vainilla, maderas suaves",
+
+    inspiracion:
+        "Inspirado en Xerjoff Erba Pura, con un perfil frutal almizclado muy similar, combinando frutas brillantes, almizcle limpio y un fondo cremoso y elegante.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia fresca, sofisticada y versátil con estilo niche. Perfecta para uso diario, salidas o clima cálido."
+},
+
+{
+    id: "maison-alhambra-salvo-elixir",
+    nombre: "Maison Alhambra Salvo Elixir",
+    marca: "Maison Alhambra",
+    categoria: "perfumes-grandes",
+    imagen: "images/maison-alhambra-salvo-elixir.PNG",
+    precioMinorista: 55080,
+    precioMayorista: 40800,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 60 ML – MEN",
+
+    descripcion:
+        "Fragancia intensa, elegante y extremadamente seductora, con un perfil amaderado especiado avainillado que combina especias cálidas, notas aromáticas frescas y un fondo dulce profundo. La apertura de canela, nuez moscada y pomelo es potente y sofisticada. En el corazón, la lavanda y los acordes ambarados aportan profundidad y sensualidad. El fondo de vainilla, sándalo, ámbar y regaliz deja una estela cálida, masculina y muy duradera.",
+
+    notasSalida: "Canela, nuez moscada, pomelo",
+    notasCorazon: "Lavanda, notas aromáticas, acordes ambarados",
+    notasFondo: "Vainilla, sándalo, ámbar, regaliz",
+
+    inspiracion:
+        "Inspirado en Dior Sauvage Elixir, con un perfil especiado, aromático y amaderado muy similar, intenso, elegante y masculino.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina intensa, elegante y moderna. Perfecta para noches, salidas, eventos o clima fresco."
+},
+
+{
+    id: "maison-alhambra-salvo-intense",
+    nombre: "Maison Alhambra Salvo Intense",
+    marca: "Maison Alhambra",
+    categoria: "perfumes-grandes",
+    imagen: "images/maison-alhambra-salvo-intense.PNG",
+    precioMinorista: 58968,
+    precioMayorista: 43680,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, intensa y masculina, con un perfil aromático amaderado que combina cítricos vibrantes, especias suaves y un fondo cálido y seductor. La apertura de bergamota y pimienta es energética y moderna. En el corazón aparecen lavanda, geranio y vetiver, aportando elegancia y profundidad. El fondo de ambroxan, cedro y ládano deja una estela intensa, limpia y duradera.",
+
+    notasSalida: "Bergamota, pimienta",
+    notasCorazon: "Lavanda, geranio, vetiver",
+    notasFondo: "Ambroxan, cedro, ládano",
+
+    inspiracion:
+        "Inspirado en Dior Sauvage Eau de Parfum, con un perfil fresco, especiado y amaderado muy similar, masculino, moderno y versátil.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina fresca, intensa y elegante. Perfecta para uso diario, salidas, oficina o clima templado a fresco."
+},
+
+{
+    id: "maison-alhambra-victorioso-nero",
+    nombre: "Maison Alhambra Victorioso Nero",
+    marca: "Maison Alhambra",
+    categoria: "perfumes-grandes",
+    imagen: "images/maison-alhambra-victorioso-nero.PNG",
+    precioMinorista: 54432,
+    precioMayorista: 40320,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia intensa, dulce y altamente seductora, con un perfil oriental avainillado amaderado que combina especias cálidas, notas aromáticas profundas y un fondo dulce potente. La apertura de pimienta negra y notas aromáticas es impactante y masculina. En el corazón, el incienso, la lavanda y los acordes ambarados aportan profundidad y una sensación ligeramente ahumada. El fondo de vainilla, ámbar y haba tonka deja una estela poderosa, cremosa y duradera.",
+
+    notasSalida: "Pimienta negra, notas aromáticas",
+    notasCorazon: "Incienso, lavanda, acordes ambarados",
+    notasFondo: "Vainilla, ámbar, haba tonka",
+
+    inspiracion:
+        "Inspirado en Paco Rabanne Invictus Victory Elixir, con un perfil dulce, especiado y amaderado muy similar, intenso, nocturno y seductor.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina intensa, dulce y elegante. Perfecta para noches, citas, eventos o clima fresco."
+},
+
+{
+    id: "rasasi-hawas-for-her",
+    nombre: "Rasasi Hawas for Her",
+    marca: "Rasasi",
+    categoria: "perfumes-grandes",
+    imagen: "images/rasasi-hawas-for-her.PNG",
+    precioMinorista: 66528,
+    precioMayorista: 49280,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – WOMAN",
+
+    descripcion:
+        "Fragancia dulce, frutal y seductora, con un perfil floral gourmand moderno que combina frutas jugosas, flores cremosas y un fondo avainillado almizclado extremadamente femenino. Un perfume elegante, juvenil y envolvente, ideal para quienes buscan un aroma llamativo, con mucha presencia y excelente duración. La apertura es fresca, dulce y frutal, donde la granada, la piña y los cítricos brillantes crean una salida jugosa, luminosa y muy femenina. Desde el primer spray transmite energía, sensualidad y una vibra moderna muy atractiva. En el corazón aparecen flores suaves y elegantes que aportan feminidad y profundidad. El jazmín, la peonía y las flores blancas se mezclan con acordes frutales cremosos logrando un equilibrio perfecto entre dulzura, frescura y sofisticación. El fondo es cálido, cremoso y envolvente, con vainilla, almizcle y ámbar que dejan una estela dulce, limpia y muy duradera. La evolución mantiene siempre una vibra femenina, adictiva y ligeramente gourmand.",
+
+    notasSalida: "Granada, piña, cítricos",
+    notasCorazon: "Jazmín, peonía, flores blancas, frutas suaves",
+    notasFondo: "Vainilla, almizcle, ámbar",
+
+    inspiracion:
+        "Inspirado en un estilo similar a Calvin Klein Euphoria y fragancias frutal-florales dulces modernas como Versace Bright Crystal, con una vibra femenina, jugosa y elegante muy comparable. Destaca por su mezcla entre frutas exóticas, flores cremosas y un fondo dulce almizclado muy seductor.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina dulce, frutal y moderna. Perfecta para salidas, uso diario, citas o clima templado a cálido, gracias a su combinación de frutas jugosas, flores suaves y una estela dulce con excelente duración."
+},
+
+{
+    id: "rasasi-hawas-for-him",
+    nombre: "Rasasi Hawas for Him",
+    marca: "Rasasi",
+    categoria: "perfumes-grandes",
+    imagen: "images/rasasi-hawas-for-him.PNG",
+    precioMinorista: 71064,
+    precioMayorista: 52640,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, dulce y acuática, con un perfil aromático frutal ambarado que combina frutas jugosas, notas marinas limpias y un fondo almizclado cálido extremadamente seductor. Un perfume moderno, juvenil y muy versátil, ideal para quienes buscan un aroma llamativo, fresco pero con mucha presencia y excelente duración. La apertura es vibrante, frutal y especiada, donde la manzana, la bergamota y el limón crean una salida chispeante, dulce y energizante. El toque leve de canela aporta calidez y personalidad desde el primer spray, manteniendo una vibra masculina muy atractiva. En el corazón aparecen notas acuáticas limpias junto con frutas suaves y acordes aromáticos. La mezcla de ciruela, flor de azahar y notas marinas genera una sensación fresca, moderna y ligeramente dulce que equilibra perfectamente lo frutal con lo acuático. El fondo es cálido, sensual y duradero, con ámbar gris, almizcle y maderas flotantes que dejan una estela adictiva, limpia y masculina. La evolución mantiene una frescura dulce muy característica con excelente rendimiento en piel.",
+
+    notasSalida: "Manzana, bergamota, limón, canela",
+    notasCorazon: "Notas acuáticas, ciruela, flor de azahar",
+    notasFondo: "Ámbar gris, almizcle, maderas flotantes",
+
+    inspiracion:
+        "Inspirado en Paco Rabanne Invictus Aqua (2016), con un perfil fresco, dulce y acuático muy similar. Comparte esa vibra juvenil, deportiva y seductora con frutas brillantes, notas marinas y un fondo almizclado moderno de gran proyección.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina fresca, dulce y versátil. Perfecta para uso diario, calor, gimnasio, salidas o verano, gracias a su combinación de frutas jugosas, notas acuáticas y un fondo almizclado con excelente duración."
+},
+
+{
+    id: "rasasi-hawas-for-him-fire",
+    nombre: "Rasasi Hawas for Him Fire",
+    marca: "Rasasi",
+    categoria: "perfumes-grandes",
+    imagen: "images/rasasi-hawas-for-him-fire.PNG",
+    precioMinorista: 96768,
+    precioMayorista: 71680,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – UNISEX",
+
+    descripcion:
+        "Fragancia intensa, dulce y especiada, con un perfil amaderado acuático moderno que combina frutas cálidas, especias vibrantes y un fondo ambarado profundo extremadamente seductor. Un perfume llamativo, enérgico y adictivo, ideal para quienes buscan un aroma con mucha presencia, carácter y excelente duración. La apertura es explosiva, frutal y especiada, donde la manzana jugosa se mezcla con notas cítricas y un toque picante de jengibre y pimienta. El resultado es una salida cálida-fresca muy moderna, con un inicio dulce pero energético que impacta desde el primer spray. En el corazón aparecen notas aromáticas y acuáticas con un giro más cálido y especiado. La lavanda y los acordes marinos se combinan con frutas rojas y matices ligeramente ahumados, creando una sensación masculina intensa, sofisticada y muy seductora. El fondo es profundo, dulce y envolvente, con ámbar, vainilla, incienso y maderas oscuras que dejan una estela potente, cremosa y altamente adictiva. La evolución es cálida, nocturna y con una vibra más fire sensual y dominante.",
+
+    notasSalida: "Manzana, cítricos, jengibre, pimienta",
+    notasCorazon: "Lavanda, notas acuáticas, frutas rojas, acordes aromáticos",
+    notasFondo: "Ámbar, vainilla, incienso, maderas oscuras",
+
+    inspiracion:
+        "Inspirado en Paco Rabanne Invictus Flame, con un perfil dulce, especiado y amaderado muy similar. Comparte esa vibra intensa, cálida y adictiva, con frutas especiadas, un corazón aromático moderno y un fondo ambarado dulce de gran proyección.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina dulce, intensa y moderna. Perfecta para noches, salidas, clima fresco o eventos, gracias a su combinación de especias calientes, frutas jugosas y un fondo ambarado profundo con excelente duración y estela."
+},
+
+{
+    id: "rasasi-hawas-for-him-ice",
+    nombre: "Rasasi Hawas for Him Ice",
+    marca: "Rasasi",
+    categoria: "perfumes-grandes",
+    imagen: "images/rasasi-hawas-for-him-ice.PNG",
+    precioMinorista: 107352,
+    precioMayorista: 79520,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia ultra fresca, limpia y energizante, con un perfil aromático acuático helado que combina cítricos brillantes, notas mentoladas y un fondo almizclado moderno extremadamente versátil. Un perfume deportivo, juvenil y muy refrescante, ideal para quienes buscan un aroma limpio, frío y con excelente sensación de frescura durante todo el día. La apertura es explosiva, helada y cítrica, donde la manzana verde, la bergamota y el limón se combinan con un efecto mentolado que genera una salida ultra refrescante, limpia y vibrante desde el primer spray. En el corazón aparecen notas acuáticas cristalinas junto con lavanda y acordes aromáticos suaves. Esta combinación refuerza la sensación ice, dando un estilo masculino fresco, elegante y muy moderno, con una vibra limpia tipo brisa marina. El fondo es suave, almizclado y ligeramente ambarado, con maderas blancas y ambroxan que dejan una estela fresca, limpia y duradera sin perder esa sensación helada característica. La evolución mantiene siempre un perfil liviano pero muy atractivo.",
+
+    notasSalida: "Manzana verde, bergamota, limón, efecto mentolado",
+    notasCorazon: "Notas acuáticas, lavanda, acordes aromáticos",
+    notasFondo: "Almizcle, ambroxan, maderas blancas",
+
+    inspiracion:
+        "Inspirado en Paco Rabanne Invictus Aqua de estilo fresco y con una vibra también cercana a Davidoff Cool Water, combinando frescura acuática intensa, sensación helada y un fondo limpio moderno muy masculino.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina extremadamente fresca y versátil. Perfecta para verano, deporte, uso diario o calor intenso, gracias a su combinación de notas heladas, cítricos vibrantes y una estela limpia con muy buena duración para su estilo fresco."
+},
+
+{
+    id: "rasasi-hawas-for-him-malibu",
+    nombre: "Rasasi Hawas for Him Malibu",
+    marca: "Rasasi",
+    categoria: "perfumes-grandes",
+    imagen: "images/rasasi-hawas-for-him-malibu.PNG",
+    precioMinorista: 105840,
+    precioMayorista: 78400,
+    stock: 1,
+    presentacion: "EAU DE PARFUM – 100 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, dulce y tropical, con un perfil acuático frutal moderno que combina frutas jugosas, notas marinas y un fondo ambarado almizclado muy seductor. Un perfume veraniego, relajado y llamativo, ideal para quienes buscan un aroma alegre, playero y con excelente presencia. La apertura es brillante, frutal y energética, donde la piña, la manzana y los cítricos crean una salida jugosa, dulce y tropical con un toque fresco que recuerda inmediatamente al verano y al aire marino. En el corazón aparecen notas acuáticas limpias junto con acordes aromáticos suaves. El coco ligero y las frutas tropicales se mezclan con matices marinos, generando una sensación playera, fresca y muy moderna, sin perder elegancia masculina. El fondo es cálido, dulce y envolvente, con ámbar, almizcle y maderas suaves que dejan una estela cremosa, seductora y duradera. La evolución mantiene siempre una vibra veraniega, relajada y ligeramente gourmand.",
+
+    notasSalida: "Piña, manzana, cítricos",
+    notasCorazon: "Notas acuáticas, coco, frutas tropicales, acordes aromáticos",
+    notasFondo: "Ámbar, almizcle, maderas suaves",
+
+    inspiracion:
+        "Inspirado en creaciones tipo Versace Eros Energy y la vibra tropical de fragancias como Dolce & Gabbana Light Blue Sun, con un perfil frutal-acuático dulce muy similar. Destaca por su combinación de frutas tropicales, notas marinas limpias y un fondo ambarado moderno y seductor.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina fresca, tropical y veraniega. Perfecta para playa, calor, salidas diurnas o vacaciones, gracias a su mezcla de frutas jugosas, notas acuáticas y un fondo dulce ambarado con excelente duración."
+},
 ];
