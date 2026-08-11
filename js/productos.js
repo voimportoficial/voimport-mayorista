@@ -2524,4 +2524,524 @@ const productos = [
     recomendacion:
         "Ideal para quienes buscan una fragancia masculina fresca, tropical y veraniega. Perfecta para playa, calor, salidas diurnas o vacaciones, gracias a su mezcla de frutas jugosas, notas acuáticas y un fondo dulce ambarado con excelente duración."
 },
+{
+    id: "maison-alhambra-alive-now-30ml",
+    nombre: "Maison Alhambra Alive Now",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-alive-now-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – UNISEX",
+
+    descripcion:
+        "Fragancia dulce, frutal y luminosa, con un perfil floral afrutado moderno que combina frutas rojas jugosas, flores delicadas y un fondo avainillado almizclado muy envolvente. Un perfume alegre, juvenil y seductor, ideal para quienes buscan un aroma dulce con mucha personalidad y una vibra moderna. La apertura es vibrante y frutal, donde la frambuesa, el lichi y las hojas de violeta crean una salida jugosa, ligeramente ácida y muy atractiva. En el corazón aparecen la rosa, la peonía y el jazmín, aportando un carácter floral elegante y femenino que equilibra perfectamente la intensidad de las frutas. El fondo es dulce, suave y cremoso, con vainilla y almizcle que dejan una estela cálida, limpia y envolvente.",
+
+    notasSalida: "Frambuesa, lichi, hojas de violeta",
+    notasCorazon: "Rosa, peonía, jazmín",
+    notasFondo: "Vainilla, almizcle",
+
+    inspiracion:
+        "Inspirado en Mugler Angel Nova, con un perfil frutal floral dulce y moderno muy similar, protagonizado por frutas rojas y lichi sobre un corazón de rosas y un fondo cálido y envolvente.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia dulce, frutal, floral y moderna. Perfecta para uso diario, salidas, citas, primavera o clima templado a cálido."
+},
+
+{
+    id: "maison-alhambra-bad-femme-30ml",
+    nombre: "Maison Alhambra B.A.D Femme",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-bad-femme-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – WOMAN",
+
+    descripcion:
+        "Fragancia dulce, intensa y seductora, con un perfil floral gourmand que combina almendra, café, flores blancas y un fondo cremoso de vainilla, cacao y haba tonka. Un perfume femenino, elegante y sensual, ideal para quienes buscan un aroma con presencia, dulzura y un carácter nocturno sofisticado. La apertura combina bergamota, almendra, café y limón, creando una salida dulce, ligeramente amarga y cítrica que resulta intensa y muy llamativa. En el corazón aparecen tuberosa, flor de azahar, jazmín sambac, rosa búlgara e iris, formando un bouquet floral blanco profundo y extremadamente femenino. El fondo es cálido, gourmand y envolvente, donde el haba tonka, la vainilla, el cacao, el praliné, el almizcle y las maderas aportan cremosidad, profundidad y una estela dulce muy seductora.",
+
+    notasSalida: "Bergamota, almendra, café, limón",
+    notasCorazon: "Tuberosa, flor de azahar, jazmín sambac, rosa búlgara, iris",
+    notasFondo: "Haba tonka, vainilla, almizcle, cacao, praliné, sándalo, madera de cachemira, ámbar, pachulí, cedro, canela",
+
+    inspiracion:
+        "Inspirado en Carolina Herrera Good Girl, con un perfil floral gourmand dulce y sensual muy similar, combinando almendra y café con flores blancas y un fondo cremoso de cacao, vainilla y haba tonka.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina dulce, sensual y elegante. Perfecta para citas, noches, eventos, salidas especiales o clima fresco."
+},
+
+{
+    id: "maison-alhambra-bad-homme-30ml",
+    nombre: "Maison Alhambra B.A.D Homme",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-bad-homme-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – MEN",
+
+    descripcion:
+        "Fragancia especiada, dulce y masculina, con un perfil aromático gourmand que combina cítricos frescos, pimientas vibrantes, maderas aromáticas y un fondo profundo de cacao y haba tonka. Un perfume moderno, seductor y con personalidad, ideal para quienes buscan un aroma masculino diferente, cálido y ligeramente dulce. La apertura es fresca y especiada, donde el limón se combina con pimienta blanca y pimienta rosa creando una salida vibrante, chispeante y con mucho carácter. En el corazón aparecen el cedro y la salvia, aportando una faceta aromática, amaderada y elegante que equilibra la intensidad de las especias. El fondo es cálido, dulce y envolvente, con cacao y haba tonka que generan una estela gourmand cremosa, masculina y muy atractiva.",
+
+    notasSalida: "Limón, pimienta blanca, pimienta rosa",
+    notasCorazon: "Cedro, salvia",
+    notasFondo: "Cacao, haba tonka",
+
+    inspiracion:
+        "Inspirado en Carolina Herrera Bad Boy, con un perfil especiado, aromático y gourmand muy similar, donde las pimientas, las maderas y el cacao crean una combinación masculina, moderna y seductora.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina especiada, dulce y moderna. Perfecta para noches, citas, salidas, eventos o clima templado a fresco."
+},
+
+{
+    id: "maison-alhambra-chants-tenderina-30ml",
+    nombre: "Maison Alhambra Chants Tenderina",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-chants-tenderina-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – WOMAN",
+
+    descripcion:
+        "Fragancia fresca, floral y delicadamente frutal, con un perfil elegante y femenino que combina cítricos luminosos, frutas suaves, flores refinadas y un fondo almizclado limpio. Un perfume delicado, juvenil y sofisticado, ideal para quienes buscan un aroma femenino fresco, elegante y fácil de usar todos los días. La apertura es luminosa y afrutada, donde la bergamota, la flor de pomelo y el durazno crean una salida fresca, jugosa y ligeramente dulce. En el corazón aparecen la rosa, el jazmín y el iris, formando un bouquet floral elegante, suave y femenino con una sensación limpia y refinada. El fondo combina almizcle blanco, vainilla, vetiver y pachulí, dejando una estela delicada, cremosa y ligeramente amaderada que mantiene la fragancia elegante y equilibrada.",
+
+    notasSalida: "Bergamota, flor de pomelo, durazno",
+    notasCorazon: "Rosa, jazmín, iris",
+    notasFondo: "Almizcle blanco, vainilla, vetiver, pachulí",
+
+    inspiracion:
+        "Inspirado en Chanel Chance Eau Tendre, con un perfil floral frutal fresco y delicado muy similar, combinando frutas luminosas, flores suaves y un fondo almizclado elegante y femenino.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina fresca, floral, delicada y elegante. Perfecta para uso diario, oficina, primavera, verano, salidas de día o clima cálido."
+},
+{
+    id: "maison-alhambra-dark-aoud-30ml",
+    nombre: "Maison Alhambra Dark Aoud",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-dark-aoud-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – UNISEX",
+
+    descripcion:
+        "Fragancia intensa, amaderada y sofisticada, con un perfil oriental especiado que combina especias cálidas, oud profundo y un fondo dulce y envolvente. Un perfume elegante, misterioso y con mucha personalidad, ideal para quienes buscan aromas amaderados con carácter y una presencia refinada. La apertura es especiada y aromática, donde el cardamomo, la pimienta y el palo de rosa brasileño crean una salida cálida, seca y ligeramente picante. En el corazón aparece el oud acompañado por sándalo y vetiver, aportando profundidad, elegancia y una marcada sensación amaderada. El fondo suaviza la composición con vainilla, haba tonka y ámbar gris, dejando una estela cálida, ligeramente dulce y muy sofisticada.",
+
+    notasSalida: "Cardamomo, pimienta, palo de rosa brasileño",
+    notasCorazon: "Oud, sándalo, vetiver",
+    notasFondo: "Vainilla, haba tonka, ámbar gris",
+
+    inspiracion:
+        "Inspirado en el estilo de Tom Ford Oud Wood, con un perfil amaderado especiado elegante y sofisticado, donde el oud se combina con especias cálidas, sándalo, vetiver y una base ligeramente dulce.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia unisex amaderada, intensa y elegante. Perfecta para noches, eventos, ocasiones especiales o clima fresco, especialmente para amantes del oud refinado y las fragancias sofisticadas."
+},
+
+{
+    id: "maison-alhambra-delilah-pour-femme-30ml",
+    nombre: "Maison Alhambra Delilah Pour Femme",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-delilah-pour-femme-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – WOMAN",
+
+    descripcion:
+        "Fragancia femenina, floral y frutal, con un perfil romántico y sofisticado que combina frutas frescas ligeramente ácidas, rosas elegantes y un fondo dulce almizclado extremadamente delicado. Un perfume femenino, refinado y seductor, ideal para quienes buscan un aroma floral moderno con mucha elegancia. La apertura es fresca, jugosa y ligeramente ácida, donde el lichi, el ruibarbo y la bergamota crean una salida luminosa y muy femenina. En el corazón aparecen la rosa, la peonía y el lirio, formando un bouquet floral elegante, suave y romántico. El fondo combina vainilla, almizcle blanco y cachemira, aportando cremosidad, suavidad y una estela limpia, delicadamente dulce y envolvente.",
+
+    notasSalida: "Bergamota, lichi, ruibarbo",
+    notasCorazon: "Peonía, rosa, lirio",
+    notasFondo: "Vainilla, almizcle blanco, cachemira",
+
+    inspiracion:
+        "Inspirado en Parfums de Marly Delina, con un perfil floral frutal elegante y femenino muy similar, protagonizado por lichi, ruibarbo y rosa sobre un fondo suave, almizclado y avainillado.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina floral, frutal y elegante. Perfecta para citas, salidas, eventos, uso diario, primavera o clima templado, con una vibra romántica y sofisticada."
+},
+
+{
+    id: "maison-alhambra-glacier-gold-30ml",
+    nombre: "Maison Alhambra Glacier Gold",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-glacier-gold-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – UNISEX",
+
+    descripcion:
+        "Fragancia dulce, cálida y especiada, con un perfil oriental gourmand moderno que combina frescura aromática, especias intensas y un fondo avainillado extremadamente envolvente. Un perfume seductor, potente y llamativo, ideal para quienes buscan un aroma dulce con mucha presencia y una vibra nocturna moderna. La apertura combina menta, bergamota, lavanda y cardamomo, creando una salida fresca, aromática y especiada que contrasta perfectamente con la dulzura posterior. En el corazón aparecen canela, flor de azahar y comino, aportando calidez, profundidad y un carácter especiado muy atractivo. El fondo es cremoso, dulce y envolvente, con vainilla, ámbar, haba tonka y sándalo que dejan una estela cálida, sensual y duradera.",
+
+    notasSalida: "Menta, bergamota, lavanda, cardamomo",
+    notasCorazon: "Flor de azahar, canela, comino",
+    notasFondo: "Vainilla, ámbar, haba tonka, sándalo",
+
+    inspiracion:
+        "Inspirado en Jean Paul Gaultier Le Male Elixir, con un perfil dulce, cálido y especiado de estilo oriental gourmand, combinando frescura aromática con una base avainillada intensa y extremadamente seductora.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia dulce, intensa y envolvente. Perfecta para noches, citas, salidas, fiestas, eventos o clima fresco, especialmente para amantes de los perfumes avainillados y seductores."
+},
+
+{
+    id: "maison-alhambra-glacier-le-noir-30ml",
+    nombre: "Maison Alhambra Glacier Le Noir",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-glacier-le-noir-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – MEN",
+
+    descripcion:
+        "Fragancia masculina, dulce y especiada, con un perfil oriental aromático elegante que combina especias cálidas, lavanda refinada, iris cremoso y un fondo intenso de vainilla y maderas. Un perfume sofisticado, seductor y moderno, ideal para quienes buscan un aroma nocturno con mucha presencia y un carácter masculino elegante. La apertura está dominada por el cardamomo, aportando una sensación especiada, cálida y ligeramente fresca. En el corazón aparecen lavanda e iris, creando una faceta aromática, floral y ligeramente empolvada que aporta sofisticación. El fondo es dulce, cálido y profundo, con vainilla, acordes orientales y notas amaderadas que dejan una estela cremosa, elegante y extremadamente seductora.",
+
+    notasSalida: "Cardamomo",
+    notasCorazon: "Lavanda, iris",
+    notasFondo: "Vainilla, acordes orientales, notas amaderadas",
+
+    inspiracion:
+        "Inspirado en Jean Paul Gaultier Le Male Le Parfum, con un perfil especiado, aromático y avainillado muy similar, combinando cardamomo, lavanda e iris con una base cálida, dulce y amaderada.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina dulce, elegante y seductora. Perfecta para noches, citas, eventos, salidas especiales o clima fresco, con una vibra sofisticada y moderna."
+},
+{
+    id: "maison-alhambra-glacier-pour-homme-30ml",
+    nombre: "Maison Alhambra Glacier Pour Homme",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-glacier-pour-homme-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, aromática y dulcemente especiada, con un perfil oriental fougère que combina hierbas refrescantes, especias cálidas y un fondo avainillado cremoso extremadamente masculino. Un perfume clásico pero moderno, limpio y seductor, ideal para quienes buscan una fragancia versátil con frescura y dulzura equilibradas. La apertura es fresca y aromática, donde la lavanda, la menta, el cardamomo y la bergamota crean una salida limpia, refrescante y ligeramente especiada. En el corazón aparecen flor de azahar, canela y alcaravea, aportando calidez, profundidad y un contraste especiado muy atractivo. El fondo es dulce, cremoso y envolvente, con vainilla, haba tonka, ámbar y sándalo que dejan una estela cálida, masculina y duradera.",
+
+    notasSalida: "Lavanda, menta, cardamomo, bergamota",
+    notasCorazon: "Flor de azahar, canela, alcaravea",
+    notasFondo: "Vainilla, haba tonka, ámbar, sándalo",
+
+    inspiracion:
+        "Inspirado en el estilo de Jean Paul Gaultier Le Male, con un perfil aromático dulce y especiado muy similar, combinando frescura de menta y lavanda con especias cálidas y un fondo cremoso de vainilla.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina fresca, dulce y aromática. Perfecta para uso diario, salidas, citas, noches o clima templado a fresco."
+},
+
+{
+    id: "maison-alhambra-glacier-ultra-30ml",
+    nombre: "Maison Alhambra Glacier Ultra",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-glacier-ultra-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – UNISEX",
+
+    descripcion:
+        "Fragancia dulce, intensa y especiada, con un perfil aromático avainillado moderno que combina cítricos brillantes, especias cálidas y un fondo cremoso extremadamente seductor. Un perfume juvenil, llamativo y envolvente, ideal para quienes buscan una fragancia dulce con mucha presencia y una marcada vibra nocturna. La apertura es vibrante y especiada, donde el limón se mezcla con canela y pimienta creando una salida fresca, cálida y energética. En el corazón aparecen lavanda, pachulí y salvia esclarea, aportando una faceta aromática elegante que equilibra perfectamente la dulzura de la composición. El fondo es cálido, profundo y cremoso, con vainilla, ámbar y cedro que dejan una estela dulce, sensual y muy duradera.",
+
+    notasSalida: "Limón, canela, pimienta",
+    notasCorazon: "Lavanda, pachulí, salvia esclarea",
+    notasFondo: "Cedro, ámbar, vainilla",
+
+    inspiracion:
+        "Inspirado en Jean Paul Gaultier Ultra Male, con un perfil dulce, especiado y avainillado de estilo juvenil y nocturno, combinando una apertura intensa con un corazón aromático y una base cálida extremadamente seductora.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia dulce, intensa y moderna. Perfecta para noches, fiestas, citas, salidas o clima fresco, especialmente para amantes de los perfumes avainillados con mucha presencia."
+},
+
+{
+    id: "maison-alhambra-jardin-de-reve-30ml",
+    nombre: "Maison Alhambra Jardin de Rêve",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-jardin-de-reve-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – WOMAN",
+
+    descripcion:
+        "Fragancia femenina, floral y luminosa, con un perfil floral frutal elegante que combina frutas jugosas, cítricos brillantes, un abundante bouquet de flores y un fondo suave y ligeramente dulce. Un perfume refinado, femenino y delicado, ideal para quienes buscan un aroma floral clásico con frescura, elegancia y mucha versatilidad. La apertura es fresca, frutal y luminosa, donde la magnolia, la pera, el durazno, la bergamota y la mandarina crean una salida jugosa, cítrica y delicadamente floral. En el corazón aparece un bouquet intenso de jazmín, nardos, fresia, lirio de los valles, orquídea, violeta, ciruela y rosa, aportando profundidad, feminidad y sofisticación. El fondo es suave, cálido y envolvente, con almizcle, vainilla, cedro y zarzamora que dejan una estela elegante, ligeramente dulce y duradera.",
+
+    notasSalida: "Magnolia, pera, durazno, bergamota, mandarina",
+    notasCorazon: "Jazmín, nardos, fresia, lirio de los valles, orquídea, violeta, ciruela, rosa",
+    notasFondo: "Almizcle, vainilla, cedro, zarzamora",
+
+    inspiracion:
+        "Inspirado en Dior J'adore, con un perfil floral frutal elegante y femenino, donde frutas luminosas y cítricos se combinan con un abundante corazón de flores y un fondo suave, almizclado y ligeramente dulce.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina floral, elegante y luminosa. Perfecta para uso diario, oficina, eventos, primavera, verano o salidas de día, gracias a su perfil refinado y versátil."
+},
+
+{
+    id: "maison-alhambra-jean-lowe-immortal-30ml",
+    nombre: "Maison Alhambra Jean Lowe Immortal",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-jean-lowe-immortal-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, elegante y moderna, con un perfil cítrico aromático ambarado que combina cítricos vibrantes, especias frescas y un fondo cálido extremadamente sofisticado. Un perfume masculino, limpio y seductor, ideal para quienes buscan un aroma refinado, versátil y con mucha personalidad. La apertura es brillante y energética, donde el pomelo, el jengibre y la bergamota crean una salida cítrica, especiada y refrescante. En el corazón aparecen romero, notas acuáticas, salvia y geranio, aportando una sensación limpia, aromática y masculina que mantiene la fragancia fresca y elegante. El fondo es cálido y ambarado, con ambroxan, ámbar y ládano que aportan profundidad y dejan una estela moderna, sofisticada y envolvente.",
+
+    notasSalida: "Pomelo, jengibre, bergamota",
+    notasCorazon: "Romero, notas acuáticas, salvia, geranio",
+    notasFondo: "Ambroxan, ámbar, ládano",
+
+    inspiracion:
+        "Inspirado en Louis Vuitton L’Immensité, con un perfil fresco, cítrico, especiado y ambarado muy similar, destacando la combinación de jengibre y cítricos sobre un corazón aromático y una base moderna de ambroxan.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina fresca, elegante y versátil. Perfecta para uso diario, oficina, salidas, primavera, verano o clima cálido."
+},
+{
+    id: "maison-alhambra-jean-lowe-noir-30ml",
+    nombre: "Maison Alhambra Jean Lowe Noir",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-jean-lowe-noir-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – UNISEX",
+
+    descripcion:
+        "Fragancia intensa, oscura y sofisticada, con un perfil oriental amaderado que combina oud profundo, incienso ahumado, frutas oscuras y un fondo resinoso extremadamente potente. Un perfume misterioso, elegante y con mucha presencia, ideal para quienes buscan aromas intensos, exclusivos y de carácter marcado. La apertura es profunda y ahumada, donde el oud y el incienso crean una salida oscura, resinosa y envolvente. En el corazón aparecen rosa, frambuesa, azafrán y abedul, aportando un contraste entre dulzura frutal, especias cálidas y matices ligeramente ahumados. El fondo es cálido, balsámico y persistente, con ámbar, benjuí y geranio que dejan una estela intensa, elegante y extremadamente envolvente.",
+
+    notasSalida: "Oud, incienso",
+    notasCorazon: "Rosa, frambuesa, azafrán, abedul",
+    notasFondo: "Ámbar, benjuí, geranio",
+
+    inspiracion:
+        "Inspirado en Louis Vuitton Ombre Nomade, con un perfil oriental amaderado oscuro y potente, donde el oud y el incienso se combinan con rosa, frambuesa y acordes cálidos resinosos.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia unisex intensa, oscura y sofisticada. Perfecta para noches, eventos, ocasiones especiales o clima frío, especialmente para amantes del oud y los perfumes con mucha presencia."
+},
+
+{
+    id: "maison-alhambra-jorge-di-profumo-30ml",
+    nombre: "Maison Alhambra Jorge Di Profumo",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-jorge-di-profumo-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, aromática y masculina, con un perfil cítrico acuático que combina cítricos brillantes, especias frescas, hierbas aromáticas y un fondo amaderado limpio y elegante. Un perfume sofisticado, versátil y moderno, ideal para quienes buscan frescura masculina con mayor profundidad y carácter. La apertura es fresca y vibrante, donde la bergamota, el limón siciliano y la pimienta negra crean una salida cítrica, energética y ligeramente especiada. En el corazón aparecen lavanda, geranio y tabaco, aportando una faceta aromática elegante con un matiz cálido y masculino. El fondo combina sándalo, vetiver y almizcle, dejando una estela limpia, seca, amaderada y sofisticada.",
+
+    notasSalida: "Bergamota, pimienta negra, limón siciliano",
+    notasCorazon: "Lavanda, geranio, tabaco",
+    notasFondo: "Sándalo, vetiver, almizcle",
+
+    inspiracion:
+        "Inspirado en Giorgio Armani Acqua di Giò Profumo, con un perfil fresco, aromático y masculino muy similar, combinando cítricos y acordes frescos con una base amaderada más profunda y elegante.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina fresca, elegante y versátil. Perfecta para uso diario, oficina, salidas, primavera, verano o clima templado."
+},
+
+{
+    id: "maison-alhambra-jorge-di-profumo-deep-blue-30ml",
+    nombre: "Maison Alhambra Jorge Di Profumo Deep Blue",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-jorge-di-profumo-deep-blue-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – MEN",
+
+    descripcion:
+        "Fragancia fresca, acuática y aromática, con un perfil marino moderno que combina cítricos luminosos, acordes oceánicos, hierbas aromáticas y un fondo mineral almizclado extremadamente limpio. Un perfume refrescante, elegante y muy versátil, ideal para quienes buscan una sensación de frescura marina profunda y masculina. La apertura es acuática y cítrica, donde el aquozone, las notas marinas, la bergamota y la mandarina verde crean una salida limpia, vibrante y refrescante. En el corazón aparecen romero, lavanda, ciprés y lentisco, aportando una faceta aromática verde, masculina y ligeramente especiada. El fondo combina notas minerales, almizcle, ámbar y pachulí, dejando una estela fresca, limpia y ligeramente cálida que conserva su carácter marino.",
+
+    notasSalida: "Aquozone, notas marinas, bergamota, mandarina verde",
+    notasCorazon: "Romero, lavanda, ciprés, lentisco",
+    notasFondo: "Notas minerales, almizcle, ámbar, pachulí",
+
+    inspiracion:
+        "Inspirado en Giorgio Armani Acqua di Giò Profondo, con un perfil acuático aromático fresco y moderno, combinando notas marinas y cítricas con hierbas aromáticas y una base mineral almizclada.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina muy fresca, acuática y versátil. Perfecta para verano, calor intenso, uso diario, oficina, deporte, vacaciones o salidas de día."
+},
+
+{
+    id: "maison-alhambra-kismet-for-women-30ml",
+    nombre: "Maison Alhambra Kismet for Women",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-kismet-for-women-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – WOMAN",
+
+    descripcion:
+        "Fragancia femenina, floral y delicadamente frutal, con un perfil elegante que combina albaricoque jugoso, flores blancas intensas y un fondo cálido amaderado. Un perfume sofisticado, femenino y envolvente, ideal para quienes buscan un floral blanco con dulzura frutal y una vibra refinada. La apertura es frutal y floral, donde el albaricoque se combina con rosa y jazmín creando una salida luminosa, ligeramente dulce y muy femenina. En el corazón aparecen tuberosa y narciso, formando un bouquet floral blanco intenso, cremoso y sofisticado. El fondo de ámbar y cedro aporta calidez, profundidad y una estela elegante, ligeramente amaderada y duradera.",
+
+    notasSalida: "Albaricoque, rosa, jazmín",
+    notasCorazon: "Tuberosa, narciso",
+    notasFondo: "Ámbar, cedro",
+
+    inspiracion:
+        "Inspirado en el estilo de Kilian Good Girl Gone Bad, con un perfil floral blanco elegante y femenino, protagonizado por flores intensas y una faceta frutal de albaricoque sobre un fondo cálido y amaderado.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina floral, elegante y sofisticada. Perfecta para uso diario, oficina, salidas, eventos, primavera o clima templado, especialmente para amantes de las flores blancas."
+},
+{
+    id: "maison-alhambra-lintrude-30ml",
+    nombre: "Maison Alhambra L’Intrude",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-lintrude-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – WOMAN",
+
+    descripcion:
+        "Fragancia femenina, floral y seductora, con un perfil floral blanco moderno que combina frutas jugosas, flores intensas y un fondo cálido ligeramente dulce y amaderado. Un perfume elegante, sofisticado y con mucha personalidad, ideal para quienes buscan un aroma femenino envolvente y sensual. La apertura es fresca y frutal, donde la pera se mezcla con la bergamota creando una salida jugosa, luminosa y ligeramente cítrica. En el corazón aparecen nardos, flor de azahar y jazmín sambac, formando un bouquet de flores blancas intenso, cremoso y extremadamente femenino. El fondo es cálido y profundo, con pachulí, ambroxan, vainilla y vetiver que aportan dulzura, profundidad y una estela elegante, sensual y duradera.",
+
+    notasSalida: "Pera, bergamota",
+    notasCorazon: "Nardos, flor de azahar, jazmín sambac",
+    notasFondo: "Pachulí, ambroxan, vainilla, vetiver",
+
+    inspiracion:
+        "Inspirado en Givenchy L’Interdit Eau de Parfum, con un perfil floral blanco intenso y elegante, combinando frutas luminosas, nardos y jazmín con un fondo cálido, amaderado y ligeramente dulce.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina floral, sensual y elegante. Perfecta para citas, noches, eventos, salidas especiales o clima templado a fresco."
+},
+
+{
+    id: "maison-alhambra-la-rouge-baroque-extreme-30ml",
+    nombre: "Maison Alhambra La Rouge Baroque Extreme",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-la-rouge-baroque-extreme-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – UNISEX",
+
+    descripcion:
+        "Fragancia intensa, dulce y sofisticada, con un perfil ambarado amaderado que combina especias cálidas, almendra cremosa, flores elegantes y un fondo profundo extremadamente envolvente. Un perfume unisex, lujoso y magnético, ideal para quienes buscan un aroma llamativo, elegante y con mucha presencia. La apertura es cálida y especiada, donde la almendra amarga se combina con el azafrán creando una salida dulce, intensa y ligeramente tostada. En el corazón aparecen jazmín egipcio y cedro, aportando una faceta floral amaderada refinada que equilibra perfectamente la dulzura inicial. El fondo es profundo, cálido y persistente, con ámbar gris, notas amaderadas, almizcle, ambroxan y cachemira que dejan una estela envolvente, sofisticada y extremadamente seductora.",
+
+    notasSalida: "Almendra amarga, azafrán",
+    notasCorazon: "Jazmín egipcio, cedro",
+    notasFondo: "Ámbar gris, notas amaderadas, almizcle, ambroxan, cachemira",
+
+    inspiracion:
+        "Inspirado en Maison Francis Kurkdjian Baccarat Rouge 540 Extrait de Parfum, con un perfil dulce, ambarado y amaderado intenso, donde el azafrán y la almendra se combinan con flores, maderas y una base cálida extremadamente sofisticada.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia unisex dulce, intensa y lujosa. Perfecta para noches, eventos, citas, ocasiones especiales o clima fresco, especialmente para quienes disfrutan perfumes con mucha presencia."
+},
+
+{
+    id: "maison-alhambra-la-vivacite-30ml",
+    nombre: "Maison Alhambra La Vivacité",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-la-vivacite-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – WOMAN",
+
+    descripcion:
+        "Fragancia femenina, dulce y elegante, con un perfil floral frutal gourmand que combina frutas jugosas, flores sofisticadas y un fondo avainillado extremadamente cremoso. Un perfume femenino, envolvente y refinado, ideal para quienes buscan un aroma dulce con personalidad y una vibra elegante y moderna. La apertura es frutal y luminosa, donde la grosella negra y la pera crean una salida jugosa, dulce y ligeramente ácida. En el corazón aparecen iris, flor de azahar y jazmín, formando una combinación floral elegante, cremosa y femenina que aporta profundidad y sofisticación. El fondo es dulce, cálido y gourmand, con pachulí, haba tonka, praliné y vainilla que dejan una estela cremosa, intensa y extremadamente envolvente.",
+
+    notasSalida: "Grosella negra, pera",
+    notasCorazon: "Iris, flor de azahar, jazmín",
+    notasFondo: "Pachulí, haba tonka, praliné, vainilla",
+
+    inspiracion:
+        "Inspirado en el estilo de Lancôme La Vie Est Belle, con un perfil floral gourmand dulce y elegante, combinando frutas jugosas e iris con una base cremosa de praliné, vainilla, haba tonka y pachulí.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina dulce, elegante y gourmand. Perfecta para salidas, citas, noches, eventos o clima templado a fresco."
+},
+
+{
+    id: "maison-alhambra-no-2-men-30ml",
+    nombre: "Maison Alhambra No.2 Men",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-no-2-men-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – MEN",
+
+    descripcion:
+        "Fragancia elegante, intensa y sofisticada, con un perfil amaderado especiado que combina notas cálidas, maderas profundas y un fondo dulce extremadamente masculino. Un perfume refinado, moderno y seductor, ideal para quienes buscan un aroma con presencia, excelente duración y una vibra lujosa. La apertura es cálida, especiada y envolvente, donde las especias aromáticas y los acordes frescos crean una salida intensa y sofisticada desde el primer spray. Se siente masculina, elegante y con un estilo muy premium. En el corazón aparecen notas amaderadas y florales suaves que aportan profundidad y equilibrio. El cedro, las maderas nobles y los acordes aromáticos generan una sensación refinada, moderna y extremadamente atractiva, manteniendo siempre un perfil elegante y seductor. El fondo es dulce, cálido y persistente, con vainilla, ámbar y almizcle que dejan una estela cremosa, masculina y duradera. La evolución combina perfectamente intensidad, sofisticación y sensualidad.",
+
+    notasSalida: "Especias aromáticas, acordes frescos",
+    notasCorazon: "Cedro, maderas nobles, notas aromáticas",
+    notasFondo: "Vainilla, ámbar, almizcle",
+
+    inspiracion:
+        "Inspirado en Carolina Herrera 212 VIP Black, con un perfil cálido, especiado y avainillado muy similar. Comparte esa vibra nocturna, elegante y seductora, combinando dulzura moderna, maderas sofisticadas y una presencia intensa muy masculina.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia masculina elegante, intensa y moderna. Perfecta para noches, salidas, eventos o clima fresco, gracias a su combinación de maderas cálidas, especias sofisticadas y un fondo dulce con excelente proyección y duración."
+},
+
+{
+    id: "maison-alhambra-olivia-30ml",
+    nombre: "Maison Alhambra Olivia",
+    marca: "Maison Alhambra",
+    categoria: "maison-30ml",
+    imagen: "images/maison-alhambra-olivia-30ml.PNG",
+    precioMinorista: 23000,
+    precioMayorista: 15000,
+    stock: 0,
+    presentacion: "EAU DE PARFUM – 30 ML – WOMAN",
+
+    descripcion:
+        "Fragancia femenina, dulce y acuática, con un perfil floral ambarado que combina flores blancas luminosas, especias frescas, un corazón salado avainillado y un fondo cálido extremadamente sensual. Un perfume femenino, moderno y seductor, ideal para quienes buscan una combinación diferente entre dulzura, frescura marina y elegancia. La apertura es floral y fresca, donde el jazmín, el jengibre, el lirio y la mandarina crean una salida luminosa, ligeramente especiada y muy femenina. En el corazón aparece una combinación característica de sal y vainilla, generando un contraste dulce-salado cremoso, moderno y extremadamente atractivo. El fondo es cálido y envolvente, con ámbar gris y sándalo que aportan profundidad, sensualidad y una estela amaderada suave y duradera.",
+
+    notasSalida: "Jazmín, jengibre, lirio, mandarina",
+    notasCorazon: "Sal, vainilla",
+    notasFondo: "Ámbar gris, sándalo",
+
+    inspiracion:
+        "Inspirado en el estilo de Rabanne Olympéa, con un perfil floral oriental dulce y salado, donde las flores blancas se combinan con vainilla, acordes marinos y una base cálida y amaderada.",
+
+    recomendacion:
+        "Ideal para quienes buscan una fragancia femenina dulce, sensual y diferente. Perfecta para citas, salidas, noches, verano, primavera o clima templado, especialmente para quienes disfrutan del contraste entre vainilla dulce y acordes salados."
+}
 ];
