@@ -327,10 +327,19 @@ function combinarProductoConSupabase(productoLocal) {
 }
 
 function buscarProductoActual({ slug = "", nombre = "" } = {}) {
-    return catalogoActualizado.find((producto) => {
-        if (slug && producto.slug === slug) return true;
-        return nombre && producto.nombre === nombre;
-    });
+    if (slug) {
+        return catalogoActualizado.find(
+            (producto) => producto.slug === slug
+        );
+    }
+
+    if (nombre) {
+        return catalogoActualizado.find(
+            (producto) => producto.nombre === nombre
+        );
+    }
+
+    return undefined;
 }
 
 function sincronizarCarritoConCatalogo() {
