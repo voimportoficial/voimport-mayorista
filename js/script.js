@@ -442,6 +442,8 @@ function generarCatalogo() {
     if (!productosGrid) return;
 const marcaActual = document.body.dataset.marca;
 const categoriaActual = document.body.dataset.categoria;
+const lineaActual = document.body.dataset.linea;
+const tipoActual = document.body.dataset.tipo;
 
 const terminoBusqueda =
     document.getElementById("buscador-catalogo")?.value
@@ -458,7 +460,10 @@ const productosDeLaMarca = catalogoActualizado
 
         const coincideCategoria =
             !categoriaActual || producto.categoria === categoriaActual;
-
+        const coincideLinea =
+    !lineaActual || producto.linea === lineaActual;
+        const coincideTipo =
+    !tipoActual || producto.tipo === tipoActual;
         const coincideBusqueda =
             !terminoBusqueda ||
             producto.nombre.toLowerCase().includes(terminoBusqueda) ||
@@ -470,12 +475,14 @@ const productosDeLaMarca = catalogoActualizado
     Number(producto.stock) > 0;
 
         return (
-            coincideMarca &&
-            coincideCategoria &&
-            coincideBusqueda &&
-            coincideStock &&
-            producto.activo
-        );
+    coincideMarca &&
+    coincideCategoria &&
+    coincideLinea &&
+    coincideTipo &&
+    coincideBusqueda &&
+    coincideStock &&
+    producto.activo !== false
+);
     })
         .sort((productoA, productoB) => {
     const orden =
