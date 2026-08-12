@@ -98,23 +98,29 @@ h1 {
     transition: 0.3s;
 }
 
-.btn-gold {
-    background: #d4af37;
-    color: #090909;
-}
-
-.btn-gold:hover {
-    transform: translateY(-3px);
-}
-
+.btn-gold,
 .btn-outline {
-    border: 1px solid #d4af37;
-    color: #d4af37;
+    background: rgba(12, 12, 12, 0.72);
+    color: #e0bd47;
+
+    border: 1.5px solid #d4af37;
+    border-radius: 12px;
+
+    box-shadow: 0 0 14px rgba(212, 175, 55, 0.12);
+
+    transition: 0.3s;
 }
 
+.btn-gold:hover,
 .btn-outline:hover {
     background: #d4af37;
     color: #090909;
+
+    border-color: #d4af37;
+
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.28);
+
+    transform: translateY(-3px);
 }
 .mobile-topbar {
     display: none;
@@ -920,8 +926,22 @@ h1 {
 .categorias h2 {
     color: #ffffff;
     text-align: center;
+
     font-size: 42px;
-    margin-bottom: 45px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+
+    width: fit-content;
+    margin: 0 auto 45px auto;
+
+    padding: 14px 28px;
+
+    border: 1px solid rgba(212, 175, 55, 0.75);
+    border-radius: 10px;
+
+    background: rgba(212, 175, 55, 0.03);
+
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.08);
 }
 
 .categorias-grid {
@@ -2647,4 +2667,147 @@ h1 {
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.3px;
+}
+.categorias .categoria-card:nth-child(2) img {
+    transform: scale(1.15) !important;
+    transform-origin: center center !important;
+}
+/* TÍTULO SECCIÓN MARCAS */
+.catalog h2 {
+    color: #ffffff;
+    text-align: center;
+
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+
+    width: fit-content;
+    margin: 0 auto 45px auto;
+
+    padding: 14px 28px;
+
+    border: 1px solid rgba(212, 175, 55, 0.75);
+    border-radius: 10px;
+
+    background: rgba(212, 175, 55, 0.03);
+
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.08);
+
+    position: relative;
+    top: -105px;
+}
+
+/* MARCAS - 5 POR FILA */
+@media (min-width: 901px) {
+
+    .catalog .catalog-grid {
+        position: relative;
+        display: grid !important;
+        grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+        gap: 18px !important;
+        top: -105px;
+    }
+
+    .catalog .catalog-card {
+        min-height: 270px !important;
+        height: 270px !important;
+
+        padding: 16px !important;
+
+        box-sizing: border-box !important;
+
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+    }
+
+    .catalog .catalog-card img {
+        width: 100% !important;
+        height: 185px !important;
+
+        object-fit: contain !important;
+
+        margin: 0 auto !important;
+    }
+
+    .catalog .catalog-card a {
+        font-size: 15px !important;
+        margin-top: 8px !important;
+    }
+}
+/* =============================
+   CONTACTO
+============================= */
+
+.contacto {
+    min-height: auto !important;
+    height: auto !important;
+
+    padding: 60px 0 70px !important;
+
+    scroll-margin-top: 120px;
+}
+
+.contacto .container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+/* TÍTULO CONTACTO */
+.contacto h2 {
+    color: #ffffff;
+    text-align: center;
+
+    font-size: 42px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+
+    width: fit-content;
+
+    margin: 0 auto 28px auto !important;
+    padding: 14px 28px;
+
+    border: 1px solid rgba(212, 175, 55, 0.75);
+    border-radius: 10px;
+
+    background: rgba(212, 175, 55, 0.03);
+
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.08);
+
+    position: static !important;
+    top: auto !important;
+    transform: none !important;
+}
+
+/* TEXTO */
+.contacto p {
+    margin: 0 0 24px 0 !important;
+
+    text-align: center;
+    font-size: 18px;
+
+    position: static !important;
+    top: auto !important;
+    transform: none !important;
+}
+
+/* BOTONES */
+.contacto-links {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+
+    gap: 14px !important;
+
+    margin: 0 !important;
+
+    position: static !important;
+    top: auto !important;
+    transform: none !important;
 }
