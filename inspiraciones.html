@@ -13,9 +13,9 @@
 <body class="pagina-inspiraciones">
 
     <header class="productos-header">
-        <a href="index.html">← Volver al inicio</a>
-        <h1>Inspiraciones de diseñador</h1>
-    </header>
+    <a href="/#categorias" id="volver-inspiraciones">← Volver a categorías</a>
+    <h1>Inspiraciones de diseñador</h1>
+</header>
 
     <main>
 
@@ -252,6 +252,15 @@
     <script src="js/supabase.js"></script>
     <script src="js/productos.js"></script>
     <script src="js/script.js"></script>
+<script>
+    const parametrosInspiraciones = new URLSearchParams(window.location.search);
+    const origenInspiraciones = parametrosInspiraciones.get("origen");
+    const volverInspiraciones = document.getElementById("volver-inspiraciones");
 
+    if (origenInspiraciones === "catalogo") {
+        volverInspiraciones.href = "catalogo.html";
+        volverInspiraciones.textContent = "← Volver al catálogo";
+    }
+</script>
 </body>
 </html>

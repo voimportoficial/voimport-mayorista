@@ -6,10 +6,10 @@
 
 <body data-categoria="perfumes-grandes">
 
-<header class="productos-header">
-    <a href="/">← Volver al inicio</a>
-    <h1>Catálogo Vo Import</h1>
+<header class="productos-header catalogo-header">
+    <a href="/" class="volver-inicio">← Volver al inicio</a>
 </header>
+
 
 <main>
 
@@ -18,76 +18,108 @@
 
 
             <div class="catalogo-intro">
-    <h2>Encontrá tu próxima fragancia</h2>
-    <p>Elegí una categoría o buscá directamente el perfume que querés.</p>
-</div>
+                <h2>Catálogo Vo Import</h2>
+                <p>Elegí una categoría o buscá directamente el perfume que querés.</p>
+            </div>
 
-<div class="catalogo-buscador">
-    <input
-        type="search"
-        id="buscador-catalogo"
-        placeholder="Buscar perfume o marca..."
-        autocomplete="off"
-    >
-</div>
 
-<div class="catalogo-controles">
+            <div class="catalogo-buscador">
+                <input
+                    type="search"
+                    id="buscador-catalogo"
+                    placeholder="Buscar perfume o marca..."
+                    autocomplete="off"
+                >
+            </div>
 
-    <div class="catalogo-stock-filtro">
-        <label>
-            <input type="checkbox" id="solo-disponibles">
-            <span>Mostrar solo disponibles</span>
-        </label>
-    </div>
 
-    <div class="catalogo-orden">
-        <label for="orden-catalogo">Ordenar por:</label>
+            <div class="catalogo-controles">
 
-        <select id="orden-catalogo">
-            <option value="nombre">Nombre A–Z</option>
-            <option value="precio-menor">Menor precio</option>
-            <option value="precio-mayor">Mayor precio</option>
-        </select>
-    </div>
 
-</div>
+                <div class="catalogo-stock-filtro">
+                    <label>
+                        <input type="checkbox" id="solo-disponibles">
+                        <span>Mostrar solo disponibles</span>
+                    </label>
+                </div>
 
-<div class="catalogo-categorias">
-    <button type="button" class="catalogo-filtro activo" data-categoria="perfumes-grandes">
-        Perfumes árabes
-    </button>
 
-    <button type="button" class="catalogo-filtro" data-categoria="decants">
-        Decants 5 ml
-    </button>
+                <div class="catalogo-orden">
+                    <label for="orden-catalogo">Ordenar por:</label>
 
-    <button type="button" class="catalogo-filtro" data-categoria="maison-30ml">
-        Maison Alhambra 30 ml
-    </button>
+                    <select id="orden-catalogo">
+                        <option value="nombre">Nombre A–Z</option>
+                        <option value="precio-menor">Menor precio</option>
+                        <option value="precio-mayor">Mayor precio</option>
+                    </select>
+                </div>
 
-    <button type="button" class="catalogo-filtro" data-categoria="inspiraciones">
-        Inspiraciones
-    </button>
-</div>
 
-<div class="catalogo-info-precios">
-    <h3>¿Cómo funcionan los precios?</h3>
-    <p id="texto-precios-catalogo">
-        El precio minorista se aplica por unidad.
-        Desde 3 perfumes surtidos dentro de la misma categoría,
-        se aplica automáticamente el precio mayorista.
-    </p>
-</div>
+            </div>
 
-<div
-    class="productos-grid"
-    id="productos-grid"
-></div>
+
+            <div class="catalogo-categorias">
+
+                <button
+                    type="button"
+                    class="catalogo-filtro activo"
+                    data-categoria="perfumes-grandes"
+                >
+                    Perfumes árabes
+                </button>
+
+
+                <button
+                    type="button"
+                    class="catalogo-filtro"
+                    data-categoria="decants"
+                >
+                    Decants 5 ml
+                </button>
+
+
+                <button
+                    type="button"
+                    class="catalogo-filtro"
+                    data-categoria="maison-30ml"
+                >
+                    Maison Alhambra 30 ml
+                </button>
+
+
+                <button
+                    type="button"
+                    class="catalogo-filtro"
+                    data-categoria="inspiraciones-disenador"
+                >
+                    Inspiraciones
+                </button>
+
+            </div>
+
+
+            <div class="catalogo-info-precios">
+                <h3>¿Cómo funcionan los precios?</h3>
+
+                <p id="texto-precios-catalogo">
+                    El precio minorista se aplica por unidad.
+                    Desde 3 perfumes surtidos dentro de la misma categoría,
+                    se aplica automáticamente el precio mayorista.
+                </p>
+            </div>
+
+
+            <div
+                class="productos-grid"
+                id="productos-grid"
+            ></div>
+
 
         </div>
     </section>
 
 </main>
+
 
 <button
     type="button"
@@ -104,10 +136,12 @@
     <span id="contador-carrito">0</span>
 </button>
 
+
 <div
     class="carrito-overlay"
     id="carrito-overlay"
 ></div>
+
 
 <aside
     class="carrito-panel"
@@ -129,6 +163,7 @@
 
     </div>
 
+
     <div
         class="carrito-productos"
         id="carrito-productos"
@@ -137,6 +172,7 @@
             Tu carrito está vacío.
         </p>
     </div>
+
 
     <div class="carrito-resumen">
 
@@ -160,46 +196,91 @@
     </div>
 
 </aside>
+
+
 <!-- Filtros del catálogo -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/productos.js"></script>
 <script src="js/script.js"></script>
-<script>
-    const botonesCatalogo = document.querySelectorAll(".catalogo-filtro");
-    const textoPreciosCatalogo = document.getElementById("texto-precios-catalogo");
-    const buscadorCatalogo = document.getElementById("buscador-catalogo");
-const soloDisponiblesInput = document.getElementById("solo-disponibles");
-const ordenCatalogo = document.getElementById("orden-catalogo");
 
-ordenCatalogo?.addEventListener("change", () => {
-    generarCatalogo();
-});
-soloDisponiblesInput?.addEventListener("change", () => {
-    generarCatalogo();
-});
-buscadorCatalogo?.addEventListener("input", () => {
-    generarCatalogo();
-});
+
+<script>
+
+    const botonesCatalogo =
+        document.querySelectorAll(".catalogo-filtro");
+
+    const textoPreciosCatalogo =
+        document.getElementById("texto-precios-catalogo");
+
+    const buscadorCatalogo =
+        document.getElementById("buscador-catalogo");
+
+    const soloDisponiblesInput =
+        document.getElementById("solo-disponibles");
+
+    const ordenCatalogo =
+        document.getElementById("orden-catalogo");
+
+
+    ordenCatalogo?.addEventListener("change", () => {
+        generarCatalogo();
+    });
+
+
+    soloDisponiblesInput?.addEventListener("change", () => {
+        generarCatalogo();
+    });
+
+
+    buscadorCatalogo?.addEventListener("input", () => {
+        generarCatalogo();
+    });
+
+
     botonesCatalogo.forEach((boton) => {
+
         boton.addEventListener("click", () => {
+
+
+            if (boton.dataset.categoria === "inspiraciones-disenador") {
+                window.location.href = "inspiraciones.html?origen=catalogo";
+                return;
+            }
+
 
             botonesCatalogo.forEach((item) => {
                 item.classList.remove("activo");
             });
 
+
             boton.classList.add("activo");
 
-            document.body.dataset.categoria = boton.dataset.categoria;
-if (boton.dataset.categoria === "decants") {
-    textoPreciosCatalogo.textContent =
-        "Los decants tienen precio único por unidad y no participan del mínimo mayorista.";
-} else {
-    textoPreciosCatalogo.textContent =
-        "El precio minorista se aplica por unidad. Desde 3 perfumes surtidos dentro de la misma categoría, se aplica automáticamente el precio mayorista.";
-}
+
+            document.body.dataset.categoria =
+                boton.dataset.categoria;
+
+
+            if (boton.dataset.categoria === "decants") {
+
+                textoPreciosCatalogo.textContent =
+                    "Los decants tienen precio único por unidad y no participan del mínimo mayorista.";
+
+            } else {
+
+                textoPreciosCatalogo.textContent =
+                    "El precio minorista se aplica por unidad. Desde 3 perfumes surtidos dentro de la misma categoría, se aplica automáticamente el precio mayorista.";
+
+            }
+
+
             generarCatalogo();
+
         });
+
     });
+
 </script>
+
 </body>

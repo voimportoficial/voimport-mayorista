@@ -1,22 +1,33 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" href="images/favicon.PNG">
-<title>Perfumes Armaf | Vo Import</title>
+<title>Armaf | Vo Import</title>
 
 <link rel="stylesheet" href="css/style.css">
 
-<body data-marca="Armaf">
+<body data-marca="Armaf" data-categoria="perfumes-grandes">
 
 <header class="productos-header">
-    <a href="/">← Volver al inicio</a>
-    <h1>Perfumes Armaf</h1>
+    <a href="/#marcas" class="volver-marcas">← Volver a marcas</a>
 </header>
+
 
 <main>
 
     <section class="productos">
         <div class="container">
 
-            <h2>Catálogo Armaf</h2>
+            <div class="marca-solapas">
+
+                <button
+                    type="button"
+                    class="marca-solapa activo"
+                    id="cambiar-presentacion"
+                >
+                    Ver Decants 5 ml
+                </button>
+
+            </div>
+
 
             <div
                 class="productos-grid"
@@ -27,6 +38,7 @@
     </section>
 
 </main>
+
 
 <button
     type="button"
@@ -43,10 +55,12 @@
     <span id="contador-carrito">0</span>
 </button>
 
+
 <div
     class="carrito-overlay"
     id="carrito-overlay"
 ></div>
+
 
 <aside
     class="carrito-panel"
@@ -68,6 +82,7 @@
 
     </div>
 
+
     <div
         class="carrito-productos"
         id="carrito-productos"
@@ -76,6 +91,7 @@
             Tu carrito está vacío.
         </p>
     </div>
+
 
     <div class="carrito-resumen">
 
@@ -99,6 +115,7 @@
     </div>
 
 </aside>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>

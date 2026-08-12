@@ -568,6 +568,7 @@ const productosDeLaMarca = catalogoActualizado
     coincideCategoria &&
     coincideLinea &&
     coincideTipo &&
+    !(categoriaActual === "decants" && producto.linea === "inspiraciones") &&
     coincideBusqueda &&
     coincideStock &&
     producto.activo !== false
@@ -603,65 +604,110 @@ const productosDeLaMarca = catalogoActualizado
         `;
         return;
     }
+const productosPorMarca = {};
+
+productosDeLaMarca.forEach((producto) => {
+    if (!productosPorMarca[producto.marca]) {
+        productosPorMarca[producto.marca] = [];
+    }
+
+    productosPorMarca[producto.marca].push(producto);
+});
+    const crearTarjetaProducto = (producto) => {
+    const agotado = producto.stock === 0;
+    const textoBoton = agotado
+        ? "Agotado"
+        : "Agregar al carrito";
+
+    return `
+        <div class="producto-card" data-slug="${escaparHTML(producto.slug)}">
+
+            <img
+                src="${escaparHTML(producto.imagen)}"
+                alt="${escaparHTML(producto.nombre)}"
+            >
+
+            <h3>${escaparHTML(producto.nombre)}</h3>
+
+            ${crearPrecioCatalogo(producto)}
+            ${crearTextoStock(producto)}
+
+            <a
+                href="producto.html?slug=${encodeURIComponent(producto.id)}"
+                class="boton-producto"
+            >
+                Ver producto
+            </a>
+
+            <button
+                type="button"
+                class="agregar-carrito agregar-carrito-card"
+                data-slug="${escaparHTML(producto.slug)}"
+                data-nombre="${escaparHTML(producto.nombre)}"
+                data-categoria="${escaparHTML(producto.categoria)}"
+                data-precio-minorista="${producto.precioMinorista}"
+                data-precio-mayorista="${producto.precioMayorista}"
+                data-imagen="${escaparHTML(producto.imagen)}"
+                data-stock="${producto.stock ?? ""}"
+                ${agotado ? "disabled" : ""}
+            >
+                <svg
+                    class="icono-carrito"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path d="M3 3h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H7"></path>
+                    <circle cx="10" cy="20" r="1"></circle>
+                    <circle cx="18" cy="20" r="1"></circle>
+                </svg>
+
+                ${textoBoton}
+            </button>
+
+        </div>
+    `;
+};
+
+const esCatalogoGeneral =
+    !marcaActual &&
+    ["perfumes-grandes", "decants"].includes(categoriaActual) &&
+    !lineaActual &&
+    !tipoActual;
+
+if (esCatalogoGeneral) {
+
+    const marcasOrdenadas = Object.keys(productosPorMarca)
+        .sort((marcaA, marcaB) =>
+            marcaA.localeCompare(marcaB, "es", {
+                sensitivity: "base"
+            })
+        );
+
+    productosGrid.innerHTML = marcasOrdenadas
+    .map((marca) => `
+        <section class="catalogo-marca">
+
+            <h2 class="catalogo-marca-titulo">
+                ${escaparHTML(marca)}
+            </h2>
+
+            <div class="catalogo-marca-grid">
+                ${productosPorMarca[marca]
+                    .map(crearTarjetaProducto)
+                    .join("")}
+            </div>
+
+        </section>
+    `)
+    .join("");
+
+} else {
 
     productosGrid.innerHTML = productosDeLaMarca
-        .map((producto) => {
-            const agotado = producto.stock === 0;
-            const textoBoton = agotado
-                ? "Agotado"
-                : "Agregar al carrito";
-
-            return `
-                <div class="producto-card" data-slug="${escaparHTML(producto.slug)}">
-
-                    <img
-                        src="${escaparHTML(producto.imagen)}"
-                        alt="${escaparHTML(producto.nombre)}"
-                    >
-
-                    <h3>${escaparHTML(producto.nombre)}</h3>
-
-                    ${crearPrecioCatalogo(producto)}
-                    ${crearTextoStock(producto)}
-
-                    <a
-                        href="producto.html?slug=${encodeURIComponent(producto.id)}"
-                        class="boton-producto"
-                    >
-                        Ver producto
-                    </a>
-
-                    <button
-                        type="button"
-                        class="agregar-carrito agregar-carrito-card"
-                        data-slug="${escaparHTML(producto.slug)}"
-                        data-nombre="${escaparHTML(producto.nombre)}"
-                        data-categoria="${escaparHTML(producto.categoria)}"
-                        data-precio-minorista="${producto.precioMinorista}"
-                        data-precio-mayorista="${producto.precioMayorista}"
-                        data-imagen="${escaparHTML(producto.imagen)}"
-                        data-stock="${producto.stock ?? ""}"
-                        ${agotado ? "disabled" : ""}
-                    >
-                        <svg
-                            class="icono-carrito"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <path d="M3 3h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H7"></path>
-                            <circle cx="10" cy="20" r="1"></circle>
-                            <circle cx="18" cy="20" r="1"></circle>
-                        </svg>
-
-                        ${textoBoton}
-                    </button>
-
-                </div>
-            `;
-         })
+        .map(crearTarjetaProducto)
         .join("");
 }
-
+}
 // =============================
 // FICHA INDIVIDUAL DEL PRODUCTO
 // =============================
@@ -1297,3 +1343,34 @@ iniciarAplicacion().catch((error) => {
     console.error("Error al iniciar la web:", error);
     actualizarCarrito();
 });
+const cambiarPresentacion =
+    document.getElementById("cambiar-presentacion");
+
+if (cambiarPresentacion) {
+
+    cambiarPresentacion.addEventListener("click", () => {
+
+        const viendoDecants =
+            document.body.dataset.categoria === "decants";
+
+        if (viendoDecants) {
+
+            document.body.dataset.categoria = "perfumes-grandes";
+
+            cambiarPresentacion.textContent =
+                "Ver Decants 5 ml";
+
+        } else {
+
+            document.body.dataset.categoria = "decants";
+
+            cambiarPresentacion.textContent =
+                "← Volver a perfumes";
+
+        }
+
+        generarCatalogo();
+
+    });
+
+}

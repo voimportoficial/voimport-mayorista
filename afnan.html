@@ -1,14 +1,13 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" href="images/favicon.PNG">
-<title>Perfumes Afnan | Vo Import</title>
+<title>Afnan | Vo Import</title>
 
 <link rel="stylesheet" href="css/style.css">
 
-<body data-marca="Afnan">
+<body data-marca="Afnan" data-categoria="perfumes-grandes">
 
 <header class="productos-header">
-    <a href="/">← Volver al inicio</a>
-    <h1>Perfumes Afnan</h1>
+    <a href="/#marcas" class="volver-marcas">← Volver a marcas</a>
 </header>
 
 <main>
@@ -16,17 +15,29 @@
     <section class="productos">
         <div class="container">
 
-            <h2>Catálogo Afnan</h2>
+            <div class="marca-solapas">
+
+                <button
+                    type="button"
+                    class="marca-solapa activo"
+                    id="cambiar-presentacion"
+                >
+                    Ver Decants 5 ml
+                </button>
+
+            </div>
+
 
             <div
-    class="productos-grid"
-    id="productos-grid"
-></div>
+                class="productos-grid"
+                id="productos-grid"
+            ></div>
 
         </div>
     </section>
 
 </main>
+
 
 <button
     type="button"
@@ -43,10 +54,12 @@
     <span id="contador-carrito">0</span>
 </button>
 
+
 <div
     class="carrito-overlay"
     id="carrito-overlay"
 ></div>
+
 
 <aside
     class="carrito-panel"
@@ -68,6 +81,7 @@
 
     </div>
 
+
     <div
         class="carrito-productos"
         id="carrito-productos"
@@ -76,6 +90,7 @@
             Tu carrito está vacío.
         </p>
     </div>
+
 
     <div class="carrito-resumen">
 
@@ -100,9 +115,11 @@
 
 </aside>
 
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/productos.js"></script>
 <script src="js/supabase.js"></script>
 <script src="js/script.js"></script>
+
 
 </body>
