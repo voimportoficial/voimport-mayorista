@@ -36,12 +36,101 @@ let carrito = cargarCarritoGuardado();
 
 
 // =============================
+// CARRITO GLOBAL
+// =============================
+
+if (!document.getElementById("abrir-carrito")) {
+    document.body.insertAdjacentHTML(
+        "beforeend",
+        `
+        <button
+            type="button"
+            class="boton-carrito"
+            id="abrir-carrito"
+            aria-label="Abrir carrito"
+        >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M3 3h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H7"></path>
+                <circle cx="10" cy="20" r="1"></circle>
+                <circle cx="18" cy="20" r="1"></circle>
+            </svg>
+
+            <span id="contador-carrito">0</span>
+        </button>
+
+
+        <div
+            class="carrito-overlay"
+            id="carrito-overlay"
+        ></div>
+
+
+        <aside
+            class="carrito-panel"
+            id="carrito-panel"
+        >
+
+            <div class="carrito-encabezado">
+
+                <h2>Mi carrito</h2>
+
+                <button
+                    type="button"
+                    class="cerrar-carrito"
+                    id="cerrar-carrito"
+                    aria-label="Cerrar carrito"
+                >
+                    ×
+                </button>
+
+            </div>
+
+
+            <div
+                class="carrito-productos"
+                id="carrito-productos"
+            >
+                <p class="carrito-vacio">
+                    Tu carrito está vacío.
+                </p>
+            </div>
+
+
+            <div class="carrito-resumen">
+
+                <p id="mensaje-mayorista">
+                    Los mínimos mayoristas se calculan por categoría.
+                </p>
+
+                <div class="carrito-total">
+                    <span>Total</span>
+                    <strong id="carrito-total">$0</strong>
+                </div>
+
+                <button
+                    type="button"
+                    class="finalizar-pedido"
+                    id="finalizar-pedido"
+                >
+                    Finalizar pedido
+                </button>
+
+            </div>
+
+        </aside>
+        `
+    );
+}
+
+
+// =============================
 // ELEMENTOS DE LA PÁGINA
 // =============================
 
 const productosGrid = document.getElementById("productos-grid");
 const menuToggle = document.querySelector(".menu-toggle");
 const navLinks = document.querySelector(".nav-links");
+
 
 const botonAbrirCarrito = document.getElementById("abrir-carrito");
 const botonCerrarCarrito = document.getElementById("cerrar-carrito");

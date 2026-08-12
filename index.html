@@ -28,12 +28,21 @@
 </div>
 
 <div class="nav-links">
-    <a href="#inicio">Inicio</a>
+    <a href="#">Inicio</a>
     <a href="#categorias">Categorías</a>
     <a href="#marcas">Marcas</a>
     <a href="catalogo.html">Catálogo</a>
     <a href="mayorista.html">Mayorista</a>
     <a href="#contacto">Contacto</a>
+
+    <button class="boton-buscador" id="abrir-buscador" aria-label="Abrir buscador">
+    <span>Buscar</span>
+
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+    </svg>
+</button>
 </div>
 
         <a href="https://wa.me/message/AL7OCHKD6Z7IA1"
@@ -66,6 +75,47 @@
 
         </div>
     </header>
+    <!-- BUSCADOR GENERAL -->
+<div class="buscador-overlay" id="buscador-overlay">
+
+    <div class="buscador-panel">
+
+        <button
+            type="button"
+            class="cerrar-buscador"
+            id="cerrar-buscador"
+            aria-label="Cerrar buscador"
+        >
+            ×
+        </button>
+
+        <h2>¿Qué estás buscando?</h2>
+
+        <p>
+            Buscá perfumes, marcas, categorías o información de nuestra tienda.
+        </p>
+
+        <div class="buscador-input-contenedor">
+
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+            </svg>
+
+            <input
+                type="search"
+                id="buscador-general"
+                placeholder="Ej: Khamrah, Lattafa, decants, mayorista..."
+                autocomplete="off"
+            >
+
+        </div>
+
+        <div class="resultados-buscador" id="resultados-buscador"></div>
+
+    </div>
+
+</div>
 
     <section class="categorias" id="categorias">
     <div class="container">
@@ -239,6 +289,294 @@ class="contacto-boton">
     </div>
 </section>
 
-    <script src="js/script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/productos.js"></script>
+<script src="js/script.js"></script>
+
+<script>
+    const botonAbrirBuscador = document.getElementById("abrir-buscador");
+    const botonCerrarBuscador = document.getElementById("cerrar-buscador");
+    const overlayBuscador = document.getElementById("buscador-overlay");
+    const inputBuscador = document.getElementById("buscador-general");
+    const resultadosBuscador = document.getElementById("resultados-buscador");
+
+    let datosSupabaseBuscador = new Map();
+
+
+    async function cargarDatosSupabaseBuscador() {
+        const datos = await obtenerDatosProductos();
+
+        datosSupabaseBuscador = new Map(
+            datos.map((producto) => [
+                producto.slug,
+                producto
+            ])
+        );
+    }
+
+
+    cargarDatosSupabaseBuscador();
+
+
+    function normalizarTexto(texto) {
+        return String(texto || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
+    }
+
+
+    function obtenerNombreCategoria(producto) {
+        if (producto.categoria === "perfumes-grandes") {
+            return "PERFUMES ÁRABES";
+        }
+
+        if (producto.categoria === "decants") {
+            return "DECANT 5 ML";
+        }
+
+        if (producto.categoria === "maison-30ml") {
+            return "MAISON ALHAMBRA 30 ML";
+        }
+
+        if (producto.categoria === "inspiraciones-disenador") {
+            return "INSPIRACIÓN 60 ML";
+        }
+
+        return "";
+    }
+
+const destinosGenerales = [
+    {
+        titulo: "Mayorista",
+        categoria: "SECCIÓN",
+        descripcion: "Información y condiciones para compras mayoristas",
+        url: "mayorista.html"
+    },
+    {
+        titulo: "Catálogo",
+        categoria: "SECCIÓN",
+        descripcion: "Ver todos nuestros productos",
+        url: "catalogo.html"
+    },
+    {
+        titulo: "Categorías",
+        categoria: "SECCIÓN",
+        descripcion: "Explorá todas nuestras categorías",
+        url: "#categorias"
+    },
+    {
+        titulo: "Contacto",
+        categoria: "SECCIÓN",
+        descripcion: "WhatsApp, Instagram y medios de contacto",
+        url: "#contacto"
+    },
+    {
+        titulo: "Perfumes árabes",
+        categoria: "CATEGORÍA",
+        descripcion: "Perfumes árabes originales",
+        url: "categoria.html?categoria=perfumes-grandes"
+    },
+    {
+        titulo: "Decants 5 ml",
+        categoria: "CATEGORÍA",
+        descripcion: "Decants de perfumes árabes en presentación de 5 ml",
+        url: "categoria.html?categoria=decants"
+    },
+    {
+        titulo: "Maison Alhambra 30 ml",
+        categoria: "CATEGORÍA",
+        descripcion: "Perfumes Maison Alhambra de 30 ml",
+        url: "categoria.html?categoria=maison-30ml"
+    },
+    {
+        titulo: "Inspiraciones de diseñador",
+        categoria: "CATEGORÍA",
+        descripcion: "Perfumes 60 ml y decants 5 ml",
+        url: "inspiraciones.html"
+    }
+];
+
+
+inputBuscador.addEventListener("input", () => {
+    const busqueda = normalizarTexto(inputBuscador.value.trim());
+
+    if (busqueda.length < 2) {
+        resultadosBuscador.innerHTML = "";
+        return;
+    }
+
+    const coincidencias = productos
+        .map((producto) => {
+            const datosSupabase = datosSupabaseBuscador.get(producto.id);
+
+if (datosSupabase && datosSupabase.activo === false) {
+    return {
+        producto,
+        prioridad: 0
+    };
+}
+            const nombre = normalizarTexto(producto.nombre);
+            const marca = normalizarTexto(producto.marca);
+            const inspiracion = normalizarTexto(producto.inspiracion);
+
+            const informacionExtra = normalizarTexto(`
+                ${producto.descripcion || ""}
+                ${producto.notasSalida || ""}
+                ${producto.notasCorazon || ""}
+                ${producto.notasFondo || ""}
+            `);
+
+            let prioridad = 0;
+
+            if (nombre.startsWith(busqueda)) prioridad += 100;
+            if (marca.startsWith(busqueda)) prioridad += 90;
+
+            if (nombre.includes(busqueda)) prioridad += 70;
+            if (marca.includes(busqueda)) prioridad += 60;
+
+            if (
+                busqueda.length >= 4 &&
+                inspiracion.includes(busqueda)
+            ) {
+                prioridad += 30;
+            }
+
+            if (
+                busqueda.length >= 5 &&
+                informacionExtra.includes(busqueda)
+            ) {
+                prioridad += 10;
+            }
+
+            return {
+                producto,
+                prioridad
+            };
+        })
+        .filter((resultado) => resultado.prioridad > 0)
+        .sort((a, b) => b.prioridad - a.prioridad)
+        .map((resultado) => resultado.producto);
+
+
+    const coincidenciasGenerales = destinosGenerales.filter((destino) => {
+        const tituloDestino = normalizarTexto(destino.titulo);
+
+        return tituloDestino.includes(busqueda);
+    });
+
+
+if (
+    coincidencias.length === 0 &&
+    coincidenciasGenerales.length === 0
+) {
+    resultadosBuscador.innerHTML = `
+        <div class="buscador-sin-resultados">
+            No encontramos resultados para “${inputBuscador.value}”.
+        </div>
+    `;
+    return;
+}
+
+
+const htmlGenerales = coincidenciasGenerales
+    .map((destino) => `
+        <a
+            class="resultado-buscador-item resultado-buscador-general"
+            href="${destino.url}"
+        >
+            <div>
+                <small class="resultado-buscador-categoria">
+                    ${destino.categoria}
+                </small>
+
+                <strong>${destino.titulo}</strong>
+                <span>${destino.descripcion}</span>
+            </div>
+
+            <span class="resultado-buscador-flecha">→</span>
+        </a>
+    `)
+    .join("");
+
+
+const htmlProductos = coincidencias
+    .map((producto) => {
+        const datosSupabase = datosSupabaseBuscador.get(producto.id);
+
+        const stock = datosSupabase
+            ? Number(datosSupabase.stock)
+            : null;
+
+        return `
+            <a
+                class="resultado-buscador-item"
+                href="producto.html?slug=${encodeURIComponent(producto.id)}"
+            >
+                <img src="${producto.imagen}" alt="${producto.nombre}">
+
+                <div>
+                    <small class="resultado-buscador-categoria">
+                        ${obtenerNombreCategoria(producto)}
+                    </small>
+
+                    <strong>${producto.nombre}</strong>
+                    <span>${producto.marca}</span>
+
+                    ${
+                        stock === 0
+                            ? `<small class="resultado-buscador-agotado">AGOTADO</small>`
+                            : stock > 0
+                                ? `<small class="resultado-buscador-stock">Stock: ${stock}</small>`
+                                : ""
+                    }
+                </div>
+
+                <span class="resultado-buscador-flecha">→</span>
+            </a>
+        `;
+    })
+    .join("");
+
+
+if (coincidenciasGenerales.length > 0) {
+    resultadosBuscador.innerHTML = htmlGenerales;
+} else {
+    resultadosBuscador.innerHTML = htmlProductos;
+}
+
+});
+
+
+botonAbrirBuscador.addEventListener("click", () => {
+    overlayBuscador.classList.add("activo");
+
+    setTimeout(() => {
+        inputBuscador.focus();
+    }, 100);
+});
+
+
+botonCerrarBuscador.addEventListener("click", () => {
+    overlayBuscador.classList.remove("activo");
+});
+
+
+overlayBuscador.addEventListener("click", (e) => {
+    if (e.target === overlayBuscador) {
+        overlayBuscador.classList.remove("activo");
+    }
+});
+
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        overlayBuscador.classList.remove("activo");
+    }
+});
+
+</script>
+
 </body>
 </html>

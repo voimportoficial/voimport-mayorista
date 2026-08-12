@@ -121,6 +121,22 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/productos.js"></script>
+
+<script>
+    if (categoria === "decants") {
+        for (let i = productos.length - 1; i >= 0; i--) {
+            const producto = productos[i];
+
+            if (
+                producto.categoria === "decants" &&
+                producto.linea === "inspiraciones"
+            ) {
+                productos.splice(i, 1);
+            }
+        }
+    }
+</script>
+
 <script src="js/script.js"></script>
 
 </body>
