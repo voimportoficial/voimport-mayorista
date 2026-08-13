@@ -5205,7 +5205,7 @@ const productos = [
 },
 {
     id: "inspiracion-1-million-60ml",
-    nombre: "1 Million",
+    nombre: "One Million",
     marca: "VO Import",
     categoria: "inspiraciones-disenador",
     linea: "inspiraciones",
@@ -5878,7 +5878,92 @@ const productos = [
 }
 
 ];
+const disenadorPorInspiracion = {
 
+    "inspiracion-scandal-mujer-60ml": "jean-paul-gaultier",
+    "inspiracion-scandal-pour-homme-60ml": "jean-paul-gaultier",
+
+    "inspiracion-eros-60ml": "versace",
+
+    "inspiracion-good-girl-60ml": "carolina-herrera",
+    "inspiracion-212-vip-60ml": "carolina-herrera",
+    "inspiracion-bad-boy-60ml": "carolina-herrera",
+    "inspiracion-212-men-60ml": "carolina-herrera",
+    "inspiracion-ch-carolina-herrera-60ml": "carolina-herrera",
+
+    "inspiracion-1-million-60ml": "paco-rabanne",
+    "inspiracion-invictus-60ml": "paco-rabanne",
+    "inspiracion-phantom-60ml": "paco-rabanne",
+    "inspiracion-olympea-60ml": "paco-rabanne",
+    "inspiracion-black-xs-60ml": "paco-rabanne",
+    "inspiracion-fame-60ml": "paco-rabanne",
+
+    "inspiracion-sauvage-60ml": "dior",
+    "inspiracion-sauvage-elixir-60ml": "dior",
+    "inspiracion-fahrenheit-60ml": "dior",
+
+    "inspiracion-bleu-de-chanel-60ml": "chanel",
+    "inspiracion-chance-60ml": "chanel",
+    "inspiracion-coco-60ml": "chanel",
+
+    "inspiracion-my-way-60ml": "armani",
+    "inspiracion-stronger-with-you-60ml": "armani",
+    "inspiracion-si-passione-60ml": "armani",
+
+    "inspiracion-wanted-60ml": "azzaro",
+
+    "inspiracion-man-in-black-60ml": "bvlgari",
+
+    "inspiracion-amor-amor-60ml": "cacharel",
+
+    "inspiracion-la-vie-est-belle-60ml": "lancome",
+
+    "inspiracion-light-blue-60ml": "dolce-gabbana",
+
+    "inspiracion-alien-60ml": "thierry-mugler",
+    "inspiracion-angel-60ml": "thierry-mugler",
+
+    "inspiracion-spicebomb-60ml": "viktor-rolf",
+
+    "inspiracion-toy-boy-60ml": "moschino",
+
+    "inspiracion-nina-60ml": "nina-ricci",
+
+    "inspiracion-erba-pura-60ml": "xerjoff",
+
+    "inspiracion-oud-wood-60ml": "tom-ford",
+
+    "inspiracion-flower-by-kenzo-60ml": "kenzo",
+    "inspiracion-kenzo-homme-60ml": "kenzo",
+
+    "inspiracion-baccarat-rouge-540-60ml": "francis-kurkdjian",
+
+    "inspiracion-glamourous-60ml": "ralph-lauren",
+    "inspiracion-polo-black-60ml": "ralph-lauren",
+    "inspiracion-polo-blue-60ml": "ralph-lauren",
+
+    "inspiracion-valentino-born-in-roma-60ml": "valentino",
+
+    "inspiracion-le-beau-60ml": "jean-paul-gaultier",
+    "inspiracion-le-male-elixir-60ml": "jean-paul-gaultier",
+
+    "inspiracion-aventus-60ml": "creed",
+
+    "inspiracion-libre-60ml": "yves-saint-laurent",
+
+    "inspiracion-ombre-nomade-60ml": "louis-vuitton"
+
+};
+
+
+productos.forEach((producto) => {
+
+    if (disenadorPorInspiracion[producto.id]) {
+        producto.disenador =
+            disenadorPorInspiracion[producto.id];
+    }
+
+});
 productos.forEach((producto) => {
     if (
         producto.categoria === "inspiraciones-disenador" &&

@@ -121,6 +121,129 @@ if (!document.getElementById("abrir-carrito")) {
         `
     );
 }
+// =============================
+// PAGO POR TRANSFERENCIA
+// =============================
+
+const resumenCarritoPago = document.querySelector(".carrito-resumen");
+
+if (
+    resumenCarritoPago &&
+    !document.getElementById("carrito-pago-transferencia")
+) {
+    resumenCarritoPago.insertAdjacentHTML(
+        "afterbegin",
+        `
+        <div
+            class="carrito-pago-transferencia"
+            id="carrito-pago-transferencia"
+        >
+
+            <h3>¿Querés reservar tu pedido?</h3>
+
+            <p class="carrito-pago-texto">
+                Podés abonar por transferencia y asegurar tus productos.
+            </p>
+
+            <div class="carrito-dato-pago">
+                <span>Titular</span>
+                <strong>Eric Damian Ranzoni</strong>
+            </div>
+
+            <div class="carrito-dato-pago">
+                <span>Alias</span>
+
+                <div class="carrito-alias-fila">
+                    <strong>voimport.lemon</strong>
+
+                    <button
+                        type="button"
+                        class="copiar-alias"
+                        id="copiar-alias"
+                    >
+                        Copiar
+                    </button>
+                </div>
+            </div>
+
+            <div class="carrito-dato-pago">
+                <span>CVU</span>
+                <strong>0000168300000017205739</strong>
+            </div>
+
+            <div class="carrito-dato-pago">
+                <span>Lemontag</span>
+                <strong>$ericranzoni</strong>
+            </div>
+
+            <p class="carrito-reserva-aviso">
+                La reserva se confirma una vez recibido y verificado el pago.
+            </p>
+
+            <button
+                type="button"
+                class="enviar-comprobante"
+                id="enviar-comprobante"
+            >
+                Enviar comprobante por WhatsApp
+            </button>
+
+        </div>
+        `
+    );
+}
+// =============================
+// COPIAR ALIAS
+// =============================
+
+const botonCopiarAlias = document.getElementById("copiar-alias");
+
+botonCopiarAlias?.addEventListener("click", async () => {
+    try {
+        await navigator.clipboard.writeText("voimport.lemon");
+
+        botonCopiarAlias.textContent = "Copiado ✓";
+
+        setTimeout(() => {
+            botonCopiarAlias.textContent = "Copiar";
+        }, 1500);
+
+    } catch (error) {
+        alert("Alias: voimport.lemon");
+    }
+});
+// =============================
+// ENVIAR COMPROBANTE POR WHATSAPP
+// =============================
+
+const botonEnviarComprobante =
+    document.getElementById("enviar-comprobante");
+
+botonEnviarComprobante?.addEventListener("click", () => {
+
+    if (carrito.length === 0) {
+        alert("Agregá productos al carrito antes de enviar el comprobante.");
+        return;
+    }
+
+    const mensaje = encodeURIComponent(
+        `Hola, realicé la transferencia para reservar mi pedido.
+
+${crearMensajePedido()}
+
+Adjunto el comprobante de pago.`
+    );
+
+    const enlaceWhatsApp =
+        `https://wa.me/${numeroWhatsApp}?text=${mensaje}`;
+
+    window.open(
+        enlaceWhatsApp,
+        "_blank",
+        "noopener,noreferrer"
+    );
+
+});
 
 
 // =============================
@@ -527,63 +650,149 @@ function crearPrecioCatalogo(producto) {
         </p>
     `;
 }
-function generarCatalogo() {  
+function generarCatalogo() {
     if (!productosGrid) return;
-const marcaActual = document.body.dataset.marca;
-const categoriaActual = document.body.dataset.categoria;
-const lineaActual = document.body.dataset.linea;
-const tipoActual = document.body.dataset.tipo;
 
-const terminoBusqueda =
-    document.getElementById("buscador-catalogo")?.value
-        .trim()
-        .toLowerCase() || "";
+    const marcaActual =
+        document.body.dataset.marca;
 
-const soloDisponibles =
-    document.getElementById("solo-disponibles")?.checked || false;
+    const categoriaActual =
+        document.body.dataset.categoria;
 
-const productosDeLaMarca = catalogoActualizado
-    .filter((producto) => {
-        const coincideMarca =
-            !marcaActual || producto.marca === marcaActual;
+    const lineaActual =
+        document.body.dataset.linea;
 
-        const coincideCategoria =
-            !categoriaActual || producto.categoria === categoriaActual;
-        const coincideLinea =
-    !lineaActual || producto.linea === lineaActual;
-        const coincideTipo =
-    !tipoActual || producto.tipo === tipoActual;
-        const coincideBusqueda =
-            !terminoBusqueda ||
-            producto.nombre.toLowerCase().includes(terminoBusqueda) ||
-            producto.marca.toLowerCase().includes(terminoBusqueda);
+    const tipoActual =
+        document.body.dataset.tipo;
 
-        const coincideStock =
-    !soloDisponibles ||
-    producto.stock === null ||
-    Number(producto.stock) > 0;
+    const disenadorActual =
+        new URLSearchParams(window.location.search)
+            .get("disenador");
 
-        return (
-    coincideMarca &&
-    coincideCategoria &&
-    coincideLinea &&
-    coincideTipo &&
-    !(categoriaActual === "decants" && producto.linea === "inspiraciones") &&
-    coincideBusqueda &&
-    coincideStock &&
-    producto.activo !== false
-);
-    })
+    const terminoBusqueda =
+        document.getElementById("buscador-catalogo")
+            ?.value
+            .trim()
+            .toLowerCase() || "";
+
+    const soloDisponibles =
+        document.getElementById("solo-disponibles")
+            ?.checked || false;
+
+
+    const productosDeLaMarca = catalogoActualizado
+        .filter((producto) => {
+
+            const coincideMarca =
+                !marcaActual ||
+                producto.marca === marcaActual;
+
+            const coincideCategoria =
+                !categoriaActual ||
+                producto.categoria === categoriaActual;
+
+            const coincideLinea =
+                !lineaActual ||
+                producto.linea === lineaActual;
+
+            const coincideTipo =
+                !tipoActual ||
+                producto.tipo === tipoActual;
+
+            const coincideDisenador =
+                !disenadorActual ||
+                producto.disenador === disenadorActual;
+
+            const nombreProducto =
+                String(producto.nombre || "")
+                    .toLowerCase();
+
+            const marcaProducto =
+                String(producto.marca || "")
+                    .toLowerCase();
+
+            const coincideBusqueda =
+                !terminoBusqueda ||
+                nombreProducto.includes(terminoBusqueda) ||
+                marcaProducto.includes(terminoBusqueda);
+
+            const coincideStock =
+                !soloDisponibles ||
+                producto.stock === null ||
+                Number(producto.stock) > 0;
+
+
+            /*
+                En el catálogo general de Decants 5 ml
+                NO mostramos los decants de inspiraciones.
+
+                Pero en inspiraciones-decants.html,
+                donde lineaActual = "inspiraciones",
+                SÍ deben aparecer.
+            */
+            const ocultarDecantInspiracionGeneral =
+                categoriaActual === "decants" &&
+                !lineaActual &&
+                producto.linea === "inspiraciones";
+
+
+            return (
+                coincideMarca &&
+                coincideCategoria &&
+                coincideLinea &&
+                coincideTipo &&
+                coincideDisenador &&
+                !ocultarDecantInspiracionGeneral &&
+                coincideBusqueda &&
+                coincideStock &&
+                producto.activo !== false
+            );
+        })
+
         .sort((productoA, productoB) => {
+
     const orden =
-        document.getElementById("orden-catalogo")?.value || "nombre";
+        document.getElementById("orden-catalogo")
+            ?.value || "nombre";
 
     if (orden === "precio-menor") {
-        return Number(productoA.precioMinorista) - Number(productoB.precioMinorista);
+        return (
+            Number(productoA.precioMinorista) -
+            Number(productoB.precioMinorista)
+        );
     }
 
     if (orden === "precio-mayor") {
-        return Number(productoB.precioMinorista) - Number(productoA.precioMinorista);
+        return (
+            Number(productoB.precioMinorista) -
+            Number(productoA.precioMinorista)
+        );
+    }
+
+    const esInspiracion =
+        lineaActual === "inspiraciones" &&
+        ["perfume", "decant"].includes(tipoActual);
+
+    if (esInspiracion) {
+
+        const disenadorA =
+            String(productoA.disenador || "");
+
+        const disenadorB =
+            String(productoB.disenador || "");
+
+        const ordenDisenador =
+            disenadorA.localeCompare(
+                disenadorB,
+                "es",
+                {
+                    sensitivity: "base"
+                }
+            );
+
+        if (ordenDisenador !== 0) {
+            return ordenDisenador;
+        }
     }
 
     return productoA.nombre.localeCompare(
@@ -596,117 +805,187 @@ const productosDeLaMarca = catalogoActualizado
     );
 });
 
-    if (productosDeLaMarca.length === 0) {
-        productosGrid.innerHTML = `
-            <p class="catalogo-vacio">
-                No hay productos disponibles en este momento.
-            </p>
-        `;
-        return;
-    }
-const productosPorMarca = {};
 
-productosDeLaMarca.forEach((producto) => {
-    if (!productosPorMarca[producto.marca]) {
-        productosPorMarca[producto.marca] = [];
-    }
-
-    productosPorMarca[producto.marca].push(producto);
-});
-    const crearTarjetaProducto = (producto) => {
-    const agotado = producto.stock === 0;
-    const textoBoton = agotado
-        ? "Agotado"
-        : "Agregar al carrito";
-
-    return `
-        <div class="producto-card" data-slug="${escaparHTML(producto.slug)}">
-
-            <img
-                src="${escaparHTML(producto.imagen)}"
-                alt="${escaparHTML(producto.nombre)}"
-            >
-
-            <h3>${escaparHTML(producto.nombre)}</h3>
-
-            ${crearPrecioCatalogo(producto)}
-            ${crearTextoStock(producto)}
-
-            <a
-                href="producto.html?slug=${encodeURIComponent(producto.id)}"
-                class="boton-producto"
-            >
-                Ver producto
-            </a>
-
-            <button
-                type="button"
-                class="agregar-carrito agregar-carrito-card"
-                data-slug="${escaparHTML(producto.slug)}"
-                data-nombre="${escaparHTML(producto.nombre)}"
-                data-categoria="${escaparHTML(producto.categoria)}"
-                data-precio-minorista="${producto.precioMinorista}"
-                data-precio-mayorista="${producto.precioMayorista}"
-                data-imagen="${escaparHTML(producto.imagen)}"
-                data-stock="${producto.stock ?? ""}"
-                ${agotado ? "disabled" : ""}
-            >
-                <svg
-                    class="icono-carrito"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
-                    <path d="M3 3h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H7"></path>
-                    <circle cx="10" cy="20" r="1"></circle>
-                    <circle cx="18" cy="20" r="1"></circle>
-                </svg>
-
-                ${textoBoton}
-            </button>
-
-        </div>
+if (productosDeLaMarca.length === 0) {
+    productosGrid.innerHTML = `
+        <p class="catalogo-vacio">
+            No hay productos disponibles en este momento.
+        </p>
     `;
+
+    return;
+}
+
+
+const esPaginaInspiraciones =
+    lineaActual === "inspiraciones" &&
+    ["perfume", "decant"].includes(tipoActual);
+
+
+const nombresDisenadores = {
+    "armani": "Armani",
+    "azzaro": "Azzaro",
+    "bvlgari": "Bvlgari",
+    "cacharel": "Cacharel",
+    "carolina-herrera": "Carolina Herrera",
+    "chanel": "Chanel",
+    "creed": "Creed",
+    "dior": "Dior",
+    "dolce-gabbana": "Dolce & Gabbana",
+    "francis-kurkdjian": "Francis Kurkdjian",
+    "jean-paul-gaultier": "Jean Paul Gaultier",
+    "kenzo": "Kenzo",
+    "lancome": "Lancôme",
+    "louis-vuitton": "Louis Vuitton",
+    "moschino": "Moschino",
+    "nina-ricci": "Nina Ricci",
+    "paco-rabanne": "Paco Rabanne",
+    "ralph-lauren": "Ralph Lauren",
+    "thierry-mugler": "Thierry Mugler",
+    "tom-ford": "Tom Ford",
+    "valentino": "Valentino",
+    "versace": "Versace",
+    "viktor-rolf": "Viktor & Rolf",
+    "xerjoff": "Xerjoff",
+    "yves-saint-laurent": "Yves Saint Laurent"
 };
 
-const esCatalogoGeneral =
-    !marcaActual &&
-    ["perfumes-grandes", "decants"].includes(categoriaActual) &&
-    !lineaActual &&
-    !tipoActual;
 
-if (esCatalogoGeneral) {
+const productosPorMarca = {};
 
-    const marcasOrdenadas = Object.keys(productosPorMarca)
-        .sort((marcaA, marcaB) =>
-            marcaA.localeCompare(marcaB, "es", {
-                sensitivity: "base"
-            })
-        );
 
-    productosGrid.innerHTML = marcasOrdenadas
-    .map((marca) => `
-        <section class="catalogo-marca">
+productosDeLaMarca.forEach((producto) => {
 
-            <h2 class="catalogo-marca-titulo">
-                ${escaparHTML(marca)}
-            </h2>
+    const grupo = esPaginaInspiraciones
+        ? nombresDisenadores[producto.disenador] || "Otros"
+        : producto.marca;
 
-            <div class="catalogo-marca-grid">
-                ${productosPorMarca[marca]
-                    .map(crearTarjetaProducto)
-                    .join("")}
-            </div>
+    if (!productosPorMarca[grupo]) {
+        productosPorMarca[grupo] = [];
+    }
 
-        </section>
-    `)
-    .join("");
+    productosPorMarca[grupo].push(producto);
+});
 
-} else {
 
-    productosGrid.innerHTML = productosDeLaMarca
+const crearTarjetaProducto = (producto) => {
+
+    const agotado =
+        producto.stock === 0;
+
+    const textoBoton =
+        agotado
+            ? "Agotado"
+            : "Agregar al carrito";
+
+
+    const nombreDisenador =
+        nombresDisenadores[producto.disenador] ||
+        producto.disenador ||
+        "";
+
+
+    const esProductoArabe =
+        !esPaginaInspiraciones &&
+        ["perfumes-grandes", "decants"]
+            .includes(producto.categoria);
+
+
+    const textoSuperior =
+        esPaginaInspiraciones
+            ? nombreDisenador
+            : esProductoArabe
+                ? producto.marca
+                : "";
+
+
+    const etiquetaSuperior =
+    textoSuperior
+        ? `
+            <p class="producto-disenador">
+                ${escaparHTML(textoSuperior)}
+            </p>
+        `
+        : "";
+
+
+const nombreVisible =
+    !esPaginaInspiraciones &&
+    ["perfumes-grandes", "decants"].includes(producto.categoria) &&
+    producto.marca &&
+    producto.nombre
+        .toLowerCase()
+        .startsWith(producto.marca.toLowerCase())
+        ? producto.nombre
+            .slice(producto.marca.length)
+            .trim()
+        : producto.nombre;
+
+
+return `
+    <div
+        class="producto-card"
+        data-slug="${escaparHTML(producto.slug)}"
+    >
+
+        ${etiquetaSuperior}
+
+        <img
+            src="${escaparHTML(producto.imagen)}"
+            alt="${escaparHTML(producto.nombre)}"
+        >
+
+        <h3>
+            ${escaparHTML(nombreVisible)}
+        </h3>
+
+        ${crearPrecioCatalogo(producto)}
+
+        ${crearTextoStock(producto)}
+
+        <a
+            href="producto.html?slug=${encodeURIComponent(producto.id)}"
+            class="boton-producto"
+        >
+            Ver producto
+        </a>
+
+        <button
+            type="button"
+            class="agregar-carrito agregar-carrito-card"
+            data-slug="${escaparHTML(producto.slug)}"
+            data-nombre="${escaparHTML(producto.nombre)}"
+            data-categoria="${escaparHTML(producto.categoria)}"
+            data-precio-minorista="${producto.precioMinorista}"
+            data-precio-mayorista="${producto.precioMayorista}"
+            data-imagen="${escaparHTML(producto.imagen)}"
+            data-stock="${producto.stock ?? ""}"
+            ${agotado ? "disabled" : ""}
+        >
+
+            <svg
+                class="icono-carrito"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path d="M3 3h2l2.2 10.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.6L20 7H7"></path>
+                <circle cx="10" cy="20" r="1"></circle>
+                <circle cx="18" cy="20" r="1"></circle>
+            </svg>
+
+            ${textoBoton}
+
+        </button>
+
+    </div>
+`;
+};
+
+
+    productosGrid.innerHTML =
+    productosDeLaMarca
         .map(crearTarjetaProducto)
         .join("");
-}
 }
 // =============================
 // FICHA INDIVIDUAL DEL PRODUCTO
@@ -868,29 +1147,51 @@ function crearMensajeMayorista() {
 function actualizarCarrito() {
     const cantidadTotal = obtenerCantidadTotal();
 
+    const bloquePagoTransferencia =
+        document.getElementById("carrito-pago-transferencia");
+
+    /*
+        Si el bloque de pago estaba dentro de la zona de productos,
+        lo sacamos momentáneamente antes de volver a dibujar el carrito.
+    */
+    if (
+        bloquePagoTransferencia &&
+        bloquePagoTransferencia.parentElement === carritoProductos
+    ) {
+        bloquePagoTransferencia.remove();
+    }
+
+
     if (contadorCarrito) {
         contadorCarrito.textContent = cantidadTotal;
     }
 
+
     if (carritoProductos) {
+
         if (carrito.length === 0) {
+
             carritoProductos.innerHTML = `
                 <p class="carrito-vacio">
                     Tu carrito está vacío.
                 </p>
             `;
+
         } else {
+
             carritoProductos.innerHTML = carrito
                 .map((producto, indice) => {
+
                     const precioUnitario =
                         obtenerPrecioUnitario(producto);
 
                     const tipoPrecio =
                         obtenerTipoPrecio(producto);
 
-                    const regla = obtenerReglaCategoria(
-                        producto.categoria
-                    );
+                    const regla =
+                        obtenerReglaCategoria(
+                            producto.categoria
+                        );
 
                     const puedeSumar =
                         producto.stock === null ||
@@ -900,6 +1201,7 @@ function actualizarCarrito() {
                         producto.stock === null
                             ? "Stock a confirmar"
                             : `Stock: ${producto.stock}`;
+
 
                     return `
                         <div class="carrito-item">
@@ -911,7 +1213,9 @@ function actualizarCarrito() {
 
                             <div class="carrito-item-info">
 
-                                <h3>${escaparHTML(producto.nombre)}</h3>
+                                <h3>
+                                    ${escaparHTML(producto.nombre)}
+                                </h3>
 
                                 <small>
                                     ${escaparHTML(regla.nombre)}
@@ -937,7 +1241,9 @@ function actualizarCarrito() {
                                         −
                                     </button>
 
-                                    <span>${producto.cantidad}</span>
+                                    <span>
+                                        ${producto.cantidad}
+                                    </span>
 
                                     <button
                                         type="button"
@@ -967,12 +1273,42 @@ function actualizarCarrito() {
                 })
                 .join("");
         }
+
+
+        /*
+            Con productos:
+            el pago queda debajo de los productos y hace scroll con ellos.
+
+            Sin productos:
+            vuelve al resumen pero queda oculto.
+        */
+        if (bloquePagoTransferencia) {
+
+            if (carrito.length > 0) {
+
+                bloquePagoTransferencia.hidden = false;
+
+                carritoProductos.appendChild(
+                    bloquePagoTransferencia
+                );
+
+            } else {
+
+                bloquePagoTransferencia.hidden = true;
+
+                resumenCarritoPago?.prepend(
+                    bloquePagoTransferencia
+                );
+            }
+        }
     }
+
 
     if (mensajeMayorista) {
         mensajeMayorista.textContent =
             crearMensajeMayorista();
     }
+
 
     const total = carrito.reduce(
         (acumulado, producto) =>
@@ -982,8 +1318,10 @@ function actualizarCarrito() {
         0
     );
 
+
     if (carritoTotal) {
-        carritoTotal.textContent = formatearPrecio(total);
+        carritoTotal.textContent =
+            formatearPrecio(total);
     }
 }
 
@@ -1186,6 +1524,7 @@ carritoProductos?.addEventListener("click", (evento) => {
 
 function crearMensajePedido() {
     const cantidadTotal = obtenerCantidadTotal();
+    
 
     let mensaje =
         "Hola, quiero realizar el siguiente pedido:\n\n";
