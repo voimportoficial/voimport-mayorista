@@ -1705,24 +1705,73 @@ if (cambiarPresentacion) {
 
     cambiarPresentacion.addEventListener("click", () => {
 
+        const esPaginaInspiraciones =
+            document.body.dataset.linea === "inspiraciones";
+
         const viendoDecants =
             document.body.dataset.categoria === "decants";
 
-        if (viendoDecants) {
 
-            document.body.dataset.categoria = "perfumes-grandes";
+        if (esPaginaInspiraciones) {
 
-            cambiarPresentacion.textContent =
-                "Ver Decants 5 ml";
+            const tituloInspiraciones =
+                document.getElementById(
+                    "titulo-inspiraciones-listado"
+                );
+
+            if (viendoDecants) {
+
+                document.body.dataset.categoria =
+                    "inspiraciones-disenador";
+
+                document.body.dataset.tipo =
+                    "perfume";
+
+                cambiarPresentacion.textContent =
+                    "Ver Decants 5 ml";
+
+                if (tituloInspiraciones) {
+                    tituloInspiraciones.textContent =
+                        "Perfumes inspirados en diseñador";
+                }
+
+            } else {
+
+                document.body.dataset.categoria =
+                    "decants";
+
+                document.body.dataset.tipo =
+                    "decant";
+
+                cambiarPresentacion.textContent =
+                    "← Volver a perfumes";
+
+                if (tituloInspiraciones) {
+                    tituloInspiraciones.textContent =
+                        "Decants 5 ml inspirados en diseñador";
+                }
+            }
 
         } else {
 
-            document.body.dataset.categoria = "decants";
+            if (viendoDecants) {
 
-            cambiarPresentacion.textContent =
-                "← Volver a perfumes";
+                document.body.dataset.categoria =
+                    "perfumes-grandes";
 
+                cambiarPresentacion.textContent =
+                    "Ver Decants 5 ml";
+
+            } else {
+
+                document.body.dataset.categoria =
+                    "decants";
+
+                cambiarPresentacion.textContent =
+                    "← Volver a perfumes";
+            }
         }
+
 
         generarCatalogo();
 

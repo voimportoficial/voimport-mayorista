@@ -3183,3 +3183,7 @@ body[data-categoria="decants"]:not([data-linea="inspiraciones"]) .producto-disen
 .producto-disenador {
     margin-bottom: 46px;
 }
+body[data-linea="inspiraciones"] #cambiar-presentacion {
+    display: block;
+    margin: 0 auto 28px;
+}
