@@ -139,10 +139,10 @@ if (
             id="carrito-pago-transferencia"
         >
 
-            <h3>¿Querés reservar tu pedido?</h3>
+            <h3>¿Querés confirmar tu pedido?</h3>
 
             <p class="carrito-pago-texto">
-                Podés abonar por transferencia y asegurar tus productos.
+                Podés abonar por transferencia para confirmar tu pedido.
             </p>
 
             <div class="carrito-dato-pago">
@@ -177,7 +177,7 @@ if (
             </div>
 
             <p class="carrito-reserva-aviso">
-                La reserva se confirma una vez recibido y verificado el pago.
+                El pedido queda confirmado una vez recibido y verificado el pago.
             </p>
 
             <button
@@ -192,6 +192,7 @@ if (
         `
     );
 }
+
 // =============================
 // COPIAR ALIAS
 // =============================
