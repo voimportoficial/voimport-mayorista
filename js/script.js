@@ -1540,7 +1540,34 @@ carritoProductos?.addEventListener("click", (evento) => {
 
 function crearMensajePedido() {
     const cantidadTotal = obtenerCantidadTotal();
-    
+
+    const nombresDisenadoresPedido = {
+        "armani": "Giorgio Armani",
+        "azzaro": "Azzaro",
+        "bvlgari": "Bvlgari",
+        "cacharel": "Cacharel",
+        "carolina-herrera": "Carolina Herrera",
+        "chanel": "Chanel",
+        "creed": "Creed",
+        "dior": "Christian Dior",
+        "dolce-gabbana": "Dolce & Gabbana",
+        "francis-kurkdjian": "Francis Kurkdjian",
+        "jean-paul-gaultier": "Jean Paul Gaultier",
+        "kenzo": "Kenzo",
+        "lancome": "Lancôme",
+        "louis-vuitton": "Louis Vuitton",
+        "moschino": "Moschino",
+        "nina-ricci": "Nina Ricci",
+        "paco-rabanne": "Paco Rabanne",
+        "ralph-lauren": "Ralph Lauren",
+        "thierry-mugler": "Thierry Mugler",
+        "tom-ford": "Tom Ford",
+        "valentino": "Valentino",
+        "versace": "Versace",
+        "viktor-rolf": "Viktor & Rolf",
+        "xerjoff": "Xerjoff",
+        "yves-saint-laurent": "Yves Saint Laurent"
+    };
 
     let mensaje =
         "Hola, quiero realizar el siguiente pedido:\n\n";
@@ -1552,19 +1579,98 @@ function crearMensajePedido() {
         const tipoPrecio =
             obtenerTipoPrecio(producto);
 
-        const regla = obtenerReglaCategoria(
-            producto.categoria
-        );
-
         const subtotal =
             precioUnitario * producto.cantidad;
 
-        mensaje += `${indice + 1}. ${producto.nombre}\n`;
-        mensaje += `Categoría: ${regla.nombre}\n`;
-        mensaje += `Cantidad: ${producto.cantidad}\n`;
-        mensaje += `Precio aplicado: ${tipoPrecio}\n`;
-        mensaje += `Precio unitario: ${formatearPrecio(precioUnitario)}\n`;
-        mensaje += `Subtotal: ${formatearPrecio(subtotal)}\n\n`;
+        const productoActual =
+            buscarProductoActual({
+                slug: producto.slug,
+                nombre: producto.nombre
+            });
+
+        const disenador =
+            productoActual?.disenador || "";
+
+        const nombreDisenador =
+            nombresDisenadoresPedido[disenador] ||
+            disenador ||
+            "";
+
+        const esInspiracion =
+            producto.categoria === "inspiraciones-disenador" ||
+            (
+                producto.categoria === "decants" &&
+                productoActual?.linea === "inspiraciones"
+            );
+
+        let nombreCompleto =
+            producto.nombre;
+
+        if (esInspiracion && nombreDisenador) {
+            const nombreProductoNormalizado =
+                producto.nombre
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "");
+
+            const disenadorNormalizado =
+                nombreDisenador
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "");
+
+            if (
+                !nombreProductoNormalizado.startsWith(
+                    disenadorNormalizado
+                )
+            ) {
+                nombreCompleto =
+                    `${nombreDisenador} ${producto.nombre}`;
+            }
+        }
+
+        let categoriaTexto = "";
+
+        if (producto.categoria === "perfumes-grandes") {
+            categoriaTexto = "Perfume árabe";
+        }
+
+        if (producto.categoria === "maison-30ml") {
+            categoriaTexto = "Maison Alhambra 30 ml";
+        }
+
+        if (producto.categoria === "inspiraciones-disenador") {
+            categoriaTexto = "Inspiración 60 ml";
+        }
+
+        if (producto.categoria === "decants") {
+            categoriaTexto = "Decant 5 ml";
+        }
+
+        mensaje +=
+            `${indice + 1}. ${nombreCompleto}\n`;
+
+        mensaje +=
+            `${categoriaTexto} · ${producto.cantidad} ${
+                producto.cantidad === 1 ? "u" : "u"
+            }`;
+
+        if (tipoPrecio !== "Precio único") {
+            mensaje += ` · ${tipoPrecio}`;
+        }
+
+        mensaje += "\n";
+
+        if (producto.cantidad === 1) {
+            mensaje +=
+                `${formatearPrecio(precioUnitario)}\n\n`;
+        } else {
+            mensaje +=
+                `${formatearPrecio(precioUnitario)} c/u\n`;
+
+            mensaje +=
+                `Subtotal: ${formatearPrecio(subtotal)}\n\n`;
+        }
     });
 
     const total = carrito.reduce(
@@ -1575,13 +1681,18 @@ function crearMensajePedido() {
         0
     );
 
-    mensaje += `Cantidad total: ${cantidadTotal} unidades\n`;
-    mensaje += `Total del pedido: ${formatearPrecio(total)}\n\n`;
+    mensaje +=
+        `Total: ${cantidadTotal} unidades\n`;
+
+    mensaje +=
+        `Total del pedido: ${formatearPrecio(total)}\n\n`;
+
     mensaje +=
         "Quedo a la espera para coordinar el pago y la entrega.";
 
     return mensaje;
 }
+
 
 botonFinalizarPedido?.addEventListener("click", () => {
     if (carrito.length === 0) {
