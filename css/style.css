@@ -3187,3 +3187,9 @@ body[data-linea="inspiraciones"] #cambiar-presentacion {
     display: block;
     margin: 0 auto 28px;
 }
+/* Precio dorado para todos los Decants */
+.producto-card:has(.agregar-carrito[data-categoria="decants"])
+.producto-precio.minorista {
+    color: #d4af37;
+    font-weight: 700;
+}
