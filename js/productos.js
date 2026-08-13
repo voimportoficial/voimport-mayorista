@@ -5125,7 +5125,7 @@ const productos = [
 },
 {
     id: "inspiracion-scandal-mujer-60ml",
-    nombre: "Scandal Mujer",
+    nombre: "Scandal Woman",
     marca: "VO Import",
     categoria: "inspiraciones-disenador",
     linea: "inspiraciones",
@@ -5189,7 +5189,7 @@ const productos = [
 },
 {
     id: "inspiracion-212-vip-60ml",
-    nombre: "212 VIP",
+    nombre: "212 Heroes Woman",
     marca: "VO Import",
     categoria: "inspiraciones-disenador",
     linea: "inspiraciones",
@@ -5429,7 +5429,7 @@ const productos = [
 },
 {
     id: "inspiracion-light-blue-60ml",
-    nombre: "Dolce & Gabbana Light Blue",
+    nombre: "Light Blue",
     marca: "VO Import",
     categoria: "inspiraciones-disenador",
     linea: "inspiraciones",
@@ -5557,7 +5557,7 @@ const productos = [
 },
 {
     id: "inspiracion-flower-by-kenzo-60ml",
-    nombre: "Flower by Kenzo",
+    nombre: "Flower",
     marca: "VO Import",
     categoria: "inspiraciones-disenador",
     linea: "inspiraciones",
@@ -5637,7 +5637,7 @@ const productos = [
 },
 {
     id: "inspiracion-kenzo-homme-60ml",
-    nombre: "Kenzo Homme",
+    nombre: "Homme",
     marca: "VO Import",
     categoria: "inspiraciones-disenador",
     linea: "inspiraciones",
@@ -5685,7 +5685,7 @@ const productos = [
 },
 {
     id: "inspiracion-valentino-born-in-roma-60ml",
-    nombre: "Valentino Born in Roma",
+    nombre: "Born in Roma",
     marca: "VO Import",
     categoria: "inspiraciones-disenador",
     linea: "inspiraciones",
@@ -5829,7 +5829,7 @@ const productos = [
 },
 {
     id: "inspiracion-ch-carolina-herrera-60ml",
-    nombre: "CH Carolina Herrera",
+    nombre: "CH",
     marca: "VO Import",
     categoria: "inspiraciones-disenador",
     linea: "inspiraciones",

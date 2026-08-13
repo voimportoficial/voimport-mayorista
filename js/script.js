@@ -770,43 +770,57 @@ function generarCatalogo() {
     }
 
     const esInspiracion =
-        lineaActual === "inspiraciones" &&
-        ["perfume", "decant"].includes(tipoActual);
+    lineaActual === "inspiraciones" &&
+    ["perfume", "decant"].includes(tipoActual);
 
-    if (esInspiracion) {
 
-        const disenadorA =
-            String(productoA.disenador || "");
+if (esInspiracion) {
 
-        const disenadorB =
-            String(productoB.disenador || "");
+    const disenadorA =
+        productoA.disenador === "armani"
+            ? "Giorgio Armani"
+            : productoA.disenador === "dior"
+                ? "Christian Dior"
+                : String(productoA.disenador || "");
 
-        const ordenDisenador =
-            disenadorA.localeCompare(
-                disenadorB,
-                "es",
-                {
-                    sensitivity: "base"
-                }
-            );
+    const disenadorB =
+        productoB.disenador === "armani"
+            ? "Giorgio Armani"
+            : productoB.disenador === "dior"
+                ? "Christian Dior"
+                : String(productoB.disenador || "");
 
-        if (ordenDisenador !== 0) {
-            return ordenDisenador;
-        }
+
+    const ordenDisenador =
+        disenadorA.localeCompare(
+            disenadorB,
+            "es",
+            {
+                sensitivity: "base"
+            }
+        );
+
+
+    if (ordenDisenador !== 0) {
+        return ordenDisenador;
     }
+}
 
-    return productoA.nombre.localeCompare(
-        productoB.nombre,
-        "es",
-        {
-            numeric: true,
-            sensitivity: "base"
-        }
-    );
+
+return productoA.nombre.localeCompare(
+    productoB.nombre,
+    "es",
+    {
+        numeric: true,
+        sensitivity: "base"
+    }
+);
+
 });
 
 
 if (productosDeLaMarca.length === 0) {
+
     productosGrid.innerHTML = `
         <p class="catalogo-vacio">
             No hay productos disponibles en este momento.
@@ -823,14 +837,14 @@ const esPaginaInspiraciones =
 
 
 const nombresDisenadores = {
-    "armani": "Armani",
+    "armani": "Giorgio Armani",
     "azzaro": "Azzaro",
     "bvlgari": "Bvlgari",
     "cacharel": "Cacharel",
     "carolina-herrera": "Carolina Herrera",
     "chanel": "Chanel",
     "creed": "Creed",
-    "dior": "Dior",
+    "dior": "Christian Dior",
     "dolce-gabbana": "Dolce & Gabbana",
     "francis-kurkdjian": "Francis Kurkdjian",
     "jean-paul-gaultier": "Jean Paul Gaultier",
