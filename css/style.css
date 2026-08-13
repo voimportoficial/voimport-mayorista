@@ -1184,6 +1184,9 @@ h1 {
     border-radius: 18px;
     overflow: hidden;
 }
+.producto-card .boton-producto {
+    margin-top: auto;
+}
 
 .producto-card img {
     width: 100%;
@@ -3175,4 +3178,8 @@ body[data-categoria="decants"]:not([data-linea="inspiraciones"]) .producto-disen
             transparent 78%
         ),
         #111111;
+}
+.producto-card:has(.agregar-carrito[data-categoria="decants"])
+.producto-disenador {
+    margin-bottom: 46px;
 }

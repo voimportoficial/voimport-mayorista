@@ -650,6 +650,7 @@ function crearPrecioCatalogo(producto) {
         </p>
     `;
 }
+
 function generarCatalogo() {
     if (!productosGrid) return;
 
@@ -688,8 +689,9 @@ function generarCatalogo() {
                 producto.marca === marcaActual;
 
             const coincideCategoria =
-                !categoriaActual ||
-                producto.categoria === categoriaActual;
+    terminoBusqueda
+        ? true
+        : !categoriaActual || producto.categoria === categoriaActual;
 
             const coincideLinea =
                 !lineaActual ||
@@ -900,9 +902,9 @@ const crearTarjetaProducto = (producto) => {
 
 
     const esProductoArabe =
-        !esPaginaInspiraciones &&
-        ["perfumes-grandes", "decants"]
-            .includes(producto.categoria);
+    !esPaginaInspiraciones &&
+    ["perfumes-grandes", "decants", "maison-30ml"]
+        .includes(producto.categoria);
 
 
     const textoSuperior =
@@ -925,7 +927,7 @@ const crearTarjetaProducto = (producto) => {
 
 const nombreVisible =
     !esPaginaInspiraciones &&
-    ["perfumes-grandes", "decants"].includes(producto.categoria) &&
+    ["perfumes-grandes", "decants", "maison-30ml"].includes(producto.categoria) &&
     producto.marca &&
     producto.nombre
         .toLowerCase()
