@@ -1522,18 +1522,109 @@ function agregarProductoAlCarrito(boton) {
         });
     }
 
-    guardarCarrito();
-    actualizarCarrito();
+   guardarCarrito();
+actualizarCarrito();
 
-    const contenidoOriginal = boton.innerHTML;
-    boton.textContent = "Agregado ✓";
+const contenidoOriginal = boton.innerHTML;
+boton.textContent = "Agregado ✓";
 
-    setTimeout(() => {
-        boton.innerHTML = contenidoOriginal;
-    }, 900);
+setTimeout(() => {
+    boton.innerHTML = contenidoOriginal;
+}, 900);
+
+
+// Mostramos aviso visual de producto agregado
+mostrarAvisoCarritoAgregado();
+
+
+// Cantidad total de unidades que hay en el carrito
+const cantidadTotalCarrito = carrito.reduce(
+    (total, producto) => {
+        return total + (Number(producto.cantidad) || 0);
+    },
+    0
+);
+
+
+// Si es el primer producto, abrimos el carrito.
+// Desde el segundo en adelante, solo animamos el botón.
+if (cantidadTotalCarrito === 1) {
 
     abrirCarrito();
+
+} else {
+
+    if (botonAbrirCarrito) {
+
+        botonAbrirCarrito.classList.remove("carrito-agregado");
+
+        void botonAbrirCarrito.offsetWidth;
+
+        botonAbrirCarrito.classList.add("carrito-agregado");
+
+        setTimeout(() => {
+            botonAbrirCarrito.classList.remove("carrito-agregado");
+        }, 700);
+    }
+
 }
+
+}
+
+
+// =============================
+// AVISO PRODUCTO AGREGADO
+// =============================
+
+let temporizadorAvisoCarrito;
+
+function mostrarAvisoCarritoAgregado() {
+
+    let aviso = document.getElementById(
+        "aviso-carrito-agregado"
+    );
+
+    if (!aviso) {
+
+        aviso = document.createElement("div");
+
+        aviso.id = "aviso-carrito-agregado";
+        aviso.className = "aviso-carrito-agregado";
+
+        aviso.setAttribute("role", "status");
+        aviso.setAttribute("aria-live", "polite");
+
+        aviso.innerHTML = `
+            <span class="aviso-carrito-check">✓</span>
+
+            <span class="aviso-carrito-texto">
+                Agregado al carrito
+            </span>
+
+            <strong class="aviso-carrito-cantidad">
+                +1
+            </strong>
+        `;
+
+        document.body.appendChild(aviso);
+    }
+
+
+    clearTimeout(temporizadorAvisoCarrito);
+
+    aviso.classList.remove("visible");
+
+    void aviso.offsetWidth;
+
+    aviso.classList.add("visible");
+
+
+    temporizadorAvisoCarrito = setTimeout(() => {
+        aviso.classList.remove("visible");
+    }, 1300);
+
+}
+
 
 // Delegación de eventos: funciona también con tarjetas creadas automáticamente.
 document.addEventListener("click", (evento) => {

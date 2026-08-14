@@ -934,14 +934,14 @@ h1 {
     width: fit-content;
     margin: 0 auto 45px auto;
 
-    padding: 14px 28px;
+    padding: 0;
 
-    border: 1px solid rgba(212, 175, 55, 0.75);
-    border-radius: 10px;
+    border: none;
+    border-radius: 0;
 
-    background: rgba(212, 175, 55, 0.03);
+    background: transparent;
 
-    box-shadow: 0 0 18px rgba(212, 175, 55, 0.08);
+    box-shadow: none;
 }
 
 .categorias-grid {
@@ -2717,17 +2717,17 @@ h1 {
     width: fit-content;
     margin: 0 auto 45px auto;
 
-    padding: 14px 28px;
+    padding: 0;
 
-    border: 1px solid rgba(212, 175, 55, 0.75);
-    border-radius: 10px;
+    border: none;
+    border-radius: 0;
 
-    background: rgba(212, 175, 55, 0.03);
+    background: transparent;
 
-    box-shadow: 0 0 18px rgba(212, 175, 55, 0.08);
+    box-shadow: none;
 
     position: relative;
-    top: -105px;
+    top: -120px;
 }
 
 /* MARCAS - 5 POR FILA */
@@ -2803,14 +2803,14 @@ h1 {
     width: fit-content;
 
     margin: 0 auto 28px auto !important;
-    padding: 14px 28px;
+    padding: 0;
 
-    border: 1px solid rgba(212, 175, 55, 0.75);
-    border-radius: 10px;
+    border: none;
+    border-radius: 0;
 
-    background: rgba(212, 175, 55, 0.03);
+    background: transparent;
 
-    box-shadow: 0 0 18px rgba(212, 175, 55, 0.08);
+    box-shadow: none;
 
     position: static !important;
     top: auto !important;
@@ -2924,11 +2924,11 @@ h1 {
 .titulo-dorado-seccion {
     width: fit-content;
     margin: 0 auto 30px;
-    padding: 12px 24px;
+    padding: 0;
     color: #d4af37;
-    border: 1px solid rgba(212, 175, 55, 0.65);
-    border-radius: 14px;
-    background: #111111;
+    border: none;
+    border-radius: 0;
+    background: transparent;
     text-align: center;
 }
 .titulo-disenador {
@@ -3447,7 +3447,7 @@ body[data-linea="inspiraciones"] #cambiar-presentacion {
 
     .catalog h2 {
         position: relative !important;
-        top: 0 !important;
+        top: -15px !important;
 
         font-size: 25px !important;
         line-height: 1.15;
@@ -4230,9 +4230,18 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
 @media (max-width: 768px) {
 
     .pagina-inspiraciones .inspiraciones-tipos-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 12px !important;
-    }
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+
+    width: calc(100% - 28px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+.pagina-inspiraciones .disenadores-grid {
+    width: calc(100% - 28px) !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
 
     .pagina-inspiraciones .inspiracion-tipo-card {
         min-height: 0 !important;
@@ -4360,4 +4369,132 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
         border-radius: 9px;
     }
 
+}
+/* ===== ANIMACIÓN CARRITO AL AGREGAR PRODUCTO - PC Y MOBILE ===== */
+
+.boton-carrito.carrito-agregado {
+    animation: carritoAgregado 0.7s ease;
+}
+
+.boton-carrito.carrito-agregado #contador-carrito {
+    animation: contadorCarritoAgregado 0.7s ease;
+}
+
+@keyframes carritoAgregado {
+
+    0% {
+        transform: scale(1);
+    }
+
+    35% {
+        transform: scale(1.18);
+        box-shadow: 0 0 0 5px rgba(212, 175, 55, 0.18);
+    }
+
+    65% {
+        transform: scale(0.96);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: none;
+    }
+}
+
+@keyframes contadorCarritoAgregado {
+
+    0% {
+        transform: scale(1);
+    }
+
+    40% {
+        transform: scale(1.45);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+/* ===== AVISO FLOTANTE PRODUCTO AGREGADO - PC Y MOBILE ===== */
+
+.aviso-carrito-agregado {
+    position: fixed;
+    left: 50%;
+    bottom: 28px;
+
+    transform: translate(-50%, 20px) scale(0.96);
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 12px 16px;
+
+    background: rgba(12, 12, 12, 0.96);
+    border: 1px solid rgba(212, 175, 55, 0.65);
+    border-radius: 12px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    z-index: 5000;
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease,
+        visibility 0.25s ease;
+}
+
+.aviso-carrito-agregado.visible {
+    opacity: 1;
+    visibility: visible;
+
+    transform: translate(-50%, 0) scale(1);
+}
+
+.aviso-carrito-check {
+    color: #d4af37;
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.aviso-carrito-cantidad {
+    color: #d4af37;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+
+/* ===== AVISO FLOTANTE MOBILE ===== */
+
+@media (max-width: 768px) {
+
+    .aviso-carrito-agregado {
+        bottom: 22px;
+
+        width: calc(100% - 36px);
+        max-width: 340px;
+
+        justify-content: center;
+
+        padding: 11px 14px;
+
+        font-size: 13px;
+    }
+
+    .aviso-carrito-check {
+        font-size: 17px;
+    }
+
+    .aviso-carrito-cantidad {
+        font-size: 15px;
+    }
 }
