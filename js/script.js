@@ -247,12 +247,26 @@ botonEnviarComprobante?.addEventListener("click", () => {
         return;
     }
 
+    const detallePedido = crearMensajePedido()
+        .replace(
+            "Hola, quiero realizar el siguiente pedido:\n\n",
+            ""
+        )
+        .replace(
+            "\n\nQuedo a la espera para coordinar el pago y la entrega.",
+            ""
+        );
+
     const mensaje = encodeURIComponent(
-        `Hola, realicé la transferencia para reservar mi pedido.
+        `Hola, realicé la transferencia para confirmar mi pedido.
 
-${crearMensajePedido()}
+Detalle del pedido:
 
-Adjunto el comprobante de pago.`
+${detallePedido}
+
+Adjunto el comprobante de pago.
+
+Quedo a la espera de la confirmación y para coordinar la entrega.`
     );
 
     const enlaceWhatsApp =
