@@ -66,60 +66,80 @@ if (!document.getElementById("abrir-carrito")) {
 
 
         <aside
-            class="carrito-panel"
-            id="carrito-panel"
+    class="carrito-panel"
+    id="carrito-panel"
+>
+
+
+    <div class="carrito-encabezado">
+
+
+        <h2>Mi carrito</h2>
+
+
+        <button
+            type="button"
+            class="cerrar-carrito"
+            id="cerrar-carrito"
+            aria-label="Cerrar carrito"
         >
-
-            <div class="carrito-encabezado">
-
-                <h2>Mi carrito</h2>
-
-                <button
-                    type="button"
-                    class="cerrar-carrito"
-                    id="cerrar-carrito"
-                    aria-label="Cerrar carrito"
-                >
-                    ×
-                </button>
-
-            </div>
+            ×
+        </button>
 
 
-            <div
-                class="carrito-productos"
-                id="carrito-productos"
-            >
-                <p class="carrito-vacio">
-                    Tu carrito está vacío.
-                </p>
-            </div>
+    </div>
 
 
-            <div class="carrito-resumen">
 
-                <p id="mensaje-mayorista">
-                    Los mínimos mayoristas se calculan por categoría.
-                </p>
+    <div
+        class="carrito-productos"
+        id="carrito-productos"
+    >
+        <p class="carrito-vacio">
+            Tu carrito está vacío.
+        </p>
+    </div>
 
-                <div class="carrito-total">
-                    <span>Total</span>
-                    <strong id="carrito-total">$0</strong>
-                </div>
 
-                <button
-                    type="button"
-                    class="finalizar-pedido"
-                    id="finalizar-pedido"
-                >
-                    Finalizar pedido
-                </button>
 
-            </div>
+    <div class="carrito-resumen">
 
-        </aside>
-        `
-    );
+
+        <p id="mensaje-mayorista">
+            Los mínimos mayoristas se calculan por categoría.
+        </p>
+
+
+        <button
+            type="button"
+            class="vaciar-carrito"
+            id="vaciar-carrito"
+        >
+            Vaciar carrito
+        </button>
+
+
+        <div class="carrito-total">
+            <span>Total</span>
+            <strong id="carrito-total">$0</strong>
+        </div>
+
+
+        <button
+            type="button"
+            class="finalizar-pedido"
+            id="finalizar-pedido"
+        >
+            Finalizar pedido
+        </button>
+
+
+    </div>
+
+
+</aside>
+`
+);
 }
 // =============================
 // PAGO POR TRANSFERENCIA
@@ -264,7 +284,39 @@ const carritoProductos = document.getElementById("carrito-productos");
 const contadorCarrito = document.getElementById("contador-carrito");
 const carritoTotal = document.getElementById("carrito-total");
 const mensajeMayorista = document.getElementById("mensaje-mayorista");
-const botonFinalizarPedido = document.getElementById("finalizar-pedido");
+// =============================
+// BOTÓN VACIAR CARRITO GLOBAL
+// =============================
+
+const carritoResumen = document.querySelector(".carrito-resumen");
+
+if (
+    carritoResumen &&
+    !document.getElementById("vaciar-carrito")
+) {
+    const nuevoBotonVaciar = document.createElement("button");
+
+    nuevoBotonVaciar.type = "button";
+    nuevoBotonVaciar.className = "vaciar-carrito";
+    nuevoBotonVaciar.id = "vaciar-carrito";
+    nuevoBotonVaciar.textContent = "Vaciar carrito";
+
+    const carritoTotal =
+        carritoResumen.querySelector(".carrito-total");
+
+    if (carritoTotal) {
+        carritoResumen.insertBefore(
+            nuevoBotonVaciar,
+            carritoTotal
+        );
+    }
+}
+
+const botonVaciarCarrito =
+    document.getElementById("vaciar-carrito");
+
+const botonFinalizarPedido =
+    document.getElementById("finalizar-pedido");
 
 
 // =============================
@@ -1540,6 +1592,31 @@ carritoProductos?.addEventListener("click", (evento) => {
     actualizarCarrito();
 });
 
+// =============================
+// VACIAR CARRITO
+// =============================
+
+botonVaciarCarrito?.addEventListener("click", () => {
+
+    if (carrito.length === 0) {
+        alert("Tu carrito ya está vacío.");
+        return;
+    }
+
+    const confirmarVaciado = window.confirm(
+        "¿Querés vaciar todo el carrito?"
+    );
+
+    if (!confirmarVaciado) {
+        return;
+    }
+
+    carrito.length = 0;
+
+    guardarCarrito();
+    actualizarCarrito();
+
+});
 
 // =============================
 // FINALIZAR PEDIDO POR WHATSAPP
