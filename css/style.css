@@ -3220,6 +3220,32 @@ body[data-linea="inspiraciones"] #cambiar-presentacion {
     z-index: 2000;
 }
 
+.nav-links.active > a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 48px;
+    padding: 10px 8px;
+
+    background: #0d0d0d;
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    border-radius: 12px;
+
+    color: #ffffff;
+    text-decoration: none;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    transition: 0.25s ease;
+}
+
+.nav-links.active > a:active {
+    border-color: #d4af37;
+    background: #14110a;
+}
+
 .nav-links.active .boton-buscador {
     grid-column: 1 / -1;
     justify-self: center;
