@@ -2306,3 +2306,105 @@ if (enlaceVolverProducto) {
     });
 
 }
+// =============================
+// AVISO DE SCROLL EN EL CARRITO
+// =============================
+
+function configurarAvisoScrollCarrito() {
+
+    const carritoProductos =
+        document.querySelector(".carrito-productos");
+
+    if (!carritoProductos) {
+        return;
+    }
+
+
+    let avisoScroll =
+        document.getElementById("aviso-scroll-carrito");
+
+
+    if (!avisoScroll) {
+
+        avisoScroll = document.createElement("div");
+
+        avisoScroll.id = "aviso-scroll-carrito";
+        avisoScroll.className = "aviso-scroll-carrito";
+
+        avisoScroll.innerHTML = `
+            <span>Deslizá para ver más</span>
+            <span class="aviso-scroll-flecha">↓</span>
+        `;
+
+
+        carritoProductos.insertAdjacentElement(
+            "afterend",
+            avisoScroll
+        );
+
+    }
+
+
+    function actualizarAvisoScroll() {
+
+        const tieneScroll =
+            carritoProductos.scrollHeight >
+            carritoProductos.clientHeight + 5;
+
+        const llegoAlFinal =
+            carritoProductos.scrollTop +
+            carritoProductos.clientHeight >=
+            carritoProductos.scrollHeight - 8;
+
+
+        if (tieneScroll && !llegoAlFinal) {
+
+            avisoScroll.classList.add("visible");
+
+        } else {
+
+            avisoScroll.classList.remove("visible");
+
+        }
+
+    }
+
+
+    carritoProductos.addEventListener(
+        "scroll",
+        actualizarAvisoScroll,
+        { passive: true }
+    );
+
+
+    const observadorCarrito =
+        new MutationObserver(() => {
+
+            requestAnimationFrame(
+                actualizarAvisoScroll
+            );
+
+        });
+
+
+    observadorCarrito.observe(
+        carritoProductos,
+        {
+            childList: true,
+            subtree: true
+        }
+    );
+
+
+    window.addEventListener(
+        "resize",
+        actualizarAvisoScroll
+    );
+
+
+    actualizarAvisoScroll();
+
+}
+
+
+configurarAvisoScrollCarrito();
