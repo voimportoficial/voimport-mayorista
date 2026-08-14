@@ -2199,3 +2199,110 @@ function crearVolverFlotanteGlobal() {
 
 
 crearVolverFlotanteGlobal();
+// =============================
+// BARRA INFORMATIVA GLOBAL
+// =============================
+
+function crearBarraInformativaGlobal() {
+
+    let barra = document.querySelector(".mobile-topbar");
+
+    // Si la página no tiene la barra, la creamos automáticamente
+    if (!barra) {
+
+        barra = document.createElement("div");
+        barra.className = "mobile-topbar";
+
+        document.body.insertBefore(
+            barra,
+            document.body.firstChild
+        );
+    }
+
+
+    const mensajes = `
+        <span>◆ MAYORISTA DESDE 3 PERFUMES SURTIDOS ◆</span>
+        <span>◆ PERFUMES 100% ORIGINALES ◆</span>
+        <span>◆ TIENDA FÍSICA EN VILLA LUZURIAGA ◆</span>
+        <span>◆ ENVÍOS A TODO EL PAÍS ◆</span>
+        <span>◆ COMPRA MINORISTA Y MAYORISTA ◆</span>
+        <span>◆ INSPIRACIONES DE DISEÑADOR ◆</span>
+        <span>◆ DECANTS 5 ML PREMIUM ◆</span>
+        <span>◆ RETIRO DISPONIBLE ◆</span>
+    `;
+
+
+    barra.innerHTML = `
+        <div class="topbar-marquee">
+            <div class="topbar-track">
+
+                <div class="topbar-grupo">
+                    ${mensajes}
+                </div>
+
+                <div
+                    class="topbar-grupo"
+                    aria-hidden="true"
+                >
+                    ${mensajes}
+                </div>
+
+            </div>
+        </div>
+    `;
+
+}
+
+
+crearBarraInformativaGlobal();
+// =============================
+// VOLVER DESDE DETALLE DE PRODUCTO
+// =============================
+
+const enlaceVolverProducto =
+    document.getElementById("volver-marca");
+
+if (enlaceVolverProducto) {
+
+    const paginaAnterior = document.referrer;
+
+    let vieneDeLaWeb = false;
+
+    if (paginaAnterior) {
+
+        try {
+
+            const urlAnterior = new URL(paginaAnterior);
+
+            vieneDeLaWeb =
+                urlAnterior.origin === window.location.origin &&
+                urlAnterior.href !== window.location.href;
+
+        } catch (error) {
+            vieneDeLaWeb = false;
+        }
+
+    }
+
+
+    enlaceVolverProducto.addEventListener("click", (evento) => {
+
+        if (!vieneDeLaWeb) {
+            return;
+        }
+
+        evento.preventDefault();
+
+        if (window.history.length > 1) {
+
+            window.history.back();
+
+        } else {
+
+            window.location.href = paginaAnterior;
+
+        }
+
+    });
+
+}

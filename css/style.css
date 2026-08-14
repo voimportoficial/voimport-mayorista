@@ -122,36 +122,99 @@ h1 {
 
     transform: translateY(-3px);
 }
+/* ===== BARRA INFORMATIVA GLOBAL - PC Y MOBILE ===== */
+
 .mobile-topbar {
-    display: none;
+    display: block;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 36px;
+
+    overflow: hidden;
+
+    background: #111111;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.45);
+
+    color: #d4af37;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+
+    z-index: 5000;
 }
+
+.topbar-marquee {
+    width: 100%;
+    height: 100%;
+
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+}
+
+.topbar-track {
+    display: flex;
+    align-items: center;
+
+    width: max-content;
+    min-width: max-content;
+
+    white-space: nowrap;
+
+    animation: topbarMovimientoDerecha 38s linear infinite;
+}
+
+.topbar-grupo {
+    display: flex;
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+.topbar-grupo span {
+    display: inline-block;
+    margin-right: 46px;
+    white-space: nowrap;
+}
+
+@keyframes topbarMovimientoDerecha {
+
+    from {
+        transform: translateX(-50%);
+    }
+
+    to {
+        transform: translateX(0);
+    }
+}
+
+.mobile-topbar:hover .topbar-track {
+    animation-play-state: paused;
+}
+
+
+/* ===== MOBILE ===== */
+
 @media (max-width: 700px) {
 
     .mobile-topbar {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
+        height: 36px;
 
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 34px;
-
-        background: #111111;
-        border-bottom: 1px solid rgba(212, 175, 55, 0.45);
-
-        color: #d4af37;
         font-size: 11px;
-        font-weight: 700;
-        letter-spacing: 1px;
-
-        z-index: 2000;
+        letter-spacing: 0.7px;
     }
 
-    .mobile-topbar p {
-        margin: 0;
+    .topbar-grupo span {
+        margin-right: 34px;
+    }
+
+    .topbar-track {
+        animation-duration: 34s;
     }
 
     .hero {
@@ -4220,11 +4283,19 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
 /* ===== SUBIR TÍTULO DECANTS DE INSPIRACIONES MOBILE ===== */
 @media (max-width: 768px) {
 
-    body[data-linea="inspiraciones"][data-tipo="decant"] .productos h2 {
-    margin-top: -45px !important;
-    margin-bottom: 10px !important;
-}
+   body[data-linea="inspiraciones"][data-tipo="decant"] .productos h2 {
+    margin-top: 0 !important;
+    margin-bottom: 18px !important;
 
+    font-size: 32px !important;
+    line-height: 1.12 !important;
+
+    max-width: 360px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+
+    text-align: center !important;
+}
 }
 /* ===== ACCESOS INSPIRACIONES COMPACTOS MOBILE ===== */
 @media (max-width: 768px) {
@@ -4288,12 +4359,15 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
 @media (max-width: 700px) {
 
     body:has(.mobile-topbar) .carrito-panel {
-        top: 34px !important;
-        height: calc(100dvh - 34px) !important;
-    }
+    top: 36px !important;
+    height: calc(100dvh - 36px) !important;
+}
 
 }
+
+
 /* ===== OCULTAR CARRITO FLOTANTE CUANDO EL PANEL ESTÁ ABIERTO ===== */
+
 @media (max-width: 768px) {
 
     body:has(.carrito-panel.activo) .boton-carrito {
@@ -4303,10 +4377,12 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
     }
 
 }
+
+
 /* ===== CARRITO UNIFICADO EN TODA LA WEB MOBILE ===== */
+
 @media (max-width: 480px) {
 
-    /* Carrito igual en todas las páginas */
     .carrito-panel {
         top: 0 !important;
         right: 0 !important;
@@ -4317,10 +4393,10 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
         height: 100dvh !important;
     }
 
-    /* SOLO Inicio: respetar la franja superior de 34px */
+    /* Todas las páginas: respetar la barra superior de 36px */
     body:has(.mobile-topbar) .carrito-panel {
-        top: 34px !important;
-        height: calc(100dvh - 34px) !important;
+        top: 36px !important;
+        height: calc(100dvh - 36px) !important;
     }
 
 }
@@ -4586,4 +4662,143 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
         font-size: 18px;
     }
 
+}
+/* ===== ESPACIO GLOBAL PARA BARRA SUPERIOR ===== */
+
+/* Todas las páginas reservan los 36px de la barra */
+body {
+    padding-top: 36px;
+}
+
+
+/* Inicio móvil ya tenía espacio reservado para la barra */
+@media (max-width: 768px) {
+
+    body:has(.navbar) {
+        padding-top: 0;
+    }
+
+}
+
+
+/* ===== NAVBAR DEBAJO DE LA BARRA GLOBAL ===== */
+
+.navbar {
+    top: 36px !important;
+}
+
+
+/* ===== AJUSTE GLOBAL CARRITO POR BARRA SUPERIOR ===== */
+
+/* Carrito general en PC */
+@media (min-width: 769px) {
+
+    .boton-carrito {
+        top: 51px !important;
+    }
+
+}
+
+
+/* ===== CARRITO PÁGINAS INTERNAS ===== */
+
+/* PC */
+@media (min-width: 769px) {
+
+    .pagina-mayorista .boton-carrito,
+    body:has(.productos-header) .boton-carrito,
+    body:has(.producto-detalle-header) .boton-carrito {
+        top: 48px !important;
+        bottom: auto !important;
+    }
+
+}
+
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .pagina-mayorista .boton-carrito,
+    body:has(.productos-header) .boton-carrito,
+    body:has(.producto-detalle-header) .boton-carrito {
+        top: 66px !important;
+        bottom: auto !important;
+    }
+
+}
+/* ===== ENCABEZADO INTERNO MOBILE SIMÉTRICO Y COMPACTO ===== */
+
+@media (max-width: 768px) {
+
+    /* Todas las páginas internas excepto Inicio */
+    body:not(:has(.navbar)) .productos-header,
+    body:not(:has(.navbar)) .producto-detalle-header {
+        height: 72px !important;
+        min-height: 72px !important;
+
+        padding: 0 5% !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        box-sizing: border-box !important;
+    }
+
+    /* Volver centrado */
+    body:not(:has(.navbar)) .productos-header a,
+    body:not(:has(.navbar)) .producto-detalle-header a {
+        top: 0 !important;
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Carrito centrado entre las dos líneas */
+    body:not(:has(.navbar)) .boton-carrito {
+        top: 48px !important;
+        bottom: auto !important;
+    }
+
+}
+/* ===== AJUSTE GLOBAL DE ANCLAS POR BARRA SUPERIOR ===== */
+
+html {
+    scroll-padding-top: 36px;
+}
+/* ===== PANEL DEL CARRITO DEBAJO DE LA BARRA GLOBAL ===== */
+
+body:has(.mobile-topbar) .carrito-panel {
+    top: 36px !important;
+    height: calc(100dvh - 36px) !important;
+}
+/* ===== AJUSTE ANCLAS INICIO MOBILE ===== */
+
+@media (max-width: 768px) {
+
+    #categorias {
+        scroll-margin-top: 60px !important;
+    }
+
+    #marcas {
+        scroll-margin-top: 120px !important;
+    }
+
+}
+/* ===== LISTADOS INSPIRACIONES SIN TÍTULO ===== */
+
+/* Ocultar títulos grandes en perfumes y decants */
+body[data-linea="inspiraciones"] .productos h2 {
+    display: none !important;
+}
+
+
+/* Dejar parejo el cambio Perfumes / Decants */
+body[data-linea="inspiraciones"] #cambiar-presentacion {
+    margin: 20px auto 28px !important;
+}
+
+
+/* Igualar el comienzo del contenido en ambas páginas */
+body[data-linea="inspiraciones"] .productos {
+    padding-top: 20px !important;
 }
