@@ -3519,3 +3519,565 @@ body[data-linea="inspiraciones"] #cambiar-presentacion {
     }
 
 }
+/* ===== AJUSTES MAYORISTA MOBILE ===== */
+@media (max-width: 768px) {
+
+    /* Achicar el encabezado para subir la línea */
+    .pagina-mayorista .productos-header {
+        padding-bottom: 35px !important;
+    }
+
+    /* Volver al inicio vuelve a su posición normal */
+    .pagina-mayorista .volver-inicio-mayorista {
+        position: relative !important;
+        top: 10px !important;
+        left: -8px !important;
+        margin-bottom: 0 !important;
+    }
+
+    /* Carrito flotante SOLO en Mayorista */
+    .pagina-mayorista .boton-carrito {
+        top: 30px !important;
+        bottom: auto !important;
+        right: 18px !important;
+
+        width: 48px !important;
+        height: 48px !important;
+
+        z-index: 3000;
+    }
+
+    .pagina-mayorista .boton-carrito svg {
+        width: 23px !important;
+        height: 23px !important;
+    }
+    .pagina-mayorista .mayorista-etiqueta {
+    position: relative !important;
+    top: -15px !important;
+}
+
+}
+/* ===== BENEFICIOS MAYORISTA MOBILE ===== */
+@media (max-width: 768px) {
+
+    .pagina-mayorista .mayorista-importante {
+        margin-bottom: 22px !important;
+    }
+
+    .pagina-mayorista .mayorista-beneficios {
+        gap: 4px !important;
+        margin-bottom: 25px !important;
+    }
+
+    .pagina-mayorista .mayorista-beneficios div {
+        padding: 8px 10px !important;
+    }
+
+    .pagina-mayorista .mayorista-beneficios strong {
+        margin-bottom: 4px !important;
+        font-size: 18px !important;
+    }
+
+    .pagina-mayorista .mayorista-beneficios span {
+        font-size: 15px !important;
+        line-height: 1.3 !important;
+    }
+}
+/* ===== AJUSTES CATÁLOGO MOBILE ===== */
+@media (max-width: 768px) {
+
+    /* Misma altura de encabezado que Mayorista */
+    .pagina-catalogo .productos-header {
+        padding-bottom: 35px !important;
+    }
+
+    /* Volver al inicio */
+    .pagina-catalogo .volver-inicio {
+        display: block;
+        width: max-content;
+        position: relative !important;
+        top: 10px !important;
+        left: -8px !important;
+        margin: 0 auto !important;
+    }
+
+    /* Carrito flotante SOLO en Catálogo */
+    .pagina-catalogo .boton-carrito {
+        top: 30px !important;
+        bottom: auto !important;
+        right: 18px !important;
+
+        width: 48px !important;
+        height: 48px !important;
+
+        z-index: 3000;
+    }
+
+    .pagina-catalogo .boton-carrito svg {
+        width: 23px !important;
+        height: 23px !important;
+    }
+
+    /* Subir título e introducción del catálogo */
+    .pagina-catalogo .catalogo-intro {
+        position: relative !important;
+        top: -15px !important;
+    }
+        .pagina-catalogo .catalogo-buscador {
+        margin-top: -35px !important;
+    }
+
+}
+/* ===== FICHAS DE PRODUCTOS COMPACTAS MOBILE ===== */
+@media (max-width: 768px) {
+
+    /* 2 productos por fila */
+    .productos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+        justify-content: stretch !important;
+        align-items: stretch !important;
+    }
+
+    /* Tarjeta */
+    .producto-card {
+        width: 100% !important;
+        padding: 16px 6px 8px !important;
+        border-radius: 14px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Imagen */
+    .producto-card img {
+        width: 100% !important;
+        height: 95px !important;
+        object-fit: contain !important;
+        margin-bottom: 0 !important;
+        transform: scale(1.28) !important;
+    }
+
+    /* Nombre del perfume */
+    .producto-card h3 {
+        font-size: 16px !important;
+        line-height: 1.15 !important;
+        margin: 5px 0 7px !important;
+    }
+
+    /* Precio minorista */
+.producto-precio {
+    font-size: 15px !important;
+    line-height: 1.25 !important;
+    margin: 3px 0 !important;
+}
+
+/* Precio mayorista */
+.producto-precio.mayorista {
+    font-size: 15px !important;
+    line-height: 1.2 !important;
+    margin: 3px 0 !important;
+    padding: 0 !important;
+}
+
+    /* Texto "desde 3 perfumes..." */
+    .producto-precio span {
+        font-size: 10px !important;
+        line-height: 1.2 !important;
+        margin-top: 2px !important;
+    }
+
+    /* Estado agotado */
+    .producto-card .agotado {
+        font-size: 13px !important;
+        margin: 5px 0 !important;
+    }
+
+    /* Ver producto + agregar al carrito + agotado */
+    .producto-card .boton-producto,
+    .producto-card button {
+        width: 100% !important;
+        min-height: 36px !important;
+        padding: 8px 4px !important;
+        margin-top: 6px !important;
+        font-size: 13px !important;
+        line-height: 1.1 !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Ocultar marca superior: ahora va junto al nombre */
+    .producto-card .producto-disenador {
+        display: none !important;
+    }
+    /* ===== INSPIRACIONES 60 ML MOBILE ===== */
+
+.producto-card:has(.agregar-carrito[data-categoria="inspiraciones-disenador"]) {
+    padding-top: 22px !important;
+}
+
+.producto-card:has(.agregar-carrito[data-categoria="inspiraciones-disenador"]) img {
+    transform: scale(1.20) !important;
+}
+/* ===== DECANTS MÁS COMPACTOS MOBILE ===== */
+
+.producto-card:has(.agregar-carrito[data-categoria="decants"]) {
+    padding-top: 20px !important;
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+/* Foto: un poco más abajo y sin ocupar tanto alto */
+.producto-card:has(.agregar-carrito[data-categoria="decants"]) img {
+    height: 88px !important;
+    transform: scale(1.18) !important;
+    margin-bottom: 2px !important;
+}
+
+/* Nombre */
+.producto-card:has(.agregar-carrito[data-categoria="decants"]) h3 {
+    margin: 3px 0 8px !important;
+}
+
+/* Precio único */
+.producto-card:has(.agregar-carrito[data-categoria="decants"]) .producto-precio {
+    margin: 4px 0 !important;
+    font-size: 15px !important;
+}
+
+/* Stock: es el elemento que viene después del precio */
+.producto-card:has(.agregar-carrito[data-categoria="decants"]) .producto-precio + * {
+    margin-top: 4px !important;
+    margin-bottom: 4px !important;
+}
+
+/* Evitar que "Ver producto" se vaya al fondo de la tarjeta */
+.producto-card:has(.agregar-carrito[data-categoria="decants"]) .boton-producto {
+    margin-top: 6px !important;
+}
+
+/* Botones un poco más bajos */
+.producto-card:has(.agregar-carrito[data-categoria="decants"]) .boton-producto,
+.producto-card:has(.agregar-carrito[data-categoria="decants"]) button {
+    min-height: 32px !important;
+    padding: 7px 4px !important;
+}
+/* ===== DECANTS DE INSPIRACIONES MÁS COMPACTOS MOBILE ===== */
+
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-card {
+    padding: 18px 6px 8px !important;
+}
+
+/* Zona de imagen más baja */
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-card img {
+    height: 88px !important;
+    transform: scale(1.18) !important;
+    margin-bottom: 2px !important;
+}
+
+/* Diseñador + nombre */
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-card h3 {
+    font-size: 15px !important;
+    line-height: 1.15 !important;
+    margin: 4px 0 8px !important;
+}
+
+/* Precio único */
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-precio {
+    font-size: 15px !important;
+    line-height: 1.15 !important;
+    margin: 3px 0 !important;
+}
+
+/* Stock */
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-precio + * {
+    margin-top: 3px !important;
+    margin-bottom: 3px !important;
+}
+
+/* Botones */
+body[data-linea="inspiraciones"][data-tipo="decant"] .boton-producto,
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-card button {
+    min-height: 32px !important;
+    padding: 7px 4px !important;
+    margin-top: 5px !important;
+}
+}
+/* ===== FICHAS DE PRODUCTOS COMPACTAS PC ===== */
+@media (min-width: 769px) {
+
+    .productos-grid {
+        gap: 20px !important;
+        align-items: stretch !important;
+    }
+
+    .producto-card {
+        width: 250px !important;
+        padding: 16px 12px 12px !important;
+        border-radius: 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    .producto-card img {
+        width: 100% !important;
+        height: 155px !important;
+        object-fit: contain !important;
+        margin-bottom: 6px !important;
+        transform: scale(1.12) !important;
+    }
+
+    .producto-card h3 {
+        font-size: 19px !important;
+        line-height: 1.15 !important;
+        margin: 6px 0 9px !important;
+    }
+
+    .producto-precio {
+        font-size: 16px !important;
+        line-height: 1.25 !important;
+        margin: 4px 0 !important;
+    }
+
+    .producto-precio.mayorista {
+        font-size: 16px !important;
+        line-height: 1.2 !important;
+        margin: 4px 0 !important;
+        padding: 0 !important;
+    }
+
+    .producto-precio span {
+        font-size: 12px !important;
+        line-height: 1.2 !important;
+        margin-top: 3px !important;
+    }
+
+    .producto-card .agotado {
+        font-size: 14px !important;
+        margin: 6px 0 !important;
+    }
+
+    .producto-card .boton-producto,
+    .producto-card button {
+        width: 100% !important;
+        min-height: 38px !important;
+        padding: 9px 6px !important;
+        margin-top: 7px !important;
+        font-size: 14px !important;
+        line-height: 1.1 !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+    }
+/* Ocultar marca superior en perfumes árabes PC */
+body[data-categoria="perfumes-grandes"] .producto-card .producto-disenador {
+    display: none !important;
+}
+/* ===== DECANTS ÁRABES COMPACTOS PC ===== */
+
+body[data-categoria="decants"]:not([data-linea="inspiraciones"]) .producto-card {
+    padding: 18px 10px 10px !important;
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+body[data-categoria="decants"]:not([data-linea="inspiraciones"]) .producto-card img {
+    height: 135px !important;
+    transform: scale(1.10) !important;
+    margin-bottom: 4px !important;
+}
+
+body[data-categoria="decants"]:not([data-linea="inspiraciones"]) .producto-card .producto-precio {
+    font-size: 16px !important;
+    margin: 4px 0 !important;
+}
+
+body[data-categoria="decants"]:not([data-linea="inspiraciones"]) .producto-card .boton-producto {
+    margin-top: 7px !important;
+}
+
+body[data-categoria="decants"]:not([data-linea="inspiraciones"]) .producto-card .boton-producto,
+body[data-categoria="decants"]:not([data-linea="inspiraciones"]) .producto-card button {
+    min-height: 36px !important;
+    padding: 8px 5px !important;
+}
+/* Ocultar marca superior en Decants árabes PC */
+body[data-categoria="decants"]:not([data-linea="inspiraciones"])
+.producto-card .producto-disenador {
+    display: none !important;
+}
+/* ===== MAISON ALHAMBRA 30 ML COMPACTO PC ===== */
+
+body[data-categoria="maison-30ml"] .producto-card {
+    padding: 16px 10px 10px !important;
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+body[data-categoria="maison-30ml"] .producto-card img {
+    height: 145px !important;
+    transform: scale(1.10) !important;
+    margin-bottom: 5px !important;
+}
+
+body[data-categoria="maison-30ml"] .producto-card h3 {
+    font-size: 18px !important;
+    line-height: 1.15 !important;
+    margin: 5px 0 8px !important;
+}
+
+body[data-categoria="maison-30ml"] .producto-precio {
+    font-size: 16px !important;
+    margin: 4px 0 !important;
+}
+
+body[data-categoria="maison-30ml"] .producto-precio.mayorista {
+    font-size: 16px !important;
+    margin: 4px 0 !important;
+}
+
+body[data-categoria="maison-30ml"] .producto-card .boton-producto,
+body[data-categoria="maison-30ml"] .producto-card button {
+    min-height: 36px !important;
+    padding: 8px 5px !important;
+    margin-top: 7px !important;
+}
+
+/* Ocultar marca superior */
+body[data-categoria="maison-30ml"] .producto-card .producto-disenador {
+    display: none !important;
+}
+/* ===== INSPIRACIONES 60 ML COMPACTAS PC ===== */
+
+body[data-linea="inspiraciones"][data-tipo="perfume"] .producto-card {
+    padding: 18px 10px 10px !important;
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+body[data-linea="inspiraciones"][data-tipo="perfume"] .producto-card img {
+    height: 145px !important;
+    transform: scale(1.08) !important;
+    margin-bottom: 5px !important;
+}
+
+body[data-linea="inspiraciones"][data-tipo="perfume"] .producto-card h3 {
+    font-size: 18px !important;
+    line-height: 1.15 !important;
+    margin: 5px 0 8px !important;
+}
+
+body[data-linea="inspiraciones"][data-tipo="perfume"] .producto-precio {
+    font-size: 16px !important;
+    margin: 4px 0 !important;
+}
+
+body[data-linea="inspiraciones"][data-tipo="perfume"] .producto-precio.mayorista {
+    font-size: 16px !important;
+    margin: 4px 0 !important;
+}
+
+body[data-linea="inspiraciones"][data-tipo="perfume"] .producto-card .boton-producto,
+body[data-linea="inspiraciones"][data-tipo="perfume"] .producto-card button {
+    min-height: 36px !important;
+    padding: 8px 5px !important;
+    margin-top: 7px !important;
+}
+
+/* Ocultar diseñador superior: ahora va junto al nombre */
+body[data-linea="inspiraciones"][data-tipo="perfume"]
+.producto-card .producto-disenador {
+    display: none !important;
+}
+/* ===== DECANTS DE INSPIRACIONES COMPACTOS PC ===== */
+
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-card {
+    padding: 18px 10px 10px !important;
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-card img {
+    height: 135px !important;
+    transform: scale(1.10) !important;
+    margin-bottom: 4px !important;
+}
+
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-card h3 {
+    font-size: 18px !important;
+    line-height: 1.15 !important;
+    margin: 5px 0 8px !important;
+}
+
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-precio {
+    font-size: 16px !important;
+    margin: 4px 0 !important;
+}
+
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-card .boton-producto,
+body[data-linea="inspiraciones"][data-tipo="decant"] .producto-card button {
+    min-height: 36px !important;
+    padding: 8px 5px !important;
+    margin-top: 7px !important;
+}
+
+/* Ocultar diseñador superior: ahora va junto al nombre */
+body[data-linea="inspiraciones"][data-tipo="decant"]
+.producto-card .producto-disenador {
+    display: none !important;
+}
+}
+/* ===== VOLVER + ENCABEZADOS UNIFICADOS PC ===== */
+@media (min-width: 769px) {
+
+    /* Encabezado y línea dorada */
+    .productos-header {
+        padding: 30px 5% !important;
+        text-align: center !important;
+    }
+
+    /* Todos los "Volver" dentro del encabezado */
+    .productos-header a {
+        display: block !important;
+        width: max-content !important;
+
+        margin: 0 auto !important;
+
+        position: relative !important;
+        left: -8px !important;
+
+        color: #d4af37 !important;
+        text-decoration: none !important;
+    }
+
+    /* Subir el contenido que empieza debajo de la línea */
+    .productos {
+        padding-top: 35px !important;
+    }
+/* Inspiraciones: misma distancia debajo de la línea */
+.pagina-inspiraciones .inspiraciones-accesos {
+    padding-top: 35px !important;
+}
+
+.pagina-inspiraciones .inspiraciones-accesos .titulo-dorado-seccion {
+    margin-top: 0 !important;
+}
+/* Mayorista: misma distancia debajo de la línea */
+.pagina-mayorista .mayorista {
+    padding-top: 35px !important;
+}
+
+.pagina-mayorista .mayorista-intro {
+    margin-top: 0 !important;
+}
+/* Catálogo: dar más aire entre la línea y el título */
+.pagina-catalogo .productos {
+    padding-top: 35px !important;
+}
+
+.pagina-catalogo .catalogo-intro {
+    margin-top: 0 !important;
+}
+/* Mismo tamaño para TODOS los enlaces Volver en PC */
+.productos-header a,
+.producto-detalle-header a {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+}
+}

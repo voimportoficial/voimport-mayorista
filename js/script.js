@@ -926,18 +926,13 @@ const crearTarjetaProducto = (producto) => {
         : "";
 
 
-const nombreVisible =
-    !esPaginaInspiraciones &&
-    ["perfumes-grandes", "decants", "maison-30ml"].includes(producto.categoria) &&
-    producto.marca &&
-    producto.nombre
-        .toLowerCase()
-        .startsWith(producto.marca.toLowerCase())
-        ? producto.nombre
-            .slice(producto.marca.length)
-            .trim()
-        : producto.nombre;
 
+const esMobile = window.matchMedia("(max-width: 768px)").matches;
+
+const nombreVisible =
+    producto.linea === "inspiraciones" && textoSuperior
+        ? `${textoSuperior} ${producto.nombre}`
+        : producto.nombre;
 
 return `
     <div
@@ -945,20 +940,26 @@ return `
         data-slug="${escaparHTML(producto.slug)}"
     >
 
+
         ${etiquetaSuperior}
+
 
         <img
             src="${escaparHTML(producto.imagen)}"
             alt="${escaparHTML(producto.nombre)}"
         >
 
+
         <h3>
             ${escaparHTML(nombreVisible)}
         </h3>
 
+
         ${crearPrecioCatalogo(producto)}
 
+
         ${crearTextoStock(producto)}
+
 
         <a
             href="producto.html?slug=${encodeURIComponent(producto.id)}"
@@ -966,6 +967,7 @@ return `
         >
             Ver producto
         </a>
+
 
         <button
             type="button"
@@ -980,6 +982,7 @@ return `
             ${agotado ? "disabled" : ""}
         >
 
+
             <svg
                 class="icono-carrito"
                 viewBox="0 0 24 24"
@@ -990,9 +993,12 @@ return `
                 <circle cx="18" cy="20" r="1"></circle>
             </svg>
 
+
             ${textoBoton}
 
+
         </button>
+
 
     </div>
 `;
