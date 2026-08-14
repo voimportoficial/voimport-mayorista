@@ -2408,3 +2408,213 @@ function configurarAvisoScrollCarrito() {
 
 
 configurarAvisoScrollCarrito();
+// =============================
+// RESULTADOS INSTANTÁNEOS BUSCADOR CATÁLOGO
+// =============================
+
+const buscadorCatalogoInstantaneo =
+    document.getElementById("buscador-catalogo");
+
+const resultadosBuscadorCatalogo =
+    document.getElementById("catalogo-buscador-resultados");
+
+
+if (
+    buscadorCatalogoInstantaneo &&
+    resultadosBuscadorCatalogo
+) {
+
+    const obtenerEtiquetaCategoria = (producto) => {
+
+        if (
+            producto.linea === "inspiraciones" &&
+            producto.tipo === "decant"
+        ) {
+            return "DECANT 5 ML";
+        }
+
+        if (
+            producto.linea === "inspiraciones" &&
+            producto.tipo === "perfume"
+        ) {
+            return "INSPIRACIÓN 60 ML";
+        }
+
+        if (producto.categoria === "decants") {
+            return "DECANT 5 ML";
+        }
+
+        if (producto.categoria === "maison-30ml") {
+            return "MAISON ALHAMBRA 30 ML";
+        }
+
+        return "PERFUME ÁRABE";
+    };
+
+
+    const cerrarResultadosCatalogo = () => {
+        resultadosBuscadorCatalogo.innerHTML = "";
+        resultadosBuscadorCatalogo.classList.remove("visible");
+    };
+
+
+    const mostrarResultadosCatalogo = () => {
+
+        const termino =
+            buscadorCatalogoInstantaneo.value
+                .trim()
+                .toLowerCase();
+
+
+        if (termino.length < 2) {
+            cerrarResultadosCatalogo();
+            return;
+        }
+
+
+        const coincidencias = catalogoActualizado
+            .filter((producto) => {
+
+                if (producto.activo === false) {
+                    return false;
+                }
+
+                const nombre =
+                    String(producto.nombre || "")
+                        .toLowerCase();
+
+                const marca =
+                    String(producto.marca || "")
+                        .toLowerCase();
+
+                return (
+                    nombre.includes(termino) ||
+                    marca.includes(termino)
+                );
+
+            })
+            .slice(0, 8);
+
+
+        if (coincidencias.length === 0) {
+
+            resultadosBuscadorCatalogo.innerHTML = `
+                <div class="catalogo-resultado-vacio">
+                    No encontramos productos para
+                    “${escaparHTML(
+                        buscadorCatalogoInstantaneo.value.trim()
+                    )}”
+                </div>
+            `;
+
+            resultadosBuscadorCatalogo.classList.add("visible");
+
+            return;
+        }
+
+
+        resultadosBuscadorCatalogo.innerHTML = `
+            <div class="catalogo-resultados-lista">
+
+                ${coincidencias.map((producto) => {
+
+                    const etiquetaCategoria =
+                        obtenerEtiquetaCategoria(producto);
+
+                    return `
+                        <a
+                            href="producto.html?slug=${encodeURIComponent(producto.id)}"
+                            class="catalogo-resultado-item"
+                        >
+
+                            <img
+                                src="${escaparHTML(producto.imagen)}"
+                                alt="${escaparHTML(producto.nombre)}"
+                            >
+
+                            <div class="catalogo-resultado-info">
+
+                                <small>
+                                    ${escaparHTML(etiquetaCategoria)}
+                                </small>
+
+                                <strong>
+                                    ${escaparHTML(producto.nombre)}
+                                </strong>
+
+                                <span>
+                                    ${escaparHTML(producto.marca || "")}
+                                </span>
+
+                            </div>
+
+                            <span
+                                class="catalogo-resultado-flecha"
+                                aria-hidden="true"
+                            >
+                                →
+                            </span>
+
+                        </a>
+                    `;
+
+                }).join("")}
+
+            </div>
+
+            <button
+                type="button"
+                class="catalogo-ver-resultados"
+                id="catalogo-ver-resultados"
+            >
+                Ver todos los resultados
+            </button>
+        `;
+
+
+        resultadosBuscadorCatalogo.classList.add("visible");
+
+
+        document
+            .getElementById("catalogo-ver-resultados")
+            ?.addEventListener("click", () => {
+
+                buscadorCatalogoInstantaneo.blur();
+
+                cerrarResultadosCatalogo();
+
+                document
+                    .getElementById("productos-grid")
+                    ?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+            });
+
+    };
+
+
+    buscadorCatalogoInstantaneo.addEventListener(
+        "input",
+        mostrarResultadosCatalogo
+    );
+
+
+    buscadorCatalogoInstantaneo.addEventListener(
+        "search",
+        mostrarResultadosCatalogo
+    );
+
+
+    document.addEventListener("click", (evento) => {
+
+        if (
+            !evento.target.closest(".catalogo-buscador")
+        ) {
+            cerrarResultadosCatalogo();
+        }
+
+    });
+
+}
