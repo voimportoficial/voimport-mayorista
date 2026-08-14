@@ -2079,7 +2079,7 @@ if (cambiarPresentacion) {
 
 }
 // =============================
-// VOLVER FLOTANTE GLOBAL
+// VOLVER ARRIBA FLOTANTE GLOBAL
 // =============================
 
 function crearVolverFlotanteGlobal() {
@@ -2089,7 +2089,7 @@ function crearVolverFlotanteGlobal() {
     }
 
 
-    // Primero buscamos los enlaces Volver principales
+    // Buscamos si la página tiene un enlace Volver principal
     let enlaceVolver = document.querySelector(
         ".productos-header a, " +
         ".producto-detalle-header a, " +
@@ -2134,25 +2134,30 @@ function crearVolverFlotanteGlobal() {
 
     botonVolverFlotante.setAttribute(
         "aria-label",
-        "Volver"
+        "Volver arriba"
     );
 
     botonVolverFlotante.innerHTML = `
+        <span>Volver</span>
+
         <span
             class="volver-flotante-flecha"
             aria-hidden="true"
         >
-            ←
+            ↑
         </span>
-
-        <span>Volver</span>
     `;
 
 
     botonVolverFlotante.addEventListener(
         "click",
         () => {
-            enlaceVolver.click();
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
         }
     );
 

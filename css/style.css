@@ -4503,7 +4503,7 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
 .volver-flotante-global {
     position: fixed;
     left: 24px;
-    bottom: 24px;
+    bottom: 70px;
 
     display: flex;
     align-items: center;
@@ -4544,7 +4544,6 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
     z-index: 1800;
 }
 
-
 .volver-flotante-global.visible {
     opacity: 1;
     visibility: visible;
@@ -4553,17 +4552,14 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
     transform: translateY(0) scale(1);
 }
 
-
 .volver-flotante-global:hover {
     background: #15120b;
     border-color: #d4af37;
 }
 
-
 .volver-flotante-global:active {
     transform: scale(0.96);
 }
-
 
 .volver-flotante-flecha {
     font-size: 19px;
@@ -4577,7 +4573,7 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
 
     .volver-flotante-global {
         left: 16px;
-        bottom: 18px;
+        bottom: 70px;
 
         padding: 10px 15px;
 
