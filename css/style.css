@@ -1812,36 +1812,57 @@ h1 {
     justify-content: center;
 }
 @media (max-width: 768px) {
-    .hero {
-    margin-top: 100px !important;
-    padding: 0 !important;
-    width: 100% !important;
-    aspect-ratio: 3 / 4 !important;
-    position: relative !important;
-    overflow: visible !important;
 
-    background-image: url("/images/portada-mobile.webp.PNG") !important;
-    background-size: contain !important;
-    background-position: center top !important;
-    background-repeat: no-repeat !important;
-    background-color: #000 !important;
+    .hero {
+        margin-top: 100px !important;
+        padding: 0 !important;
+
+        width: 100% !important;
+        aspect-ratio: 3 / 4 !important;
+
+        position: relative !important;
+        overflow: visible !important;
+
+        background-image: url("/images/portada-mobile.webp.PNG") !important;
+        background-size: cover !important;
+        background-position: center top !important;
+        background-repeat: no-repeat !important;
+        background-color: #000 !important;
+    }
+
 }
 
     .hero-buttons {
-    position: absolute !important;
-    top: 100% !important;
-    left: 0 !important;
-    width: 100% !important;
-    padding: 18px 15px !important;
-    background: #050505 !important;
-    justify-content: center !important;
-    flex-wrap: nowrap !important;
-    gap: 12px !important;
+    position: absolute;
+    left: 58%;
+    top: auto;
+    bottom: 18px;
+    z-index: 10;
+
+    display: flex;
+    gap: 16px;
+    flex-wrap: nowrap;
+
+    padding: 10px 14px;
+
+    background: rgba(0, 0, 0, 0.38);
+    border: none;
+    border-radius: 14px;
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
 }
 .categorias-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 20px;
 }
+
 .categoria-card {
     min-height: 300px;
     padding: 14px;
@@ -1858,10 +1879,11 @@ h1 {
     text-align: center;
     margin-bottom: 0;
 }
+
 /* =========================
    CATÁLOGO PRINCIPAL
 ========================= */
-}
+
 .catalogo-intro {
     text-align: center;
     margin-bottom: 28px;
@@ -3422,8 +3444,30 @@ body[data-linea="inspiraciones"] #cambiar-presentacion {
 @media (max-width: 768px) {
 
     .hero-buttons {
+        position: absolute !important;
+
+        left: 0 !important;
+        right: 0 !important;
+
+        top: 100% !important;
+        bottom: auto !important;
+
+        width: 100% !important;
+
+        display: flex !important;
+        justify-content: center !important;
+        align-items: stretch !important;
+
         padding: 10px 12px !important;
         gap: 10px !important;
+
+        background: #050505 !important;
+
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
     }
 
     .hero-buttons .btn {
@@ -3432,13 +3476,13 @@ body[data-linea="inspiraciones"] #cambiar-presentacion {
 
         padding: 8px 10px !important;
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
 
         font-size: 17px !important;
-        line-height: 1.1;
-        text-align: center;
+        line-height: 1.1 !important;
+        text-align: center !important;
     }
 
 }
@@ -3460,9 +3504,9 @@ body[data-linea="inspiraciones"] #cambiar-presentacion {
     }
 
     .categorias-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-        gap: 12px !important;
-    }
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
 
     .categorias .categoria-card {
         height: 230px !important;
@@ -5081,4 +5125,38 @@ body[data-linea="inspiraciones"] .productos {
 
         font-size: 12px;
     }
+}
+/* ===== CARRITO SOLO INICIO MOBILE ===== */
+
+@media (max-width: 768px) {
+
+    body:has(.navbar) .boton-carrito {
+        top: 120px !important;
+        bottom: auto !important;
+
+        left: 14px !important;
+        right: auto !important;
+
+        width: 42px !important;
+        height: 42px !important;
+
+        z-index: 3000 !important;
+    }
+
+    body:has(.navbar) .boton-carrito svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+}
+/* ===== OCULTAR CARRITO DEL INICIO CUANDO EL MENÚ ESTÁ ABIERTO ===== */
+
+@media (max-width: 768px) {
+
+    body:has(.nav-links.active) .boton-carrito {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
 }
