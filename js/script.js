@@ -2064,3 +2064,119 @@ if (cambiarPresentacion) {
     });
 
 }
+// =============================
+// VOLVER FLOTANTE GLOBAL
+// =============================
+
+function crearVolverFlotanteGlobal() {
+
+    if (document.getElementById("volver-flotante-global")) {
+        return;
+    }
+
+
+    // Primero buscamos los enlaces Volver principales
+    let enlaceVolver = document.querySelector(
+        ".productos-header a, " +
+        ".producto-detalle-header a, " +
+        "#volver-inspiraciones"
+    );
+
+
+    // Respaldo para cualquier otra página de la web
+    if (!enlaceVolver) {
+
+        enlaceVolver = Array.from(
+            document.querySelectorAll("a")
+        ).find((enlace) => {
+
+            const texto = enlace.textContent
+                .replace(/\s+/g, " ")
+                .trim()
+                .toLowerCase();
+
+            return (
+                texto.includes("volver") &&
+                enlace.id !== "cambiar-presentacion"
+            );
+        });
+
+    }
+
+
+    // Si la página no tiene Volver, no hacemos nada
+    if (!enlaceVolver) {
+        return;
+    }
+
+
+    const botonVolverFlotante =
+        document.createElement("button");
+
+    botonVolverFlotante.type = "button";
+    botonVolverFlotante.id = "volver-flotante-global";
+    botonVolverFlotante.className =
+        "volver-flotante-global";
+
+    botonVolverFlotante.setAttribute(
+        "aria-label",
+        "Volver"
+    );
+
+    botonVolverFlotante.innerHTML = `
+        <span
+            class="volver-flotante-flecha"
+            aria-hidden="true"
+        >
+            ←
+        </span>
+
+        <span>Volver</span>
+    `;
+
+
+    botonVolverFlotante.addEventListener(
+        "click",
+        () => {
+            enlaceVolver.click();
+        }
+    );
+
+
+    document.body.appendChild(
+        botonVolverFlotante
+    );
+
+
+    function actualizarVolverFlotante() {
+
+        if (window.scrollY > 180) {
+
+            botonVolverFlotante.classList.add(
+                "visible"
+            );
+
+        } else {
+
+            botonVolverFlotante.classList.remove(
+                "visible"
+            );
+
+        }
+
+    }
+
+
+    actualizarVolverFlotante();
+
+
+    window.addEventListener(
+        "scroll",
+        actualizarVolverFlotante,
+        { passive: true }
+    );
+
+}
+
+
+crearVolverFlotanteGlobal();
