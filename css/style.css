@@ -1641,8 +1641,8 @@ h1 {
 
 @media (max-width: 480px) {
     .carrito-panel {
-        width: 100%;
-        max-width: 100%;
+        width: 85%;
+        max-width: 85%;
     }
 }
 /* PRODUCTOS DENTRO DEL CARRITO */
@@ -2358,7 +2358,7 @@ h1 {
 @media (max-width: 768px) {
 
     .inspiraciones-accesos {
-        padding: 35px 0 25px;
+        padding: 15px 0 25px;
     }
 
     .inspiraciones-accesos h2,
@@ -2367,9 +2367,9 @@ h1 {
     }
 
     .inspiraciones-tipos-grid {
-        grid-template-columns: 1fr;
-        gap: 18px;
-    }
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
 
     .inspiracion-tipo-card {
         min-height: 180px;
@@ -3201,18 +3201,29 @@ body[data-linea="inspiraciones"] #cambiar-presentacion {
     }
 
     .nav-links.active {
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        width: 100%;
-        background: #050505;
-        padding: 18px;
-        gap: 16px;
-        text-align: center;
-        z-index: 2000;
-    }
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    position: absolute;
+    top: 100%;
+    left: 0;
+
+    width: 100%;
+    background: #050505;
+
+    padding: 18px;
+    gap: 18px 10px;
+
+    text-align: center;
+    align-items: center;
+
+    z-index: 2000;
+}
+
+.nav-links.active .boton-buscador {
+    grid-column: 1 / -1;
+    justify-self: center;
+}
 
 }
 @media (max-width: 768px) {
@@ -4080,4 +4091,201 @@ body[data-linea="inspiraciones"][data-tipo="decant"]
     font-size: 18px !important;
     font-weight: 700 !important;
 }
+}
+/* ===== DETALLE DE PRODUCTO MOBILE ===== */
+@media (max-width: 768px) {
+
+    /* Encabezado + línea dorada */
+    .pagina-producto .producto-detalle-header {
+        padding: 30px 5% 35px !important;
+        text-align: center !important;
+    }
+
+    /* Volver centrado visualmente */
+    .pagina-producto .producto-detalle-header a {
+        display: block !important;
+        width: max-content !important;
+        margin: 0 auto !important;
+        position: relative !important;
+        top: 10px !important;
+        left: -8px !important;
+        font-size: 18px !important;
+        font-weight: 700 !important;
+    }
+
+    /* Carrito SOLO en la página de producto */
+    .pagina-producto .boton-carrito {
+        top: 30px !important;
+        bottom: auto !important;
+        right: 18px !important;
+        width: 48px !important;
+        height: 48px !important;
+        z-index: 3000;
+    }
+
+    .pagina-producto .boton-carrito svg {
+        width: 23px !important;
+        height: 23px !important;
+    }
+
+    /* Subir el contenido del producto */
+    .pagina-producto .producto-detalle {
+        padding-top: 35px !important;
+    }
+
+}
+/* ===== ENCABEZADOS INTERNOS UNIFICADOS MOBILE ===== */
+@media (max-width: 768px) {
+
+    /* Misma altura + misma línea dorada */
+    body:has(.productos-header) .productos-header,
+    body:has(.producto-detalle-header) .producto-detalle-header {
+        padding: 30px 5% 35px !important;
+        text-align: center !important;
+    }
+
+    /* Todos los "Volver" centrados visualmente */
+    body:has(.productos-header) .productos-header a,
+    body:has(.producto-detalle-header) .producto-detalle-header a {
+        display: block !important;
+        width: max-content !important;
+        margin: 0 auto !important;
+
+        position: relative !important;
+        top: 10px !important;
+        left: -8px !important;
+
+        font-size: 18px !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+
+        color: #d4af37 !important;
+        text-decoration: none !important;
+    }
+
+    /* Carrito igual en todas las páginas internas */
+    body:has(.productos-header) .boton-carrito,
+    body:has(.producto-detalle-header) .boton-carrito {
+        top: 30px !important;
+        bottom: auto !important;
+        right: 18px !important;
+
+        width: 48px !important;
+        height: 48px !important;
+
+        z-index: 3000 !important;
+    }
+
+    body:has(.productos-header) .boton-carrito svg,
+    body:has(.producto-detalle-header) .boton-carrito svg {
+        width: 23px !important;
+        height: 23px !important;
+    }
+
+}
+/* ===== SUBIR CAMBIO DE PRESENTACIÓN EN INSPIRACIONES MOBILE ===== */
+@media (max-width: 768px) {
+
+    body[data-linea="inspiraciones"] #cambiar-presentacion {
+        margin: -35px auto 28px !important;
+    }
+
+}
+/* ===== SUBIR TÍTULO DECANTS DE INSPIRACIONES MOBILE ===== */
+@media (max-width: 768px) {
+
+    body[data-linea="inspiraciones"][data-tipo="decant"] .productos h2 {
+    margin-top: -45px !important;
+    margin-bottom: 10px !important;
+}
+
+}
+/* ===== ACCESOS INSPIRACIONES COMPACTOS MOBILE ===== */
+@media (max-width: 768px) {
+
+    .pagina-inspiraciones .inspiraciones-tipos-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+    }
+
+    .pagina-inspiraciones .inspiracion-tipo-card {
+        min-height: 0 !important;
+        padding: 14px 10px !important;
+        border-radius: 14px !important;
+    }
+
+    .pagina-inspiraciones .inspiracion-tipo-imagen {
+        width: 100% !important;
+        height: 120px !important;
+        object-fit: contain !important;
+        margin: 0 auto 10px !important;
+    }
+
+    .pagina-inspiraciones .inspiracion-tipo-card h3 {
+        font-size: 18px !important;
+        line-height: 1.15 !important;
+        margin: 5px 0 10px !important;
+    }
+
+    /* Sacamos la descripción en móvil para que queden compactas */
+    .pagina-inspiraciones .inspiracion-tipo-card p {
+    display: block !important;
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+    margin: 6px 0 10px !important;
+}
+
+    .pagina-inspiraciones .inspiracion-tipo-card span {
+        font-size: 14px !important;
+        line-height: 1.2 !important;
+    }
+    .pagina-inspiraciones .inspiracion-tipo-card {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.pagina-inspiraciones .inspiracion-tipo-card span {
+    margin-top: auto !important;
+}
+
+}
+/* ===== CARRITO INICIO MOBILE ===== */
+@media (max-width: 700px) {
+
+    body:has(.mobile-topbar) .carrito-panel {
+        top: 34px !important;
+        height: calc(100dvh - 34px) !important;
+    }
+
+}
+/* ===== OCULTAR CARRITO FLOTANTE CUANDO EL PANEL ESTÁ ABIERTO ===== */
+@media (max-width: 768px) {
+
+    body:has(.carrito-panel.activo) .boton-carrito {
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+
+}
+/* ===== CARRITO UNIFICADO EN TODA LA WEB MOBILE ===== */
+@media (max-width: 480px) {
+
+    /* Carrito igual en todas las páginas */
+    .carrito-panel {
+        top: 0 !important;
+        right: 0 !important;
+
+        width: 88% !important;
+        max-width: 88% !important;
+
+        height: 100dvh !important;
+    }
+
+    /* SOLO Inicio: respetar la franja superior de 34px */
+    body:has(.mobile-topbar) .carrito-panel {
+        top: 34px !important;
+        height: calc(100dvh - 34px) !important;
+    }
+
 }
