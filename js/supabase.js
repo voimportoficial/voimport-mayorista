@@ -13,10 +13,18 @@ async function obtenerDatosProductos() {
         .from("productos")
         .select(`
             slug,
+            nombre,
+            marca,
+            categoria,
+            linea,
+            tipo,
+            presentacion,
+            imagen,
             precio_minorista,
             precio_mayorista,
             stock,
-            activo
+            activo,
+            retirado
         `);
 
     if (error) {

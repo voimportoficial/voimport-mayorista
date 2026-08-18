@@ -1,0 +1,1995 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <title>Vo Import | Sistema de Gestión</title>
+</head>
+
+<body>
+
+    <!-- ========================================
+         LOGIN
+         ======================================== -->
+
+    <section
+        class="auth-pantalla"
+        id="pantalla-login"
+    >
+
+        <div class="auth-contenedor">
+
+            <div class="auth-logo">
+                <h1>VO IMPORT</h1>
+                <p>Sistema de Gestión</p>
+            </div>
+
+            <div class="auth-tarjeta">
+
+                <h2>Ingresar</h2>
+
+                <p class="auth-descripcion">
+                    Accedé al panel de gestión de Vo Import.
+                </p>
+
+                <form id="form-login">
+
+                    <label for="login-email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="login-email"
+                        autocomplete="email"
+                        required
+                    >
+
+                    <label for="login-password">
+                        Contraseña
+                    </label>
+
+                    <input
+                        type="password"
+                        id="login-password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="submit"
+                        class="auth-boton-principal"
+                    >
+                        Ingresar
+                    </button>
+
+                </form>
+
+                <button
+                    type="button"
+                    class="auth-boton-secundario"
+                    id="recuperar-password"
+                >
+                    Crear / recuperar contraseña
+                </button>
+
+                <p
+                    class="auth-mensaje"
+                    id="mensaje-login"
+                ></p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================
+         NUEVA CONTRASEÑA
+         ======================================== -->
+
+    <section
+        class="auth-pantalla oculto"
+        id="pantalla-nueva-password"
+    >
+
+        <div class="auth-contenedor">
+
+            <div class="auth-logo">
+                <h1>VO IMPORT</h1>
+                <p>Sistema de Gestión</p>
+            </div>
+
+            <div class="auth-tarjeta">
+
+                <h2>Crear contraseña</h2>
+
+                <p class="auth-descripcion">
+                    Elegí la contraseña que vas a usar para ingresar al sistema.
+                </p>
+
+                <form id="form-nueva-password">
+
+                    <label for="nueva-password">
+                        Nueva contraseña
+                    </label>
+
+                    <input
+                        type="password"
+                        id="nueva-password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <label for="repetir-password">
+                        Repetir contraseña
+                    </label>
+
+                    <input
+                        type="password"
+                        id="repetir-password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <button
+                        type="submit"
+                        class="auth-boton-principal"
+                    >
+                        Guardar contraseña
+                    </button>
+
+                </form>
+
+                <p
+                    class="auth-mensaje"
+                    id="mensaje-nueva-password"
+                ></p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================
+         APLICACIÓN
+         ======================================== -->
+
+    <div
+        id="aplicacion-gestion"
+        class="oculto"
+    >
+
+        <header>
+
+            <div class="header-contenido">
+
+                <div>
+
+                    <h1>VO IMPORT</h1>
+
+                    <p>
+                        Sistema de Gestión
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="cerrar-sesion"
+                    id="cerrar-sesion"
+                >
+                    Cerrar sesión
+                </button>
+
+            </div>
+
+        </header>
+
+        <!-- ========================================
+             MENÚ PRINCIPAL
+             ======================================== -->
+
+        <nav
+            class="gestion-menu-principal"
+            aria-label="Menú principal de gestión"
+        >
+
+            <div class="gestion-menu-contenido">
+
+                <button
+                    type="button"
+                    class="gestion-menu-inicio"
+                    id="menu-inicio"
+                >
+                    Inicio
+                </button>
+
+
+                <details class="gestion-menu-item">
+
+                    <summary>
+                        Ventas
+                        <span aria-hidden="true">⌄</span>
+                    </summary>
+
+                    <div class="gestion-submenu">
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="registrar-venta"
+                        >
+                            Registrar venta
+                        </button>
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="ver-pedidos-web"
+                        >
+                            Pedidos web
+                        </button>
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="ver-movimientos"
+                        >
+                            Ver movimientos
+                        </button>
+
+                    </div>
+
+                </details>
+
+
+                <details class="gestion-menu-item">
+
+                    <summary>
+                        Stock
+                        <span aria-hidden="true">⌄</span>
+                    </summary>
+
+                    <div class="gestion-submenu">
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="ver-stock"
+                        >
+                            Ver stock
+                        </button>
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="registrar-reposicion"
+                        >
+                            Registrar reposición
+                        </button>
+
+                    </div>
+
+                </details>
+
+
+                <details class="gestion-menu-item">
+
+                    <summary>
+                        Presupuestos
+                        <span aria-hidden="true">⌄</span>
+                    </summary>
+
+                    <div class="gestion-submenu">
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="crear-presupuesto"
+                        >
+                            Crear presupuesto
+                        </button>
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="ver-presupuestos"
+                        >
+                            Ver presupuestos
+                        </button>
+
+                    </div>
+
+                </details>
+
+
+                <details class="gestion-menu-item">
+
+                    <summary>
+                        Clientes
+                        <span aria-hidden="true">⌄</span>
+                    </summary>
+
+                    <div class="gestion-submenu">
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="ver-clientes"
+                        >
+                            Clientes
+                        </button>
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="clientes-a-cobrar"
+                        >
+                            Clientes a cobrar
+                        </button>
+
+                    </div>
+
+                </details>
+
+
+                <details class="gestion-menu-item">
+
+                    <summary>
+                        Finanzas
+                        <span aria-hidden="true">⌄</span>
+                    </summary>
+
+                    <div class="gestion-submenu gestion-submenu-derecha">
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="ver-gastos"
+                        >
+                            Gastos
+                        </button>
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="ver-dinero"
+                        >
+                            Retiros e ingresos
+                        </button>
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="ver-cierres-mensuales"
+                        >
+                            Cierre mensual
+                        </button>
+
+                    </div>
+
+                </details>
+
+            </div>
+
+        </nav>
+
+
+        <main>
+
+            <!-- ========================================
+                 RESUMEN
+                 ======================================== -->
+
+            <section id="resumen-general">
+
+                <h2>Resumen general</h2>
+
+                <div class="resumen-grid">
+
+                    <article>
+                        <span>Capital en stock</span>
+                        <strong id="capital-stock">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Ventas del mes</span>
+                        <strong id="ventas-mes">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Ganancia del mes</span>
+                        <strong id="ganancia-mes">$ 0</strong>
+                    </article>
+
+                    <article class="resumen-disponible-card">
+                        <span>Disponible para retirar</span>
+                        <strong id="disponible-retirar">$ 0</strong>
+                        <small
+                            class="resumen-capital-reponer oculto"
+                            id="capital-reponer-resumen"
+                        >
+                            Capital a reponer: $ 0
+                        </small>
+                    </article>
+
+                    <article>
+                        <span>Extras del mes</span>
+                        <strong id="extras-mes">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Ganancia total generada</span>
+                        <strong id="ganancia-total-generada">$ 0</strong>
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 ACCIONES RÁPIDAS
+                 ======================================== -->
+
+            <section id="acciones-rapidas">
+
+                <h2>Acciones rápidas</h2>
+
+                <div class="acciones">
+
+                    <button
+                        type="button"
+                        class="accion-rapida"
+                        data-gestion-target="registrar-venta"
+                    >
+                        Registrar venta
+                    </button>
+
+                    <button
+                        type="button"
+                        class="accion-rapida"
+                        data-gestion-target="ver-stock"
+                    >
+                        Ver stock
+                    </button>
+
+                    <button
+                        type="button"
+                        class="accion-rapida"
+                        data-gestion-target="ver-pedidos-web"
+                    >
+                        Pedidos web
+                    </button>
+
+                    <button
+                        type="button"
+                        class="accion-rapida"
+                        data-gestion-target="ver-movimientos"
+                    >
+                        Ver movimientos
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+     REGISTRAR VENTA
+     ======================================== -->
+
+<section
+    class="seccion-venta oculto"
+    id="seccion-venta"
+>
+
+    <div class="venta-encabezado">
+
+        <div>
+
+            <h2>
+                Registrar venta
+            </h2>
+
+            <p>
+                Agregá todos los productos de la venta y confirmá al final.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="cerrar-venta"
+            id="cerrar-venta"
+        >
+            Cerrar
+        </button>
+
+    </div>
+
+
+    <div class="venta-panel">
+
+        <!-- =============================
+             PRODUCTOS
+             ============================= -->
+
+        <div class="venta-formulario">
+
+            <div class="campo">
+
+                <label for="venta-categoria">
+                    Categoría
+                </label>
+
+                <select id="venta-categoria">
+
+                    <option value="">
+                        Seleccionar categoría
+                    </option>
+
+                    <option value="perfumes-grandes">
+                        Perfumes árabes
+                    </option>
+
+                    <option value="maison-30ml">
+                        Maison Alhambra 30 ml
+                    </option>
+
+                    <option value="inspiraciones-disenador">
+                        Inspiraciones de diseñador 60 ml
+                    </option>
+
+                    <option value="decants-arabes">
+                        Decants árabes
+                    </option>
+
+                    <option value="decants-disenador">
+                        Decants de diseñador
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="venta-producto">
+                    Producto
+                </label>
+
+                <select
+                    id="venta-producto"
+                    disabled
+                >
+
+                    <option value="">
+                        Primero elegí una categoría
+                    </option>
+
+                </select>
+
+                <small id="venta-stock-disponible"></small>
+
+            </div>
+
+
+            <div class="venta-fila">
+
+                <div class="campo">
+
+                    <label for="venta-cantidad">
+                        Cantidad
+                    </label>
+
+                    <input
+                        type="number"
+                        id="venta-cantidad"
+                        min="1"
+                        value="1"
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="venta-tipo-precio">
+                        Precio
+                    </label>
+
+                    <select id="venta-tipo-precio">
+
+                        <option value="automatico">
+                            Automático
+                        </option>
+
+                        <option value="personalizado">
+                            Personalizado
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="campo oculto"
+                id="contenedor-precio-personalizado"
+            >
+
+                <label for="venta-precio-personalizado">
+                    Precio unitario personalizado
+                </label>
+
+                <input
+                    type="number"
+                    id="venta-precio-personalizado"
+                    min="0"
+                    step="1"
+                    placeholder="Ej: 70000"
+                >
+
+            </div>
+
+
+            <div class="venta-precio-preview">
+
+                <span>
+                    Precio unitario
+                </span>
+
+                <strong id="venta-precio-unitario">
+                    $ 0
+                </strong>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="agregar-item-venta"
+                id="agregar-item-venta"
+            >
+                Agregar producto a la venta
+            </button>
+
+
+            <p
+                class="venta-mensaje"
+                id="mensaje-item-venta"
+            ></p>
+
+        </div>
+
+
+        <!-- =============================
+             RESUMEN / COBRO
+             ============================= -->
+
+        <div class="venta-resumen">
+
+            <h3>
+                Productos de la venta
+            </h3>
+
+
+            <div
+                class="venta-items"
+                id="venta-items"
+            >
+
+                <p class="venta-vacia">
+                    Todavía no agregaste productos.
+                </p>
+
+            </div>
+
+
+            <div class="venta-descuento-general" id="venta-descuento-general">
+
+                <div class="venta-descuento-general-cabecera">
+                    <strong>Descuento general</strong>
+                    <small>Se aplica después de los descuentos por producto.</small>
+                </div>
+
+                <div class="venta-descuento-general-controles">
+
+                    <select id="venta-descuento-general-tipo" aria-label="Tipo de descuento general">
+                        <option value="">Sin descuento</option>
+                        <option value="porcentaje">%</option>
+                        <option value="monto">$</option>
+                    </select>
+
+                    <input
+                        type="number"
+                        id="venta-descuento-general-valor"
+                        min="0"
+                        step="1"
+                        value="0"
+                        disabled
+                        aria-label="Valor del descuento general"
+                    >
+
+                </div>
+
+                <div class="venta-descuento-general-resumen">
+                    <span>
+                        Subtotal
+                        <strong id="venta-subtotal-antes-descuento">$ 0</strong>
+                    </span>
+
+                    <span>
+                        Descuento general
+                        <strong id="venta-descuento-general-monto">$ 0</strong>
+                    </span>
+                </div>
+
+            </div>
+
+
+            <div class="venta-total">
+
+                <span>
+                    Total final
+                </span>
+
+                <strong id="venta-total">
+                    $ 0
+                </strong>
+
+            </div>
+
+
+            <!-- FECHA DE EMISIÓN -->
+
+            <div class="campo" id="campo-fecha-emision">
+
+                <label for="venta-fecha-emision">
+                    Fecha de emisión
+                </label>
+
+                <input
+                    type="datetime-local"
+                    id="venta-fecha-emision"
+                    step="60"
+                >
+
+                <small>
+                    Podés cambiarla manualmente. Las ventas se ordenan por esta fecha.
+                </small>
+
+            </div>
+
+
+            <!-- CLIENTE -->
+
+            <div class="campo">
+
+                <label for="venta-cliente">
+                    Cliente
+                </label>
+
+                <select id="venta-cliente">
+
+                    <option value="">
+                        Sin cliente
+                    </option>
+
+                </select>
+
+                <small id="venta-cliente-ayuda">
+                    Opcional si la venta queda totalmente cobrada.
+                </small>
+
+            </div>
+
+
+            <!-- ESTADO DEL COBRO -->
+
+            <div class="campo">
+
+                <label for="venta-estado-cobro">
+                    Estado del cobro
+                </label>
+
+                <select id="venta-estado-cobro">
+
+                    <option value="no-cobrado" selected>
+                        No cobrado
+                    </option>
+
+                    <option value="parcial">
+                        Pago parcial
+                    </option>
+
+                    <option value="cobrado">
+                        Cobrado
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PAGO INICIAL -->
+
+            <div
+                class="campo oculto"
+                id="contenedor-pago-inicial"
+            >
+
+                <label for="venta-pago-inicial">
+                    Pagó ahora
+                </label>
+
+                <input
+                    type="number"
+                    id="venta-pago-inicial"
+                    min="1"
+                    step="1"
+                    placeholder="Ej: 50000"
+                >
+
+            </div>
+
+
+            <!-- MEDIO DE PAGO -->
+
+            <div
+                class="campo"
+                id="contenedor-metodo-pago"
+            >
+
+                <label for="venta-metodo-pago">
+                    Medio de pago
+                </label>
+
+                <select id="venta-metodo-pago">
+
+                    <option value="">
+                        Seleccionar
+                    </option>
+
+                    <option value="Efectivo">
+                        Efectivo
+                    </option>
+
+                    <option value="Transferencia">
+                        Transferencia
+                    </option>
+
+                    <option value="Mercado Pago">
+                        Mercado Pago
+                    </option>
+
+                    <option value="Tarjeta">
+                        Tarjeta
+                    </option>
+
+                    <option value="Dólares">
+                        Dólares
+                    </option>
+
+                    <option value="USDT">
+                        USDT
+                    </option>
+
+                    <option value="Otro">
+                        Otro
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- RESUMEN COBRO -->
+
+            <div class="venta-cobro-resumen">
+
+                <div>
+
+                    <span>
+                        Pagado
+                    </span>
+
+                    <strong id="venta-total-pagado">
+                        $ 0
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Saldo pendiente
+                    </span>
+
+                    <strong id="venta-saldo-pendiente">
+                        $ 0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="venta-observaciones">
+                    Observaciones
+                </label>
+
+                <textarea
+                    id="venta-observaciones"
+                    rows="3"
+                    placeholder="Opcional"
+                ></textarea>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="confirmar-venta"
+                id="confirmar-venta"
+            >
+                Confirmar venta
+            </button>
+
+
+            <p
+                class="venta-mensaje"
+                id="mensaje-confirmar-venta"
+            ></p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+            <!-- ========================================
+                 STOCK
+                 ======================================== -->
+
+            <section
+                class="seccion-stock oculto"
+                id="seccion-stock"
+            >
+
+                <div class="stock-encabezado">
+
+                    <div>
+
+                        <h2>
+                            Stock actual
+                        </h2>
+
+                        <p>
+                            Stock separado por categorías
+                        </p>
+
+                    </div>
+
+                    <div class="stock-encabezado-acciones">
+
+                        <button
+                            type="button"
+                            class="nuevo-producto-stock"
+                            id="nuevo-producto-stock"
+                        >
+                            + Nuevo producto
+                        </button>
+
+                        <button
+                            type="button"
+                            class="cerrar-stock"
+                            id="cerrar-stock"
+                        >
+                            Cerrar
+                        </button>
+
+                    </div>
+
+                </div>
+
+                <div class="stock-vinculo-decants">
+
+                    <div>
+                        <strong>Decants vinculados</strong>
+                        <p>
+                            Vinculá automáticamente los decants cuyo nombre coincide exactamente con su perfume base. Los casos dudosos quedan para revisar manualmente.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="vincular-decants-automaticamente"
+                    >
+                        Vincular decants automáticamente
+                    </button>
+
+                </div>
+
+                <p
+                    class="venta-mensaje"
+                    id="mensaje-vincular-decants"
+                ></p>
+
+                <div id="stock-categorias"></div>
+
+            </section>
+
+
+            <!-- ========================================
+                 MOVIMIENTOS
+                 ======================================== -->
+
+            <section
+                class="seccion-movimientos oculto"
+                id="seccion-movimientos"
+            >
+
+                <div class="movimientos-encabezado">
+
+                    <div>
+
+                        <h2>
+                            Movimientos
+                        </h2>
+
+                        <p>
+                            Historial de ventas registradas
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="cerrar-movimientos"
+                        id="cerrar-movimientos"
+                    >
+                        Cerrar
+                    </button>
+
+                </div>
+
+                <p
+                    class="venta-mensaje"
+                    id="mensaje-movimientos"
+                ></p>
+
+                <div
+                    class="movimientos-lista"
+                    id="movimientos-lista"
+                >
+
+                    <p class="movimientos-vacios">
+                        Cargando movimientos...
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 CLIENTES
+                 ======================================== -->
+
+            <section
+                class="seccion-clientes oculto"
+                id="seccion-clientes"
+            >
+
+                <div class="clientes-encabezado">
+
+                    <div>
+
+                        <h2>
+                            Clientes
+                        </h2>
+
+                        <p>
+                            Guardá y administrá tus clientes.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="cerrar-clientes"
+                        id="cerrar-clientes"
+                    >
+                        Cerrar
+                    </button>
+
+                </div>
+
+
+                <div class="clientes-panel">
+
+
+                    <!-- FORMULARIO -->
+
+                    <div class="clientes-formulario">
+
+                        <h3 id="clientes-form-titulo">
+                            Nuevo cliente
+                        </h3>
+
+
+                        <form id="form-cliente">
+
+                            <div class="campo">
+
+                                <label for="cliente-nombre">
+                                    Nombre
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="cliente-nombre"
+                                    placeholder="Ej: Juan Pérez"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="cliente-telefono">
+                                    Teléfono
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="cliente-telefono"
+                                    placeholder="Ej: 11 1234-5678"
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="cliente-notas">
+                                    Notas
+                                </label>
+
+                                <textarea
+                                    id="cliente-notas"
+                                    rows="3"
+                                    placeholder="Opcional"
+                                ></textarea>
+
+                            </div>
+
+
+                            <div class="clientes-form-botones">
+
+                                <button
+                                    type="submit"
+                                    class="guardar-cliente"
+                                    id="guardar-cliente"
+                                >
+                                    Guardar cliente
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="cancelar-edicion-cliente oculto"
+                                    id="cancelar-edicion-cliente"
+                                >
+                                    Cancelar edición
+                                </button>
+
+                            </div>
+
+
+                            <p
+                                class="venta-mensaje"
+                                id="mensaje-cliente"
+                            ></p>
+
+                        </form>
+
+                    </div>
+
+
+                    <!-- LISTADO -->
+
+                    <div class="clientes-listado">
+
+                        <div class="clientes-listado-superior">
+
+                            <div>
+
+                                <h3>
+                                    Mis clientes
+                                </h3>
+
+                                <span id="clientes-contador">
+                                    0 clientes
+                                </span>
+
+                            </div>
+
+
+                            <input
+                                type="search"
+                                id="buscar-cliente"
+                                placeholder="Buscar cliente..."
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <div
+                            class="clientes-lista"
+                            id="clientes-lista"
+                        >
+
+                            <p class="clientes-vacios">
+                                Cargando clientes...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 GASTOS
+                 ======================================== -->
+
+            <section
+                class="seccion-gastos oculto"
+                id="seccion-gastos"
+            >
+
+                <div class="gastos-encabezado">
+
+                    <div>
+
+                        <h2>
+                            Gastos
+                        </h2>
+
+                        <p>
+                            Registrá los gastos reales del negocio sin mezclar compras de mercadería.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="cerrar-gastos"
+                        id="cerrar-gastos"
+                    >
+                        Cerrar
+                    </button>
+
+                </div>
+
+
+                <div class="gastos-aviso">
+                    <strong>Importante</strong>
+                    <span>
+                        Las compras de perfumes y los costos que ya forman parte de una reposición no se cargan acá.
+                    </span>
+                </div>
+
+
+                <div class="gastos-resumen">
+
+                    <article>
+                        <span>Gastos del mes</span>
+                        <strong id="gastos-total-mes">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Registros activos</span>
+                        <strong id="gastos-cantidad-activos">0</strong>
+                    </article>
+
+                </div>
+
+
+                <div class="gastos-panel">
+
+                    <!-- FORMULARIO -->
+
+                    <div class="gastos-formulario">
+
+                        <h3 id="gastos-form-titulo">
+                            Registrar gasto
+                        </h3>
+
+                        <form id="form-gasto">
+
+                            <div class="campo">
+
+                                <label for="gasto-fecha">
+                                    Fecha
+                                </label>
+
+                                <input
+                                    type="datetime-local"
+                                    id="gasto-fecha"
+                                    step="60"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="gasto-categoria">
+                                    Categoría
+                                </label>
+
+                                <select
+                                    id="gasto-categoria"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Seleccionar categoría
+                                    </option>
+
+                                    <option value="Publicidad">
+                                        Publicidad
+                                    </option>
+
+                                    <option value="Comisiones">
+                                        Comisiones
+                                    </option>
+
+                                    <option value="Insumos y embalaje">
+                                        Insumos y embalaje
+                                    </option>
+
+                                    <option value="Envíos y logística">
+                                        Envíos y logística
+                                    </option>
+
+                                    <option value="Servicios">
+                                        Servicios
+                                    </option>
+
+                                    <option value="Impuestos">
+                                        Impuestos
+                                    </option>
+
+                                    <option value="Alquiler">
+                                        Alquiler
+                                    </option>
+
+                                    <option value="Otros">
+                                        Otros
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="gasto-concepto">
+                                    Concepto
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="gasto-concepto"
+                                    placeholder="Ej: Publicidad de Instagram"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="gasto-monto">
+                                    Monto
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="gasto-monto"
+                                    min="1"
+                                    step="1"
+                                    placeholder="Ej: 25000"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="gasto-metodo-pago">
+                                    Medio de pago
+                                </label>
+
+                                <select id="gasto-metodo-pago">
+
+                                    <option value="">
+                                        Sin especificar
+                                    </option>
+
+                                    <option value="Efectivo">
+                                        Efectivo
+                                    </option>
+
+                                    <option value="Transferencia">
+                                        Transferencia
+                                    </option>
+
+                                    <option value="Mercado Pago">
+                                        Mercado Pago
+                                    </option>
+
+                                    <option value="Tarjeta">
+                                        Tarjeta
+                                    </option>
+
+                                    <option value="Dólares">
+                                        Dólares
+                                    </option>
+
+                                    <option value="USDT">
+                                        USDT
+                                    </option>
+
+                                    <option value="Otro">
+                                        Otro
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="gasto-observaciones">
+                                    Observaciones
+                                </label>
+
+                                <textarea
+                                    id="gasto-observaciones"
+                                    rows="3"
+                                    placeholder="Opcional"
+                                ></textarea>
+
+                            </div>
+
+
+                            <div class="gastos-form-botones">
+
+                                <button
+                                    type="submit"
+                                    class="guardar-gasto"
+                                    id="guardar-gasto"
+                                >
+                                    Registrar gasto
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="cancelar-edicion-gasto oculto"
+                                    id="cancelar-edicion-gasto"
+                                >
+                                    Cancelar edición
+                                </button>
+
+                            </div>
+
+
+                            <p
+                                class="venta-mensaje"
+                                id="mensaje-gasto"
+                            ></p>
+
+                        </form>
+
+                    </div>
+
+
+                    <!-- HISTORIAL -->
+
+                    <div class="gastos-historial">
+
+                        <div class="gastos-historial-superior">
+
+                            <div>
+                                <h3>Historial</h3>
+                                <span id="gastos-contador">
+                                    0 gastos
+                                </span>
+                            </div>
+
+                            <input
+                                type="search"
+                                id="buscar-gasto"
+                                placeholder="Buscar gasto..."
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <div
+                            class="gastos-lista"
+                            id="gastos-lista"
+                        >
+
+                            <p class="gastos-vacios">
+                                Cargando gastos...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 RETIROS / INGRESOS EXTRA / APORTES
+                 ======================================== -->
+
+            <section
+                class="seccion-dinero oculto"
+                id="seccion-dinero"
+            >
+
+                <div class="dinero-encabezado">
+
+                    <div>
+
+                        <h2>
+                            Retiros e ingresos
+                        </h2>
+
+                        <p>
+                            Separá lo que retirás, lo que ganás por fuera y los aportes al negocio.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="cerrar-dinero"
+                        id="cerrar-dinero"
+                    >
+                        Cerrar
+                    </button>
+
+                </div>
+
+
+                <div class="dinero-aviso">
+                    <strong>Disponible para retirar</strong>
+                    <span>
+                        Puede quedar negativo. Si pasa, Gestión te muestra cuánto capital tenés que reponer.
+                    </span>
+                </div>
+
+
+                <div class="dinero-resumen">
+
+                    <article>
+                        <span>Extras del mes</span>
+                        <strong id="dinero-extras-mes">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Retiros del mes</span>
+                        <strong id="dinero-retiros-mes">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Aportes del mes</span>
+                        <strong id="dinero-aportes-mes">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Capital a reponer</span>
+                        <strong id="dinero-capital-reponer">$ 0</strong>
+                    </article>
+
+                </div>
+
+
+                <div class="dinero-panel">
+
+                    <div class="dinero-formulario">
+
+                        <h3 id="dinero-form-titulo">
+                            Registrar movimiento
+                        </h3>
+
+                        <form id="form-dinero">
+
+                            <div class="campo">
+
+                                <label for="dinero-tipo">
+                                    Tipo de movimiento
+                                </label>
+
+                                <select id="dinero-tipo" required>
+
+                                    <option value="retiro">
+                                        Retiro personal
+                                    </option>
+
+                                    <option value="extra">
+                                        Ingreso extra
+                                    </option>
+
+                                    <option value="aporte">
+                                        Aporte al negocio
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="dinero-fecha">
+                                    Fecha
+                                </label>
+
+                                <input
+                                    type="datetime-local"
+                                    id="dinero-fecha"
+                                    step="60"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div
+                                class="campo oculto"
+                                id="campo-dinero-concepto"
+                            >
+
+                                <label for="dinero-concepto">
+                                    Concepto
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="dinero-concepto"
+                                    placeholder="Ej: Ganancia venta de celular"
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="dinero-monto">
+                                    Monto
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="dinero-monto"
+                                    min="1"
+                                    step="1"
+                                    placeholder="Ej: 50000"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div
+                                class="campo"
+                                id="campo-dinero-metodo"
+                            >
+
+                                <label for="dinero-metodo-pago">
+                                    Medio de pago
+                                </label>
+
+                                <select id="dinero-metodo-pago">
+
+                                    <option value="">
+                                        Sin especificar
+                                    </option>
+
+                                    <option value="Efectivo">
+                                        Efectivo
+                                    </option>
+
+                                    <option value="Transferencia">
+                                        Transferencia
+                                    </option>
+
+                                    <option value="Mercado Pago">
+                                        Mercado Pago
+                                    </option>
+
+                                    <option value="Tarjeta">
+                                        Tarjeta
+                                    </option>
+
+                                    <option value="Dólares">
+                                        Dólares
+                                    </option>
+
+                                    <option value="USDT">
+                                        USDT
+                                    </option>
+
+                                    <option value="Otro">
+                                        Otro
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="dinero-observaciones">
+                                    Observaciones
+                                </label>
+
+                                <textarea
+                                    id="dinero-observaciones"
+                                    rows="3"
+                                    placeholder="Opcional"
+                                ></textarea>
+
+                            </div>
+
+
+                            <div class="dinero-form-botones">
+
+                                <button
+                                    type="submit"
+                                    class="guardar-dinero"
+                                    id="guardar-dinero"
+                                >
+                                    Registrar retiro
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="cancelar-edicion-dinero oculto"
+                                    id="cancelar-edicion-dinero"
+                                >
+                                    Cancelar edición
+                                </button>
+
+                            </div>
+
+
+                            <p
+                                class="venta-mensaje"
+                                id="mensaje-dinero"
+                            ></p>
+
+                        </form>
+
+                    </div>
+
+
+                    <div class="dinero-historial">
+
+                        <div class="dinero-historial-superior">
+
+                            <div>
+                                <h3>Historial</h3>
+                                <span id="dinero-contador">
+                                    0 movimientos
+                                </span>
+                            </div>
+
+                            <input
+                                type="search"
+                                id="buscar-dinero"
+                                placeholder="Buscar movimiento..."
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <div
+                            class="dinero-lista"
+                            id="dinero-lista"
+                        >
+
+                            <p class="dinero-vacios">
+                                Cargando movimientos...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+            <!-- ========================================
+                 CIERRE MENSUAL / HISTORIAL
+                 ======================================== -->
+
+            <section
+                class="seccion-cierres oculto"
+                id="seccion-cierres-mensuales"
+            >
+
+                <div class="cierres-encabezado">
+
+                    <div>
+                        <h2>Cierre mensual</h2>
+                        <p>
+                            Guardá una foto de cómo terminó cada mes y consultala cuando quieras.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        class="cerrar-cierres"
+                        id="cerrar-cierres-mensuales"
+                    >
+                        Cerrar
+                    </button>
+
+                </div>
+
+                <div class="cierres-aviso">
+                    <strong>Importante</strong>
+                    <span>
+                        Cerrá el mes al comenzar el mes siguiente, antes de registrar movimientos nuevos. Así el capital y el disponible quedan guardados tal como terminaron.
+                    </span>
+                </div>
+
+                <div class="cierres-panel">
+
+                    <div class="cierres-pendiente">
+
+                        <div class="cierres-pendiente-cabecera">
+                            <div>
+                                <span>Próximo cierre</span>
+                                <h3 id="cierre-periodo-pendiente">Buscando...</h3>
+                            </div>
+
+                            <span
+                                class="cierre-estado"
+                                id="cierre-estado-pendiente"
+                            >
+                                Revisando
+                            </span>
+                        </div>
+
+                        <p
+                            class="cierre-explicacion"
+                            id="cierre-explicacion-pendiente"
+                        >
+                            Estamos revisando si hay un mes anterior pendiente de cierre.
+                        </p>
+
+                        <div
+                            class="cierre-preview oculto"
+                            id="cierre-preview"
+                        ></div>
+
+                        <div class="campo">
+                            <label for="cierre-observaciones">
+                                Observaciones del cierre
+                            </label>
+
+                            <textarea
+                                id="cierre-observaciones"
+                                rows="3"
+                                placeholder="Opcional. Ej: mes con compra grande de mercadería"
+                            ></textarea>
+                        </div>
+
+                        <button
+                            type="button"
+                            class="confirmar-cierre-mensual"
+                            id="confirmar-cierre-mensual"
+                            disabled
+                        >
+                            No hay un mes para cerrar
+                        </button>
+
+                        <p
+                            class="venta-mensaje"
+                            id="mensaje-cierre-mensual"
+                        ></p>
+
+                    </div>
+
+                    <div class="cierres-historial">
+
+                        <div class="cierres-historial-cabecera">
+                            <div>
+                                <h3>Historial mensual</h3>
+                                <span id="cierres-contador">0 cierres</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="cierres-lista"
+                            id="cierres-lista"
+                        >
+                            <p class="cierres-vacios">
+                                Cargando cierres...
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <script src="../js/supabase.js"></script>
+    <script src="../js/productos.js"></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>

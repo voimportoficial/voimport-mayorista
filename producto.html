@@ -188,17 +188,15 @@
 
     if (!producto) {
 
-        document.querySelector(
-            ".producto-detalle-contenido"
-        ).innerHTML = `
-            <div style="text-align:center; width:100%;">
-                <h1>Producto no encontrado</h1>
-                <p>No pudimos encontrar este perfume.</p>
-                <a href="/">
-                    ← Volver al inicio
-                </a>
-            </div>
-        `;
+        /*
+            Puede ser un producto creado desde Gestión que
+            todavía no existe en productos.js. Dejamos la
+            ficha intacta para que js/script.js lo cargue
+            desde Supabase unos instantes después.
+        */
+        document.getElementById(
+            "producto-nombre"
+        ).textContent = "Cargando producto...";
 
     } else {
 

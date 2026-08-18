@@ -240,25 +240,50 @@ botonCopiarAlias?.addEventListener("click", async () => {
 const botonEnviarComprobante =
     document.getElementById("enviar-comprobante");
 
-botonEnviarComprobante?.addEventListener("click", () => {
+botonEnviarComprobante?.addEventListener("click", async () => {
 
     if (carrito.length === 0) {
         alert("Agregá productos al carrito antes de enviar el comprobante.");
         return;
     }
 
-    const detallePedido = crearMensajePedido()
-        .replace(
-            "Hola, quiero realizar el siguiente pedido:\n\n",
-            ""
-        )
-        .replace(
-            "\n\nQuedo a la espera para coordinar el pago y la entrega.",
-            ""
-        );
+    const ventanaWhatsApp =
+        window.open("", "_blank");
 
-    const mensaje = encodeURIComponent(
-        `Hola, realicé la transferencia para confirmar mi pedido.
+    if (!ventanaWhatsApp) {
+        alert("El navegador bloqueó la ventana de WhatsApp. Permití las ventanas emergentes e intentá de nuevo.");
+        return;
+    }
+
+    ventanaWhatsApp.opener = null;
+
+    const textoOriginal =
+        botonEnviarComprobante.textContent;
+
+    botonEnviarComprobante.disabled = true;
+    botonEnviarComprobante.textContent =
+        "Registrando pedido...";
+
+    try {
+
+        const pedido =
+            await registrarPedidoWebPendiente(
+                "transferencia"
+            );
+
+        const detallePedido =
+            crearMensajePedido(pedido.codigo)
+                .replace(
+                    "Hola, quiero realizar el siguiente pedido:\n\n",
+                    ""
+                )
+                .replace(
+                    "\n\nQuedo a la espera para coordinar el pago y la entrega.",
+                    ""
+                );
+
+        const mensaje = encodeURIComponent(
+            `Hola, realicé la transferencia para confirmar mi pedido.
 
 Detalle del pedido:
 
@@ -267,16 +292,35 @@ ${detallePedido}
 Adjunto el comprobante de pago.
 
 Quedo a la espera de la confirmación y para coordinar la entrega.`
-    );
+        );
 
-    const enlaceWhatsApp =
-        `https://wa.me/${numeroWhatsApp}?text=${mensaje}`;
+        const enlaceWhatsApp =
+            `https://wa.me/${numeroWhatsApp}?text=${mensaje}`;
 
-    window.open(
-        enlaceWhatsApp,
-        "_blank",
-        "noopener,noreferrer"
-    );
+        ventanaWhatsApp.location.href =
+            enlaceWhatsApp;
+
+    } catch (error) {
+
+        console.error(
+            "No se pudo registrar el pedido web:",
+            error
+        );
+
+        ventanaWhatsApp.close();
+
+        alert(
+            error?.message ||
+            "No se pudo registrar el pedido. Intentá nuevamente."
+        );
+
+    } finally {
+
+        botonEnviarComprobante.disabled = false;
+        botonEnviarComprobante.textContent =
+            textoOriginal;
+
+    }
 
 });
 
@@ -601,7 +645,70 @@ function combinarProductoConSupabase(productoLocal) {
             stockRemoto !== null
                 ? Math.max(0, stockRemoto)
                 : 0,
-        activo: remoto.activo !== false
+        activo:
+            remoto.activo !== false &&
+            remoto.retirado !== true
+    };
+}
+
+function crearProductoSoloSupabase(remoto) {
+    const slug = String(remoto?.slug || "").trim();
+
+    if (!slug) return null;
+
+    const precioMinorista =
+        numeroValido(remoto.precio_minorista) || 0;
+
+    const precioMayoristaIngresado =
+        numeroValido(remoto.precio_mayorista);
+
+    const stockRemoto = numeroValido(remoto.stock);
+
+    const categoria =
+        String(remoto.categoria || "").trim() ||
+        CATEGORIA_PREDETERMINADA;
+
+    const tipoPredeterminado =
+        categoria === "decants" ? "decant" : "perfume";
+
+    return {
+        id: slug,
+        slug,
+        nombre:
+            String(remoto.nombre || "").trim() || slug,
+        marca:
+            String(remoto.marca || "").trim(),
+        categoria,
+        linea:
+            String(remoto.linea || "").trim(),
+        tipo:
+            String(remoto.tipo || "").trim() || tipoPredeterminado,
+        presentacion:
+            String(remoto.presentacion || "").trim(),
+        imagen:
+            String(remoto.imagen || "").trim() ||
+            "images/favicon.PNG",
+        descripcion: "",
+        notasSalida: "",
+        notasCorazon: "",
+        notasFondo: "",
+        inspiracion: "",
+        recomendacion: "",
+        disenador: "",
+        precioMinorista,
+        precioMayorista:
+            precioMayoristaIngresado !== null &&
+            precioMayoristaIngresado > 0
+                ? precioMayoristaIngresado
+                : precioMinorista,
+        stock:
+            stockRemoto !== null
+                ? Math.max(0, stockRemoto)
+                : 0,
+        activo:
+            remoto.activo !== false &&
+            remoto.retirado !== true,
+        creadoDesdeGestion: true
     };
 }
 
@@ -1087,20 +1194,167 @@ function actualizarFichaIndividual() {
 
     if (!botonDetalle) return;
 
+    const slugUrl =
+        new URLSearchParams(window.location.search)
+            .get("slug") || "";
+
     const producto = buscarProductoActual({
-        slug: botonDetalle.dataset.slug || "",
-        nombre: botonDetalle.dataset.nombre || ""
+        slug:
+            slugUrl ||
+            botonDetalle.dataset.slug || "",
+        nombre:
+            botonDetalle.dataset.nombre || ""
     });
 
-    if (!producto) return;
+    if (!producto) {
+        const contenido = document.querySelector(
+            ".producto-detalle-contenido"
+        );
+
+        if (contenido && slugUrl) {
+            contenido.innerHTML = `
+                <div style="text-align:center; width:100%;">
+                    <h1>Producto no encontrado</h1>
+                    <p>No pudimos encontrar este perfume.</p>
+                    <a href="catalogo.html">← Volver al catálogo</a>
+                </div>
+            `;
+        }
+
+        return;
+    }
+
+    document.title =
+        `${producto.nombre} | Vo Import`;
+
+    const imagenProducto =
+        producto.imagen || "images/favicon.PNG";
+
+    const imagen = document.getElementById(
+        "producto-imagen"
+    );
+
+    if (imagen) {
+        imagen.src = imagenProducto;
+        imagen.alt = `Perfume ${producto.nombre}`;
+    }
+
+    const marca = document.getElementById(
+        "producto-marca"
+    );
+
+    if (marca) {
+        marca.textContent = producto.marca || "";
+    }
+
+    const nombre = document.getElementById(
+        "producto-nombre"
+    );
+
+    if (nombre) {
+        nombre.textContent = producto.nombre || "";
+    }
+
+    const presentacion = document.getElementById(
+        "producto-presentacion"
+    );
+
+    if (presentacion) {
+        presentacion.textContent =
+            producto.presentacion || "";
+    }
+
+    const descripcion = document.getElementById(
+        "producto-descripcion"
+    );
+
+    if (descripcion) {
+        descripcion.textContent =
+            producto.descripcion || "";
+    }
+
+    const notasSalida = document.getElementById(
+        "notas-salida"
+    );
+
+    const notasCorazon = document.getElementById(
+        "notas-corazon"
+    );
+
+    const notasFondo = document.getElementById(
+        "notas-fondo"
+    );
+
+    if (notasSalida) {
+        notasSalida.textContent =
+            producto.notasSalida || "";
+    }
+
+    if (notasCorazon) {
+        notasCorazon.textContent =
+            producto.notasCorazon || "";
+    }
+
+    if (notasFondo) {
+        notasFondo.textContent =
+            producto.notasFondo || "";
+    }
+
+    const bloqueNotas = document.querySelector(
+        ".notas-olfativas"
+    );
+
+    if (bloqueNotas) {
+        const tieneNotas = Boolean(
+            producto.notasSalida ||
+            producto.notasCorazon ||
+            producto.notasFondo
+        );
+
+        bloqueNotas.style.display =
+            tieneNotas ? "" : "none";
+    }
+
+    const inspiracion = document.getElementById(
+        "producto-inspiracion"
+    );
+
+    const recomendacion = document.getElementById(
+        "producto-recomendacion"
+    );
+
+    if (inspiracion) {
+        inspiracion.textContent =
+            producto.inspiracion || "";
+    }
+
+    if (recomendacion) {
+        recomendacion.textContent =
+            producto.recomendacion || "";
+    }
+
+    const bloqueInspiracion = document.getElementById(
+        "bloque-inspiracion"
+    );
+
+    if (bloqueInspiracion) {
+        const tieneInspiracion = Boolean(
+            producto.inspiracion ||
+            producto.recomendacion
+        );
+
+        bloqueInspiracion.style.display =
+            tieneInspiracion ? "" : "none";
+    }
 
     botonDetalle.dataset.slug = producto.slug;
+    botonDetalle.dataset.nombre = producto.nombre;
     botonDetalle.dataset.categoria = producto.categoria;
     botonDetalle.dataset.precioMinorista =
         producto.precioMinorista;
     botonDetalle.dataset.precioMayorista =
         producto.precioMayorista;
-    botonDetalle.dataset.imagen = producto.imagen || "";
+    botonDetalle.dataset.imagen = imagenProducto;
     botonDetalle.dataset.stock = producto.stock ?? "";
 
     const precioMinorista = document.querySelector(
@@ -1109,6 +1363,10 @@ function actualizarFichaIndividual() {
 
     const precioMayorista = document.querySelector(
         ".detalle-precio.mayorista"
+    );
+
+    const condicionMayorista = document.querySelector(
+        ".condicion-mayorista"
     );
 
     const regla = obtenerReglaCategoria(producto.categoria);
@@ -1124,9 +1382,16 @@ function actualizarFichaIndividual() {
             precioMayorista.textContent =
                 `Mayorista: ${formatearPrecio(producto.precioMayorista)}`;
             precioMayorista.hidden = false;
+            precioMayorista.style.display = "";
         } else {
             precioMayorista.hidden = true;
+            precioMayorista.style.display = "none";
         }
+    }
+
+    if (condicionMayorista) {
+        condicionMayorista.style.display =
+            regla.tieneMayorista ? "" : "none";
     }
 
     let stockDetalle = document.querySelector(
@@ -1180,11 +1445,14 @@ function actualizarFichaIndividual() {
         ".producto-compra input"
     );
 
-    if (inputCantidad && producto.stock !== null) {
-        inputCantidad.max = String(
-            Math.max(1, producto.stock)
-        );
+    if (inputCantidad) {
         inputCantidad.disabled = sinStock;
+
+        if (producto.stock !== null) {
+            inputCantidad.max = String(
+                Math.max(1, producto.stock)
+            );
+        }
     }
 }
 
@@ -1724,10 +1992,180 @@ botonVaciarCarrito?.addEventListener("click", () => {
 });
 
 // =============================
+// PEDIDOS WEB PENDIENTES
+// =============================
+
+const PEDIDO_WEB_TEMPORAL_KEY =
+    "voimport-pedido-web-temporal";
+
+const PEDIDO_WEB_REUTILIZAR_MS =
+    30 * 60 * 1000;
+
+function crearHuellaPedidoWeb() {
+
+    return JSON.stringify(
+        carrito
+            .map((producto) => ({
+                slug: producto.slug || "",
+                cantidad: Number(producto.cantidad) || 0
+            }))
+            .sort((a, b) =>
+                a.slug.localeCompare(b.slug)
+            )
+    );
+
+}
+
+function obtenerPedidoWebTemporal() {
+
+    try {
+
+        const guardado = JSON.parse(
+            localStorage.getItem(
+                PEDIDO_WEB_TEMPORAL_KEY
+            )
+        );
+
+        if (!guardado) return null;
+
+        if (
+            guardado.huella !==
+            crearHuellaPedidoWeb()
+        ) {
+            return null;
+        }
+
+        const antiguedad =
+            Date.now() -
+            Number(guardado.creadoEn || 0);
+
+        if (
+            !Number.isFinite(antiguedad) ||
+            antiguedad < 0 ||
+            antiguedad > PEDIDO_WEB_REUTILIZAR_MS
+        ) {
+            return null;
+        }
+
+        if (
+            !guardado.pedidoId ||
+            !guardado.codigo
+        ) {
+            return null;
+        }
+
+        return guardado;
+
+    } catch (error) {
+
+        console.warn(
+            "No se pudo recuperar el pedido web temporal:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+function guardarPedidoWebTemporal(pedido) {
+
+    try {
+
+        localStorage.setItem(
+            PEDIDO_WEB_TEMPORAL_KEY,
+            JSON.stringify({
+                pedidoId: pedido.pedidoId,
+                codigo: pedido.codigo,
+                total: pedido.total,
+                huella: crearHuellaPedidoWeb(),
+                creadoEn: Date.now()
+            })
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "No se pudo guardar el pedido web temporal:",
+            error
+        );
+
+    }
+
+}
+
+async function registrarPedidoWebPendiente(
+    origen = "web"
+) {
+
+    const pedidoTemporal =
+        obtenerPedidoWebTemporal();
+
+    if (pedidoTemporal) {
+        return pedidoTemporal;
+    }
+
+    if (
+        typeof supabaseClient === "undefined" ||
+        !supabaseClient?.rpc
+    ) {
+        throw new Error(
+            "No se pudo conectar con el sistema de pedidos. Intentá nuevamente."
+        );
+    }
+
+    const items =
+        carrito.map((producto) => ({
+            slug: producto.slug || "",
+            cantidad: Number(producto.cantidad) || 0
+        }));
+
+    const { data, error } =
+        await supabaseClient.rpc(
+            "crear_pedido_web",
+            {
+                p_items: items,
+                p_origen: origen
+            }
+        );
+
+    if (error) {
+        throw error;
+    }
+
+    const resultado =
+        Array.isArray(data)
+            ? data[0]
+            : data;
+
+    if (
+        !resultado?.pedido_id ||
+        !resultado?.codigo
+    ) {
+        throw new Error(
+            "El pedido no pudo registrarse correctamente."
+        );
+    }
+
+    const pedido = {
+        pedidoId: resultado.pedido_id,
+        codigo: resultado.codigo,
+        total: Number(resultado.total) || 0
+    };
+
+    guardarPedidoWebTemporal(pedido);
+
+    return pedido;
+
+}
+
+
+// =============================
 // FINALIZAR PEDIDO POR WHATSAPP
 // =============================
 
-function crearMensajePedido() {
+function crearMensajePedido(codigoPedido = "") {
     const cantidadTotal = obtenerCantidadTotal();
 
     const nombresDisenadoresPedido = {
@@ -1760,6 +2198,11 @@ function crearMensajePedido() {
 
     let mensaje =
         "Hola, quiero realizar el siguiente pedido:\n\n";
+
+    if (codigoPedido) {
+        mensaje +=
+            `Pedido: ${codigoPedido}\n\n`;
+    }
 
     carrito.forEach((producto, indice) => {
         const precioUnitario =
@@ -1883,24 +2326,71 @@ function crearMensajePedido() {
 }
 
 
-botonFinalizarPedido?.addEventListener("click", () => {
+botonFinalizarPedido?.addEventListener("click", async () => {
+
     if (carrito.length === 0) {
         alert("Tu carrito está vacío.");
         return;
     }
 
-    const mensaje = encodeURIComponent(
-        crearMensajePedido()
-    );
+    const ventanaWhatsApp =
+        window.open("", "_blank");
 
-    const enlaceWhatsApp =
-        `https://wa.me/${numeroWhatsApp}?text=${mensaje}`;
+    if (!ventanaWhatsApp) {
+        alert("El navegador bloqueó la ventana de WhatsApp. Permití las ventanas emergentes e intentá de nuevo.");
+        return;
+    }
 
-    window.open(
-        enlaceWhatsApp,
-        "_blank",
-        "noopener,noreferrer"
-    );
+    ventanaWhatsApp.opener = null;
+
+    const textoOriginal =
+        botonFinalizarPedido.textContent;
+
+    botonFinalizarPedido.disabled = true;
+    botonFinalizarPedido.textContent =
+        "Registrando pedido...";
+
+    try {
+
+        const pedido =
+            await registrarPedidoWebPendiente(
+                "web"
+            );
+
+        const mensaje = encodeURIComponent(
+            crearMensajePedido(
+                pedido.codigo
+            )
+        );
+
+        const enlaceWhatsApp =
+            `https://wa.me/${numeroWhatsApp}?text=${mensaje}`;
+
+        ventanaWhatsApp.location.href =
+            enlaceWhatsApp;
+
+    } catch (error) {
+
+        console.error(
+            "No se pudo registrar el pedido web:",
+            error
+        );
+
+        ventanaWhatsApp.close();
+
+        alert(
+            error?.message ||
+            "No se pudo registrar el pedido. Intentá nuevamente."
+        );
+
+    } finally {
+
+        botonFinalizarPedido.disabled = false;
+        botonFinalizarPedido.textContent =
+            textoOriginal;
+
+    }
+
 });
 
 
@@ -1983,9 +2473,53 @@ async function iniciarAplicacion() {
             ? productos
             : [];
 
-    catalogoActualizado = productosLocales.map(
-        combinarProductoConSupabase
+    const catalogoLocalActualizado =
+        productosLocales.map(
+            combinarProductoConSupabase
+        );
+
+    const slugsLocales = new Set(
+        catalogoLocalActualizado
+            .map((producto) => producto.slug)
+            .filter(Boolean)
     );
+
+    const productosSoloSupabase =
+        datosSupabase
+            .filter(
+                (producto) =>
+                    producto?.slug &&
+                    !slugsLocales.has(producto.slug)
+            )
+            .map(crearProductoSoloSupabase)
+            .filter(Boolean);
+
+    catalogoActualizado = [
+        ...catalogoLocalActualizado,
+        ...productosSoloSupabase
+    ];
+
+    /*
+        El buscador general del inicio usa el array local
+        `productos`. Agregamos allí, solo en memoria, los
+        productos creados desde Gestión para que también
+        puedan encontrarse sin modificar productos.js.
+    */
+    if (
+        typeof productos !== "undefined" &&
+        Array.isArray(productos)
+    ) {
+        productosSoloSupabase.forEach((producto) => {
+            const yaExiste = productos.some(
+                (local) =>
+                    obtenerSlug(local) === producto.slug
+            );
+
+            if (!yaExiste) {
+                productos.push(producto);
+            }
+        });
+    }
 
     sincronizarCarritoConCatalogo();
     generarCatalogo();

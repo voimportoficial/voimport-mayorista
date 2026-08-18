@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <title>Vo Import | Sistema de Gestión</title>
+</head>
+
+<body>
+
+    <!-- ========================================
+         LOGIN
+         ======================================== -->
+
+    <section
+        class="auth-pantalla"
+        id="pantalla-login"
+    >
+
+        <div class="auth-contenedor">
+
+            <div class="auth-logo">
+                <h1>VO IMPORT</h1>
+                <p>Sistema de Gestión</p>
+            </div>
+
+            <div class="auth-tarjeta">
+
+                <h2>Ingresar</h2>
+
+                <p class="auth-descripcion">
+                    Accedé al panel de gestión de Vo Import.
+                </p>
+
+                <form id="form-login">
+
+                    <label for="login-email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="login-email"
+                        autocomplete="email"
+                        required
+                    >
+
+                    <label for="login-password">
+                        Contraseña
+                    </label>
+
+                    <input
+                        type="password"
+                        id="login-password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                    <button
+                        type="submit"
+                        class="auth-boton-principal"
+                    >
+                        Ingresar
+                    </button>
+
+                </form>
+
+                <button
+                    type="button"
+                    class="auth-boton-secundario"
+                    id="recuperar-password"
+                >
+                    Crear / recuperar contraseña
+                </button>
+
+                <p
+                    class="auth-mensaje"
+                    id="mensaje-login"
+                ></p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================
+         NUEVA CONTRASEÑA
+         ======================================== -->
+
+    <section
+        class="auth-pantalla oculto"
+        id="pantalla-nueva-password"
+    >
+
+        <div class="auth-contenedor">
+
+            <div class="auth-logo">
+                <h1>VO IMPORT</h1>
+                <p>Sistema de Gestión</p>
+            </div>
+
+            <div class="auth-tarjeta">
+
+                <h2>Crear contraseña</h2>
+
+                <p class="auth-descripcion">
+                    Elegí la contraseña que vas a usar para ingresar al sistema.
+                </p>
+
+                <form id="form-nueva-password">
+
+                    <label for="nueva-password">
+                        Nueva contraseña
+                    </label>
+
+                    <input
+                        type="password"
+                        id="nueva-password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <label for="repetir-password">
+                        Repetir contraseña
+                    </label>
+
+                    <input
+                        type="password"
+                        id="repetir-password"
+                        autocomplete="new-password"
+                        minlength="8"
+                        required
+                    >
+
+                    <button
+                        type="submit"
+                        class="auth-boton-principal"
+                    >
+                        Guardar contraseña
+                    </button>
+
+                </form>
+
+                <p
+                    class="auth-mensaje"
+                    id="mensaje-nueva-password"
+                ></p>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ========================================
+         APLICACIÓN
+         ======================================== -->
+
+    <div
+        id="aplicacion-gestion"
+        class="oculto"
+    >
+
+        <header>
+
+            <div class="header-contenido">
+
+                <div>
+
+                    <h1>VO IMPORT</h1>
+
+                    <p>
+                        Sistema de Gestión
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="cerrar-sesion"
+                    id="cerrar-sesion"
+                >
+                    Cerrar sesión
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <main>
+
+            <!-- ========================================
+                 RESUMEN
+                 ======================================== -->
+
+            <section>
+
+                <h2>Resumen general</h2>
+
+                <div class="resumen-grid">
+
+                    <article>
+                        <span>Capital en stock</span>
+                        <strong id="capital-stock">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Ventas del mes</span>
+                        <strong id="ventas-mes">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Ganancia del mes</span>
+                        <strong id="ganancia-mes">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Disponible para retirar</span>
+                        <strong id="disponible-retirar">$ 0</strong>
+                    </article>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 ACCIONES
+                 ======================================== -->
+
+            <section>
+
+                <h2>Acciones rápidas</h2>
+
+                <div class="acciones">
+
+                    <button
+                        type="button"
+                        id="registrar-venta"
+                    >
+                        Registrar venta
+                    </button>
+
+                    <button
+                        type="button"
+                        id="registrar-reposicion"
+                    >
+                        Registrar reposición
+                    </button>
+
+                    <button
+                        type="button"
+                        id="ver-stock"
+                    >
+                        Ver stock
+                    </button>
+
+                    <button
+                        type="button"
+                        id="ver-movimientos"
+                    >
+                        Ver movimientos
+                    </button>
+
+                    <button
+                        type="button"
+                        id="ver-clientes"
+                    >
+                        Clientes
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+     REGISTRAR VENTA
+     ======================================== -->
+
+<section
+    class="seccion-venta oculto"
+    id="seccion-venta"
+>
+
+    <div class="venta-encabezado">
+
+        <div>
+
+            <h2>
+                Registrar venta
+            </h2>
+
+            <p>
+                Agregá todos los productos de la venta y confirmá al final.
+            </p>
+
+        </div>
+
+        <button
+            type="button"
+            class="cerrar-venta"
+            id="cerrar-venta"
+        >
+            Cerrar
+        </button>
+
+    </div>
+
+
+    <div class="venta-panel">
+
+        <!-- =============================
+             PRODUCTOS
+             ============================= -->
+
+        <div class="venta-formulario">
+
+            <div class="campo">
+
+                <label for="venta-categoria">
+                    Categoría
+                </label>
+
+                <select id="venta-categoria">
+
+                    <option value="">
+                        Seleccionar categoría
+                    </option>
+
+                    <option value="perfumes-grandes">
+                        Perfumes árabes
+                    </option>
+
+                    <option value="maison-30ml">
+                        Maison Alhambra 30 ml
+                    </option>
+
+                    <option value="inspiraciones-disenador">
+                        Inspiraciones de diseñador 60 ml
+                    </option>
+
+                    <option value="decants-arabes">
+                        Decants árabes
+                    </option>
+
+                    <option value="decants-disenador">
+                        Decants de diseñador
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="venta-producto">
+                    Producto
+                </label>
+
+                <select
+                    id="venta-producto"
+                    disabled
+                >
+
+                    <option value="">
+                        Primero elegí una categoría
+                    </option>
+
+                </select>
+
+                <small id="venta-stock-disponible"></small>
+
+            </div>
+
+
+            <div class="venta-fila">
+
+                <div class="campo">
+
+                    <label for="venta-cantidad">
+                        Cantidad
+                    </label>
+
+                    <input
+                        type="number"
+                        id="venta-cantidad"
+                        min="1"
+                        value="1"
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="venta-tipo-precio">
+                        Precio
+                    </label>
+
+                    <select id="venta-tipo-precio">
+
+                        <option value="automatico">
+                            Automático
+                        </option>
+
+                        <option value="personalizado">
+                            Personalizado
+                        </option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="campo oculto"
+                id="contenedor-precio-personalizado"
+            >
+
+                <label for="venta-precio-personalizado">
+                    Precio unitario personalizado
+                </label>
+
+                <input
+                    type="number"
+                    id="venta-precio-personalizado"
+                    min="0"
+                    step="1"
+                    placeholder="Ej: 70000"
+                >
+
+            </div>
+
+
+            <div class="venta-precio-preview">
+
+                <span>
+                    Precio unitario
+                </span>
+
+                <strong id="venta-precio-unitario">
+                    $ 0
+                </strong>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="agregar-item-venta"
+                id="agregar-item-venta"
+            >
+                Agregar producto a la venta
+            </button>
+
+
+            <p
+                class="venta-mensaje"
+                id="mensaje-item-venta"
+            ></p>
+
+        </div>
+
+
+        <!-- =============================
+             RESUMEN / COBRO
+             ============================= -->
+
+        <div class="venta-resumen">
+
+            <h3>
+                Productos de la venta
+            </h3>
+
+
+            <div
+                class="venta-items"
+                id="venta-items"
+            >
+
+                <p class="venta-vacia">
+                    Todavía no agregaste productos.
+                </p>
+
+            </div>
+
+
+            <div class="venta-total">
+
+                <span>
+                    Total
+                </span>
+
+                <strong id="venta-total">
+                    $ 0
+                </strong>
+
+            </div>
+
+
+            <!-- CLIENTE -->
+
+            <div class="campo">
+
+                <label for="venta-cliente">
+                    Cliente
+                </label>
+
+                <select id="venta-cliente">
+
+                    <option value="">
+                        Sin cliente
+                    </option>
+
+                </select>
+
+                <small id="venta-cliente-ayuda">
+                    Opcional si la venta queda totalmente cobrada.
+                </small>
+
+            </div>
+
+
+            <!-- ESTADO DEL COBRO -->
+
+            <div class="campo">
+
+                <label for="venta-estado-cobro">
+                    Estado del cobro
+                </label>
+
+                <select id="venta-estado-cobro">
+
+                    <option value="cobrado">
+                        Cobrado
+                    </option>
+
+                    <option value="parcial">
+                        Pago parcial
+                    </option>
+
+                    <option value="no-cobrado">
+                        No cobrado
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- PAGO INICIAL -->
+
+            <div
+                class="campo oculto"
+                id="contenedor-pago-inicial"
+            >
+
+                <label for="venta-pago-inicial">
+                    Pagó ahora
+                </label>
+
+                <input
+                    type="number"
+                    id="venta-pago-inicial"
+                    min="1"
+                    step="1"
+                    placeholder="Ej: 50000"
+                >
+
+            </div>
+
+
+            <!-- MEDIO DE PAGO -->
+
+            <div
+                class="campo"
+                id="contenedor-metodo-pago"
+            >
+
+                <label for="venta-metodo-pago">
+                    Medio de pago
+                </label>
+
+                <select id="venta-metodo-pago">
+
+                    <option value="">
+                        Seleccionar
+                    </option>
+
+                    <option value="Efectivo">
+                        Efectivo
+                    </option>
+
+                    <option value="Transferencia">
+                        Transferencia
+                    </option>
+
+                    <option value="Mercado Pago">
+                        Mercado Pago
+                    </option>
+
+                    <option value="Tarjeta">
+                        Tarjeta
+                    </option>
+
+                    <option value="Dólares">
+                        Dólares
+                    </option>
+
+                    <option value="USDT">
+                        USDT
+                    </option>
+
+                    <option value="Otro">
+                        Otro
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <!-- RESUMEN COBRO -->
+
+            <div class="venta-cobro-resumen">
+
+                <div>
+
+                    <span>
+                        Pagado
+                    </span>
+
+                    <strong id="venta-total-pagado">
+                        $ 0
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Saldo pendiente
+                    </span>
+
+                    <strong id="venta-saldo-pendiente">
+                        $ 0
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="campo">
+
+                <label for="venta-observaciones">
+                    Observaciones
+                </label>
+
+                <textarea
+                    id="venta-observaciones"
+                    rows="3"
+                    placeholder="Opcional"
+                ></textarea>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="confirmar-venta"
+                id="confirmar-venta"
+            >
+                Confirmar venta
+            </button>
+
+
+            <p
+                class="venta-mensaje"
+                id="mensaje-confirmar-venta"
+            ></p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+            <!-- ========================================
+                 STOCK
+                 ======================================== -->
+
+            <section
+                class="seccion-stock oculto"
+                id="seccion-stock"
+            >
+
+                <div class="stock-encabezado">
+
+                    <div>
+
+                        <h2>
+                            Stock actual
+                        </h2>
+
+                        <p>
+                            Stock separado por categorías
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="cerrar-stock"
+                        id="cerrar-stock"
+                    >
+                        Cerrar
+                    </button>
+
+                </div>
+
+                <div id="stock-categorias"></div>
+
+            </section>
+
+
+            <!-- ========================================
+                 MOVIMIENTOS
+                 ======================================== -->
+
+            <section
+                class="seccion-movimientos oculto"
+                id="seccion-movimientos"
+            >
+
+                <div class="movimientos-encabezado">
+
+                    <div>
+
+                        <h2>
+                            Movimientos
+                        </h2>
+
+                        <p>
+                            Historial de ventas registradas
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="cerrar-movimientos"
+                        id="cerrar-movimientos"
+                    >
+                        Cerrar
+                    </button>
+
+                </div>
+
+                <p
+                    class="venta-mensaje"
+                    id="mensaje-movimientos"
+                ></p>
+
+                <div
+                    class="movimientos-lista"
+                    id="movimientos-lista"
+                >
+
+                    <p class="movimientos-vacios">
+                        Cargando movimientos...
+                    </p>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 CLIENTES
+                 ======================================== -->
+
+            <section
+                class="seccion-clientes oculto"
+                id="seccion-clientes"
+            >
+
+                <div class="clientes-encabezado">
+
+                    <div>
+
+                        <h2>
+                            Clientes
+                        </h2>
+
+                        <p>
+                            Guardá y administrá tus clientes.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="cerrar-clientes"
+                        id="cerrar-clientes"
+                    >
+                        Cerrar
+                    </button>
+
+                </div>
+
+
+                <div class="clientes-panel">
+
+
+                    <!-- FORMULARIO -->
+
+                    <div class="clientes-formulario">
+
+                        <h3 id="clientes-form-titulo">
+                            Nuevo cliente
+                        </h3>
+
+
+                        <form id="form-cliente">
+
+                            <div class="campo">
+
+                                <label for="cliente-nombre">
+                                    Nombre
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="cliente-nombre"
+                                    placeholder="Ej: Juan Pérez"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="cliente-telefono">
+                                    Teléfono
+                                </label>
+
+                                <input
+                                    type="tel"
+                                    id="cliente-telefono"
+                                    placeholder="Ej: 11 1234-5678"
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="cliente-notas">
+                                    Notas
+                                </label>
+
+                                <textarea
+                                    id="cliente-notas"
+                                    rows="3"
+                                    placeholder="Opcional"
+                                ></textarea>
+
+                            </div>
+
+
+                            <div class="clientes-form-botones">
+
+                                <button
+                                    type="submit"
+                                    class="guardar-cliente"
+                                    id="guardar-cliente"
+                                >
+                                    Guardar cliente
+                                </button>
+
+
+                                <button
+                                    type="button"
+                                    class="cancelar-edicion-cliente oculto"
+                                    id="cancelar-edicion-cliente"
+                                >
+                                    Cancelar edición
+                                </button>
+
+                            </div>
+
+
+                            <p
+                                class="venta-mensaje"
+                                id="mensaje-cliente"
+                            ></p>
+
+                        </form>
+
+                    </div>
+
+
+                    <!-- LISTADO -->
+
+                    <div class="clientes-listado">
+
+                        <div class="clientes-listado-superior">
+
+                            <div>
+
+                                <h3>
+                                    Mis clientes
+                                </h3>
+
+                                <span id="clientes-contador">
+                                    0 clientes
+                                </span>
+
+                            </div>
+
+
+                            <input
+                                type="search"
+                                id="buscar-cliente"
+                                placeholder="Buscar cliente..."
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <div
+                            class="clientes-lista"
+                            id="clientes-lista"
+                        >
+
+                            <p class="clientes-vacios">
+                                Cargando clientes...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+    <script src="../js/supabase.js"></script>
+    <script src="../js/productos.js"></script>
+    <script src="script.js"></script>
+
+</body>
+
+</html>
