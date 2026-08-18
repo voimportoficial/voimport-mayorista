@@ -29,24 +29,23 @@
 
             <div class="catalogo-buscador">
 
-    <input
-        type="search"
-        id="buscador-catalogo"
-        placeholder="Buscar perfume o marca..."
-        autocomplete="off"
-    >
+                <input
+                    type="search"
+                    id="buscador-catalogo"
+                    placeholder="Buscar perfume o marca..."
+                    autocomplete="off"
+                >
 
-    <div
-        class="catalogo-buscador-resultados"
-        id="catalogo-buscador-resultados"
-        aria-live="polite"
-    ></div>
+                <div
+                    class="catalogo-buscador-resultados"
+                    id="catalogo-buscador-resultados"
+                    aria-live="polite"
+                ></div>
 
-</div>
+            </div>
 
 
             <div class="catalogo-controles">
-
 
                 <div class="catalogo-stock-filtro">
                     <label>
@@ -65,7 +64,6 @@
                         <option value="precio-mayor">Mayor precio</option>
                     </select>
                 </div>
-
 
             </div>
 
@@ -125,7 +123,6 @@
                 class="productos-grid"
                 id="productos-grid"
             ></div>
-
 
         </div>
     </section>
@@ -236,62 +233,180 @@
         document.getElementById("orden-catalogo");
 
 
-    ordenCatalogo?.addEventListener("change", () => {
-        generarCatalogo();
-    });
+    function actualizarUrlCategoriaCatalogo(categoria) {
+
+        const url =
+            new URL(window.location.href);
 
 
-    soloDisponiblesInput?.addEventListener("change", () => {
-        generarCatalogo();
-    });
+        if (categoria === "perfumes-grandes") {
+
+            url.searchParams.delete(
+                "categoria"
+            );
+
+        } else {
+
+            url.searchParams.set(
+                "categoria",
+                categoria
+            );
+
+        }
 
 
-    buscadorCatalogo?.addEventListener("input", () => {
-        generarCatalogo();
-    });
+        window.history.replaceState(
+            {},
+            "",
+            url.pathname +
+            url.search +
+            url.hash
+        );
+    }
 
 
-    botonesCatalogo.forEach((boton) => {
+    function aplicarCategoriaCatalogo(
+        categoria,
+        actualizarUrl = false
+    ) {
 
-        boton.addEventListener("click", () => {
+        if (
+            categoria ===
+            "inspiraciones-disenador"
+        ) {
+
+            window.location.href =
+                "inspiraciones.html?origen=catalogo";
+
+            return;
+        }
 
 
-            if (boton.dataset.categoria === "inspiraciones-disenador") {
-                window.location.href = "inspiraciones.html?origen=catalogo";
-                return;
+        document.body.dataset.categoria =
+            categoria;
+
+
+        botonesCatalogo.forEach(
+            (boton) => {
+
+                boton.classList.toggle(
+                    "activo",
+                    boton.dataset.categoria ===
+                    categoria
+                );
+
             }
+        );
 
 
-            botonesCatalogo.forEach((item) => {
-                item.classList.remove("activo");
-            });
+        if (categoria === "decants") {
+
+            textoPreciosCatalogo.textContent =
+                "Los decants tienen precio único por unidad y no participan del mínimo mayorista.";
+
+        } else {
+
+            textoPreciosCatalogo.textContent =
+                "El precio minorista se aplica por unidad. Desde 3 perfumes surtidos dentro de la misma categoría, se aplica automáticamente el precio mayorista.";
+
+        }
 
 
-            boton.classList.add("activo");
+        if (actualizarUrl) {
+
+            actualizarUrlCategoriaCatalogo(
+                categoria
+            );
+
+        }
 
 
-            document.body.dataset.categoria =
-                boton.dataset.categoria;
+        generarCatalogo();
+    }
 
 
-            if (boton.dataset.categoria === "decants") {
+    // =====================================================
+    // RECUPERAR CATEGORÍA DESDE EL ENLACE
+    // =====================================================
 
-                textoPreciosCatalogo.textContent =
-                    "Los decants tienen precio único por unidad y no participan del mínimo mayorista.";
+    const parametrosCatalogo =
+        new URLSearchParams(
+            window.location.search
+        );
 
-            } else {
-
-                textoPreciosCatalogo.textContent =
-                    "El precio minorista se aplica por unidad. Desde 3 perfumes surtidos dentro de la misma categoría, se aplica automáticamente el precio mayorista.";
-
-            }
+    const categoriaInicialCatalogo =
+        parametrosCatalogo.get(
+            "categoria"
+        );
 
 
+    const categoriasPermitidasCatalogo = [
+        "perfumes-grandes",
+        "decants",
+        "maison-30ml"
+    ];
+
+
+    if (
+        categoriaInicialCatalogo &&
+        categoriasPermitidasCatalogo.includes(
+            categoriaInicialCatalogo
+        )
+    ) {
+
+        aplicarCategoriaCatalogo(
+            categoriaInicialCatalogo,
+            false
+        );
+
+    }
+
+
+    // =====================================================
+    // CONTROLES
+    // =====================================================
+
+    ordenCatalogo?.addEventListener(
+        "change",
+        () => {
             generarCatalogo();
+        }
+    );
 
-        });
 
-    });
+    soloDisponiblesInput?.addEventListener(
+        "change",
+        () => {
+            generarCatalogo();
+        }
+    );
+
+
+    buscadorCatalogo?.addEventListener(
+        "input",
+        () => {
+            generarCatalogo();
+        }
+    );
+
+
+    botonesCatalogo.forEach(
+        (boton) => {
+
+            boton.addEventListener(
+                "click",
+                () => {
+
+                    aplicarCategoriaCatalogo(
+                        boton.dataset.categoria,
+                        true
+                    );
+
+                }
+            );
+
+        }
+    );
 
 </script>
 

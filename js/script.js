@@ -2535,81 +2535,198 @@ iniciarAplicacion().catch((error) => {
 const cambiarPresentacion =
     document.getElementById("cambiar-presentacion");
 
+
+function actualizarUrlPresentacion(viendoDecants) {
+
+    const url =
+        new URL(window.location.href);
+
+
+    if (viendoDecants) {
+
+        url.searchParams.set(
+            "vista",
+            "decants"
+        );
+
+    } else {
+
+        url.searchParams.delete(
+            "vista"
+        );
+
+    }
+
+
+    window.history.replaceState(
+        {},
+        "",
+        url.pathname +
+        url.search +
+        url.hash
+    );
+}
+
+
 if (cambiarPresentacion) {
 
-    cambiarPresentacion.addEventListener("click", () => {
+    // =====================================================
+    // RECUPERAR LA VISTA DESDE EL ENLACE
+    // =====================================================
 
-        const esPaginaInspiraciones =
-            document.body.dataset.linea === "inspiraciones";
+    const parametrosPresentacion =
+        new URLSearchParams(
+            window.location.search
+        );
 
-        const viendoDecants =
-            document.body.dataset.categoria === "decants";
+    const vistaInicial =
+        parametrosPresentacion.get("vista");
+
+    const esPaginaInspiracionesInicial =
+        document.body.dataset.linea ===
+        "inspiraciones";
 
 
-        if (esPaginaInspiraciones) {
+    if (vistaInicial === "decants") {
+
+        document.body.dataset.categoria =
+            "decants";
+
+
+        if (esPaginaInspiracionesInicial) {
+
+            document.body.dataset.tipo =
+                "decant";
 
             const tituloInspiraciones =
                 document.getElementById(
                     "titulo-inspiraciones-listado"
                 );
 
-            if (viendoDecants) {
+            if (tituloInspiraciones) {
 
-                document.body.dataset.categoria =
-                    "inspiraciones-disenador";
+                tituloInspiraciones.textContent =
+                    "Decants 5 ml inspirados en diseñador";
 
-                document.body.dataset.tipo =
-                    "perfume";
-
-                cambiarPresentacion.textContent =
-                    "Ver Decants 5 ml";
-
-                if (tituloInspiraciones) {
-                    tituloInspiraciones.textContent =
-                        "Perfumes inspirados en diseñador";
-                }
-
-            } else {
-
-                document.body.dataset.categoria =
-                    "decants";
-
-                document.body.dataset.tipo =
-                    "decant";
-
-                cambiarPresentacion.textContent =
-                    "← Volver a perfumes";
-
-                if (tituloInspiraciones) {
-                    tituloInspiraciones.textContent =
-                        "Decants 5 ml inspirados en diseñador";
-                }
             }
 
-        } else {
-
-            if (viendoDecants) {
-
-                document.body.dataset.categoria =
-                    "perfumes-grandes";
-
-                cambiarPresentacion.textContent =
-                    "Ver Decants 5 ml";
-
-            } else {
-
-                document.body.dataset.categoria =
-                    "decants";
-
-                cambiarPresentacion.textContent =
-                    "← Volver a perfumes";
-            }
         }
 
 
-        generarCatalogo();
+        cambiarPresentacion.textContent =
+            "← Volver a perfumes";
 
-    });
+    }
+
+
+    // =====================================================
+    // CAMBIAR ENTRE PERFUMES Y DECANTS
+    // =====================================================
+
+    cambiarPresentacion.addEventListener(
+        "click",
+        () => {
+
+            const esPaginaInspiraciones =
+                document.body.dataset.linea ===
+                "inspiraciones";
+
+            const viendoDecants =
+                document.body.dataset.categoria ===
+                "decants";
+
+
+            if (esPaginaInspiraciones) {
+
+                const tituloInspiraciones =
+                    document.getElementById(
+                        "titulo-inspiraciones-listado"
+                    );
+
+
+                if (viendoDecants) {
+
+                    document.body.dataset.categoria =
+                        "inspiraciones-disenador";
+
+                    document.body.dataset.tipo =
+                        "perfume";
+
+                    cambiarPresentacion.textContent =
+                        "Ver Decants 5 ml";
+
+                    actualizarUrlPresentacion(
+                        false
+                    );
+
+
+                    if (tituloInspiraciones) {
+
+                        tituloInspiraciones.textContent =
+                            "Perfumes inspirados en diseñador";
+
+                    }
+
+                } else {
+
+                    document.body.dataset.categoria =
+                        "decants";
+
+                    document.body.dataset.tipo =
+                        "decant";
+
+                    cambiarPresentacion.textContent =
+                        "← Volver a perfumes";
+
+                    actualizarUrlPresentacion(
+                        true
+                    );
+
+
+                    if (tituloInspiraciones) {
+
+                        tituloInspiraciones.textContent =
+                            "Decants 5 ml inspirados en diseñador";
+
+                    }
+
+                }
+
+            } else {
+
+                if (viendoDecants) {
+
+                    document.body.dataset.categoria =
+                        "perfumes-grandes";
+
+                    cambiarPresentacion.textContent =
+                        "Ver Decants 5 ml";
+
+                    actualizarUrlPresentacion(
+                        false
+                    );
+
+                } else {
+
+                    document.body.dataset.categoria =
+                        "decants";
+
+                    cambiarPresentacion.textContent =
+                        "← Volver a perfumes";
+
+                    actualizarUrlPresentacion(
+                        true
+                    );
+
+                }
+
+            }
+
+
+            generarCatalogo();
+
+        }
+    );
 
 }
 // =============================
