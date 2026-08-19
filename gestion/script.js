@@ -18806,9 +18806,67 @@ function calcularPreciosProductoGestion() {
         editarProductoMarkupMinoristaGestion?.value.trim() || "";
 
 
-    const costo = Number(costoTexto);
-    const markupMayorista = Number(markupMayoristaTexto);
-    const markupMinorista = Number(markupMinoristaTexto);
+    const costo =
+        Number(costoTexto);
+
+    const markupMayorista =
+        Number(markupMayoristaTexto);
+
+    const markupMinorista =
+        Number(markupMinoristaTexto);
+
+
+    const productoEditando =
+        productosGestion.find(
+            (producto) =>
+                Number(producto.id) ===
+                Number(productoEditandoStockIdGestion)
+        );
+
+
+    const esDecant =
+        productoEditando &&
+        productoEsDecantGestion(
+            productoEditando
+        );
+
+
+    const redondeoDecant =
+        Math.max(
+            1,
+            Number(
+                editarProductoDecantRedondeoGestion?.value
+            ) || 500
+        );
+
+
+    function calcularPrecioFinal(
+        markup
+    ) {
+
+        const precioSinRedondear =
+            costo *
+            (1 + markup / 100);
+
+
+        if (esDecant) {
+
+            return (
+                Math.ceil(
+                    precioSinRedondear /
+                    redondeoDecant
+                ) *
+                redondeoDecant
+            );
+
+        }
+
+
+        return Math.round(
+            precioSinRedondear
+        );
+
+    }
 
 
     if (
@@ -18819,16 +18877,20 @@ function calcularPreciosProductoGestion() {
         costo >= 0 &&
         markupMayorista >= 0
     ) {
+
         editarProductoMayoristaGestion.value =
-            Math.round(
-                costo *
-                (1 + markupMayorista / 100)
+            calcularPrecioFinal(
+                markupMayorista
             );
+
     } else if (
         costoTexto !== "" ||
         markupMayoristaTexto !== ""
     ) {
-        editarProductoMayoristaGestion.value = "";
+
+        editarProductoMayoristaGestion.value =
+            "";
+
     }
 
 
@@ -18840,16 +18902,20 @@ function calcularPreciosProductoGestion() {
         costo >= 0 &&
         markupMinorista >= 0
     ) {
+
         editarProductoMinoristaGestion.value =
-            Math.round(
-                costo *
-                (1 + markupMinorista / 100)
+            calcularPrecioFinal(
+                markupMinorista
             );
+
     } else if (
         costoTexto !== "" ||
         markupMinoristaTexto !== ""
     ) {
-        editarProductoMinoristaGestion.value = "";
+
+        editarProductoMinoristaGestion.value =
+            "";
+
     }
 
 }
