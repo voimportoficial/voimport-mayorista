@@ -33990,14 +33990,14 @@ function sincronizarPantallaGestion() {
 
                     activarPantallaGestion(
                         ultimaPantallaVisible.id,
-                        true,
+                        false,
                         false
                     );
 
                 } else {
 
                     mostrarInicioGestion(
-                        true,
+                        false,
                         false
                     );
 
