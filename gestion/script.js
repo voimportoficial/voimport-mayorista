@@ -34295,11 +34295,55 @@ function prepararPlanEdicionMasivaGestion() {
                         costoActual
                     );
 
-                let precioMayorista =
+                                let precioMayorista =
                     Number(producto.precio_mayorista) || 0;
 
                 let precioMinorista =
                     Number(producto.precio_minorista) || 0;
+
+
+                const redondeoPrecioDecant =
+                    esDecant
+                        ? Number(
+                            producto.redondeo_costo_decant
+                        ) || 500
+                        : null;
+
+
+                function calcularPrecioMasivoDesdeMarkup(
+                    markup
+                ) {
+
+                    const precioSinRedondear =
+                        costoFinal *
+                        (1 + markup / 100);
+
+
+                    if (
+                        esDecant &&
+                        Number.isFinite(
+                            redondeoPrecioDecant
+                        ) &&
+                        redondeoPrecioDecant > 0
+                    ) {
+
+                        return (
+                            Math.ceil(
+                                precioSinRedondear /
+                                redondeoPrecioDecant
+                            ) *
+                            redondeoPrecioDecant
+                        );
+
+                    }
+
+
+                    return Math.round(
+                        precioSinRedondear
+                    );
+
+                }
+
 
                 if (
                     modoMayoristaMasivoGestion ===
@@ -34310,9 +34354,8 @@ function prepararPlanEdicionMasivaGestion() {
                         markupMayoristaDato.valor;
 
                     precioMayorista =
-                        Math.round(
-                            costoFinal *
-                            (1 + markupMayorista / 100)
+                        calcularPrecioMasivoDesdeMarkup(
+                            markupMayorista
                         );
 
                 } else if (
@@ -34348,11 +34391,12 @@ function prepararPlanEdicionMasivaGestion() {
                     }
 
                     precioMayorista =
-                        Math.round(
-                            costoFinal *
-                            (1 + markupMayorista / 100)
+                        calcularPrecioMasivoDesdeMarkup(
+                            markupMayorista
                         );
+
                 }
+
 
                 if (
                     modoMinoristaMasivoGestion ===
@@ -34363,9 +34407,8 @@ function prepararPlanEdicionMasivaGestion() {
                         markupMinoristaDato.valor;
 
                     precioMinorista =
-                        Math.round(
-                            costoFinal *
-                            (1 + markupMinorista / 100)
+                        calcularPrecioMasivoDesdeMarkup(
+                            markupMinorista
                         );
 
                 } else if (
@@ -34401,10 +34444,10 @@ function prepararPlanEdicionMasivaGestion() {
                     }
 
                     precioMinorista =
-                        Math.round(
-                            costoFinal *
-                            (1 + markupMinorista / 100)
+                        calcularPrecioMasivoDesdeMarkup(
+                            markupMinorista
                         );
+
                 }
 
                 if (
