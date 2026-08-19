@@ -52,16 +52,29 @@ const botonCerrarSesion =
 // ========================================
 
 const capitalStock =
-    document.getElementById("capital-stock");
+    document.getElementById(
+        "capital-stock"
+    );
+
+const capitalReinversionGestion =
+    document.getElementById(
+        "capital-reinversion"
+    );
 
 const ventasMes =
-    document.getElementById("ventas-mes");
+    document.getElementById(
+        "ventas-mes"
+    );
 
 const gananciaMes =
-    document.getElementById("ganancia-mes");
+    document.getElementById(
+        "ganancia-mes"
+    );
 
 const disponibleRetirar =
-    document.getElementById("disponible-retirar");
+    document.getElementById(
+        "disponible-retirar"
+    );
 
 
 // ========================================
@@ -4020,6 +4033,9 @@ botonConfirmarVenta?.addEventListener(
 
 
             renderizarStock();
+
+
+            await actualizarResumenGeneral();
 
 
             let textoResultado =
@@ -11181,7 +11197,7 @@ formAgregarPago?.addEventListener(
 
             await cargarClientesACobrarGestion();
 
-            await actualizarDisponibleRetirarGestion();
+            await actualizarResumenGeneral();
 
 
             mostrarMensaje(
@@ -22626,6 +22642,8 @@ botonGuardarReposicionGestion
 
                 await cargarHistorialReposicionesGestion();
 
+                await actualizarResumenGeneral();
+
 
                 mostrarMensaje(
                     mensajeReposicionGestion,
@@ -28146,45 +28164,280 @@ async function calcularExtrasMesGestion() {
 
 
 // =========================================================
-// DISPONIBLE PARA RETIRAR - CON NEGATIVO
+// DISPONIBLE PARA RETIRAR + CAPITAL PARA REINVERTIR
 // =========================================================
 
 calcularDisponibleRetirarGestion =
     async function () {
 
+        const resultadoError = {
+            disponible: 0,
+            capitalReponer: 0,
+            capitalParaReinvertir: 0,
+            costoPendiente: true,
+            totalCobrado: 0,
+            reservaReposicion: 0,
+            costoRecuperado: 0,
+            gananciaCobrada: 0,
+            perdidasVenta: 0,
+            totalReposiciones: 0,
+            totalGastos: 0,
+            totalRetiros: 0,
+            totalExtras: 0,
+            totalAportes: 0,
+            aportesAplicados: 0,
+            gananciasAplicadasAReponer: 0
+        };
+
+
+        // =====================================================
+        // PUNTO DE INICIO DEL NUEVO CONTROL DE CAPITAL
+        // =====================================================
+
         const {
-            data: ventasData,
-            error: ventasError
+            data: configuracion,
+            error: configuracionError
         } =
             await supabaseClient
-                .from("ventas")
+                .from(
+                    "capital_reinversion_config"
+                )
                 .select(`
-                    id,
-                    anulada
+                    fecha_inicio,
+                    capital_inicial,
+                    deficit_inicial
                 `)
                 .eq(
-                    "anulada",
-                    false
-                );
+                    "id",
+                    1
+                )
+                .maybeSingle();
 
-        if (ventasError) {
+
+        if (
+            configuracionError ||
+            !configuracion
+        ) {
 
             console.error(
-                "Error al calcular disponible (ventas):",
-                ventasError
+                "Error al cargar configuración de reinversión:",
+                configuracionError
             );
 
-            return {
-                disponible: 0,
-                capitalReponer: 0,
-                costoPendiente: true
-            };
+            return resultadoError;
+
         }
 
+
+        const fechaInicio =
+            new Date(
+                configuracion.fecha_inicio
+            );
+
+
+        if (
+            Number.isNaN(
+                fechaInicio.getTime()
+            )
+        ) {
+
+            console.error(
+                "Fecha de inicio de reinversión inválida."
+            );
+
+            return resultadoError;
+
+        }
+
+
+        const fechaInicioISO =
+            fechaInicio.toISOString();
+
+        const fechaInicioMs =
+            fechaInicio.getTime();
+
+
+        const capitalInicial =
+            Math.max(
+                0,
+                Number(
+                    configuracion.capital_inicial
+                ) || 0
+            );
+
+
+        const deficitInicial =
+            Math.max(
+                0,
+                Number(
+                    configuracion.deficit_inicial
+                ) || 0
+            );
+
+
+        // =====================================================
+        // MOVIMIENTOS GENERALES DESDE EL PUNTO DE INICIO
+        // =====================================================
+
+        const [
+            resultadoVentas,
+            resultadoGastos,
+            resultadoRetiros,
+            resultadoIngresos,
+            resultadoReposiciones
+        ] =
+            await Promise.all([
+
+                supabaseClient
+                    .from("ventas")
+                    .select(`
+                        id,
+                        total,
+                        anulada
+                    `)
+                    .eq(
+                        "anulada",
+                        false
+                    ),
+
+                supabaseClient
+                    .from("gastos")
+                    .select(`
+                        monto,
+                        fecha_gasto,
+                        anulado
+                    `)
+                    .gte(
+                        "fecha_gasto",
+                        fechaInicioISO
+                    )
+                    .eq(
+                        "anulado",
+                        false
+                    ),
+
+                supabaseClient
+                    .from("retiros")
+                    .select(`
+                        monto,
+                        fecha_retiro,
+                        anulado
+                    `)
+                    .gte(
+                        "fecha_retiro",
+                        fechaInicioISO
+                    )
+                    .eq(
+                        "anulado",
+                        false
+                    ),
+
+                supabaseClient
+                    .from(
+                        "ingresos_adicionales"
+                    )
+                    .select(`
+                        tipo,
+                        monto,
+                        fecha_ingreso,
+                        anulado
+                    `)
+                    .gte(
+                        "fecha_ingreso",
+                        fechaInicioISO
+                    )
+                    .eq(
+                        "anulado",
+                        false
+                    ),
+
+                supabaseClient
+                    .from("reposiciones")
+                    .select(`
+                        id,
+                        created_at,
+                        reposicion_items (
+                            subtotal
+                        )
+                    `)
+                    .gte(
+                        "created_at",
+                        fechaInicioISO
+                    )
+
+            ]);
+
+
+        const errorGeneral =
+            resultadoVentas.error ||
+            resultadoGastos.error ||
+            resultadoRetiros.error ||
+            resultadoIngresos.error ||
+            resultadoReposiciones.error;
+
+
+        if (errorGeneral) {
+
+            console.error(
+                "Error al calcular estado financiero:",
+                errorGeneral
+            );
+
+            return resultadoError;
+
+        }
+
+
         const ventas =
-            Array.isArray(ventasData)
-                ? ventasData
+            Array.isArray(
+                resultadoVentas.data
+            )
+                ? resultadoVentas.data
                 : [];
+
+
+        const eventos = [];
+
+
+        function agregarEvento(
+            fecha,
+            tipo,
+            datos = {}
+        ) {
+
+            const fechaMs =
+                new Date(
+                    fecha
+                ).getTime();
+
+
+            if (
+                !Number.isFinite(fechaMs) ||
+                fechaMs < fechaInicioMs
+            ) {
+                return;
+            }
+
+
+            eventos.push({
+                fechaMs,
+                tipo,
+                ...datos
+            });
+
+        }
+
+
+        // =====================================================
+        // COBROS: PRIMERO RECUPERAMOS COSTO, DESPUÉS GANANCIA
+        // =====================================================
+
+        let totalCobrado = 0;
+        let costoRecuperado = 0;
+        let gananciaCobrada = 0;
+        let perdidasVenta = 0;
+        let costoPendiente = false;
+
 
         const idsVentas =
             ventas.map(
@@ -28192,11 +28445,10 @@ calcularDisponibleRetirarGestion =
                     venta.id
             );
 
-        let totalCobrado = 0;
-        let reservaReposicion = 0;
-        let costoPendiente = false;
 
-        if (idsVentas.length > 0) {
+        if (
+            idsVentas.length > 0
+        ) {
 
             const [
                 resultadoPagos,
@@ -28209,6 +28461,7 @@ calcularDisponibleRetirarGestion =
                         .select(`
                             venta_id,
                             monto,
+                            created_at,
                             anulado
                         `)
                         .in(
@@ -28224,8 +28477,8 @@ calcularDisponibleRetirarGestion =
                         .from("venta_items")
                         .select(`
                             venta_id,
-                            producto_id,
-                            cantidad
+                            cantidad,
+                            costo_unitario
                         `)
                         .in(
                             "venta_id",
@@ -28234,47 +28487,70 @@ calcularDisponibleRetirarGestion =
 
                 ]);
 
+
             if (
                 resultadoPagos.error ||
                 resultadoItems.error
             ) {
 
                 console.error(
-                    "Error al calcular disponible (pagos/items):",
+                    "Error al calcular pagos y costos históricos:",
                     resultadoPagos.error ||
                     resultadoItems.error
                 );
 
-                return {
-                    disponible: 0,
-                    capitalReponer: 0,
-                    costoPendiente: true
-                };
+                return resultadoError;
+
             }
 
-            totalCobrado =
-                (
-                    Array.isArray(
-                        resultadoPagos.data
-                    )
-                        ? resultadoPagos.data
-                        : []
-                ).reduce(
-                    (total, pago) =>
-                        total +
-                        (Number(pago.monto) || 0),
-                    0
-                );
 
-            const productosPorId =
-                new Map(
-                    productosGestion.map(
-                        (producto) => [
-                            Number(producto.id),
-                            producto
-                        ]
-                    )
-                );
+            const pagosPorVenta =
+                new Map();
+
+            const itemsPorVenta =
+                new Map();
+
+
+            (
+                Array.isArray(
+                    resultadoPagos.data
+                )
+                    ? resultadoPagos.data
+                    : []
+            ).forEach(
+                (pago) => {
+
+                    const ventaId =
+                        Number(
+                            pago.venta_id
+                        );
+
+
+                    if (
+                        !pagosPorVenta.has(
+                            ventaId
+                        )
+                    ) {
+
+                        pagosPorVenta.set(
+                            ventaId,
+                            []
+                        );
+
+                    }
+
+
+                    pagosPorVenta
+                        .get(
+                            ventaId
+                        )
+                        .push(
+                            pago
+                        );
+
+                }
+            );
+
 
             (
                 Array.isArray(
@@ -28285,220 +28561,1235 @@ calcularDisponibleRetirarGestion =
             ).forEach(
                 (item) => {
 
-                    const cantidad =
-                        Math.max(
-                            0,
-                            Number(item.cantidad) || 0
+                    const ventaId =
+                        Number(
+                            item.venta_id
                         );
 
-                    if (cantidad <= 0) {
+
+                    if (
+                        !itemsPorVenta.has(
+                            ventaId
+                        )
+                    ) {
+
+                        itemsPorVenta.set(
+                            ventaId,
+                            []
+                        );
+
+                    }
+
+
+                    itemsPorVenta
+                        .get(
+                            ventaId
+                        )
+                        .push(
+                            item
+                        );
+
+                }
+            );
+
+
+            ventas.forEach(
+                (venta) => {
+
+                    const ventaId =
+                        Number(
+                            venta.id
+                        );
+
+
+                    const totalVenta =
+                        Math.max(
+                            0,
+                            Number(
+                                venta.total
+                            ) || 0
+                        );
+
+
+                    if (
+                        totalVenta <= 0
+                    ) {
                         return;
                     }
 
-                    const producto =
-                        productosPorId.get(
-                            Number(
-                                item.producto_id
-                            )
-                        );
 
-                    const costoActual =
-                        producto?.costo_actual === null ||
-                        producto?.costo_actual === undefined ||
-                        producto?.costo_actual === ""
-                            ? null
-                            : Number(
-                                producto.costo_actual
+                    const pagos =
+                        (
+                            pagosPorVenta.get(
+                                ventaId
+                            ) || []
+                        )
+                            .slice()
+                            .sort(
+                                (a, b) =>
+                                    new Date(
+                                        a.created_at
+                                    ).getTime() -
+                                    new Date(
+                                        b.created_at
+                                    ).getTime()
                             );
 
+
+                    const tieneCobrosDesdeInicio =
+                        pagos.some(
+                            (pago) => {
+
+                                const fechaPagoMs =
+                                    new Date(
+                                        pago.created_at
+                                    ).getTime();
+
+                                return (
+                                    Number.isFinite(
+                                        fechaPagoMs
+                                    ) &&
+                                    fechaPagoMs >=
+                                        fechaInicioMs &&
+                                    (
+                                        Number(
+                                            pago.monto
+                                        ) || 0
+                                    ) > 0
+                                );
+
+                            }
+                        );
+
+
                     if (
-                        !Number.isFinite(
-                            costoActual
-                        ) ||
-                        costoActual <= 0
+                        !tieneCobrosDesdeInicio
+                    ) {
+                        return;
+                    }
+
+
+                    const items =
+                        itemsPorVenta.get(
+                            ventaId
+                        ) || [];
+
+
+                    const costoCompleto =
+                        items.length > 0 &&
+                        items.every(
+                            (item) => {
+
+                                if (
+                                    item.costo_unitario === null ||
+                                    item.costo_unitario === undefined ||
+                                    item.costo_unitario === ""
+                                ) {
+                                    return false;
+                                }
+
+
+                                const costo =
+                                    Number(
+                                        item.costo_unitario
+                                    );
+
+
+                                return (
+                                    Number.isFinite(
+                                        costo
+                                    ) &&
+                                    costo >= 0
+                                );
+
+                            }
+                        );
+
+
+                    if (
+                        !costoCompleto
                     ) {
 
                         costoPendiente =
                             true;
 
                         return;
+
                     }
 
-                    reservaReposicion +=
-                        cantidad *
-                        costoActual;
+
+                    const costoTotal =
+                        items.reduce(
+                            (
+                                total,
+                                item
+                            ) =>
+                                total +
+                                (
+                                    (
+                                        Number(
+                                            item.cantidad
+                                        ) || 0
+                                    ) *
+                                    Number(
+                                        item.costo_unitario
+                                    )
+                                ),
+                            0
+                        );
+
+
+                    let pagadoAplicado =
+                        0;
+
+                    let perdidaRegistrada =
+                        false;
+
+
+                    pagos.forEach(
+                        (pago) => {
+
+                            const montoPago =
+                                Math.max(
+                                    0,
+                                    Number(
+                                        pago.monto
+                                    ) || 0
+                                );
+
+
+                            if (
+                                montoPago <= 0
+                            ) {
+                                return;
+                            }
+
+
+                            const restanteVenta =
+                                Math.max(
+                                    0,
+                                    totalVenta -
+                                    pagadoAplicado
+                                );
+
+
+                            const montoAplicado =
+                                Math.min(
+                                    montoPago,
+                                    restanteVenta
+                                );
+
+
+                            if (
+                                montoAplicado <= 0
+                            ) {
+                                return;
+                            }
+
+
+                            const fechaPagoMs =
+                                new Date(
+                                    pago.created_at
+                                ).getTime();
+
+
+                            if (
+                                !Number.isFinite(
+                                    fechaPagoMs
+                                )
+                            ) {
+
+                                costoPendiente =
+                                    true;
+
+                                return;
+
+                            }
+
+
+                            const pagadoAntes =
+                                pagadoAplicado;
+
+
+                            pagadoAplicado +=
+                                montoAplicado;
+
+
+                            const costoReconocidoAntes =
+                                Math.min(
+                                    costoTotal,
+                                    pagadoAntes
+                                );
+
+
+                            const costoReconocidoDespues =
+                                Math.min(
+                                    costoTotal,
+                                    pagadoAplicado
+                                );
+
+
+                            const costoEstePago =
+                                Math.max(
+                                    0,
+                                    costoReconocidoDespues -
+                                    costoReconocidoAntes
+                                );
+
+
+                            const gananciaEstePago =
+                                Math.max(
+                                    0,
+                                    montoAplicado -
+                                    costoEstePago
+                                );
+
+
+                            const ventaQuedoCobrada =
+                                pagadoAplicado >=
+                                totalVenta - 0.01;
+
+
+                            const perdidaEstePago =
+                                ventaQuedoCobrada &&
+                                !perdidaRegistrada &&
+                                costoTotal > totalVenta
+                                    ? costoTotal -
+                                        totalVenta
+                                    : 0;
+
+
+                            if (
+                                perdidaEstePago > 0
+                            ) {
+                                perdidaRegistrada =
+                                    true;
+                            }
+
+
+                            if (
+                                fechaPagoMs <
+                                fechaInicioMs
+                            ) {
+                                return;
+                            }
+
+
+                            totalCobrado +=
+                                montoAplicado;
+
+                            costoRecuperado +=
+                                costoEstePago;
+
+                            gananciaCobrada +=
+                                gananciaEstePago;
+
+                            perdidasVenta +=
+                                perdidaEstePago;
+
+
+                            agregarEvento(
+                                pago.created_at,
+                                "pago",
+                                {
+                                    costo:
+                                        costoEstePago,
+
+                                    ganancia:
+                                        gananciaEstePago,
+
+                                    perdida:
+                                        perdidaEstePago
+                                }
+                            );
+
+                        }
+                    );
 
                 }
             );
 
         }
 
-        const [
-            resultadoGastos,
-            resultadoRetiros,
-            resultadoIngresos
-        ] =
-            await Promise.all([
-
-                supabaseClient
-                    .from("gastos")
-                    .select(`
-                        monto,
-                        anulado
-                    `)
-                    .eq(
-                        "anulado",
-                        false
-                    ),
-
-                supabaseClient
-                    .from("retiros")
-                    .select(`
-                        monto,
-                        anulado
-                    `)
-                    .eq(
-                        "anulado",
-                        false
-                    ),
-
-                supabaseClient
-                    .from("ingresos_adicionales")
-                    .select(`
-                        tipo,
-                        monto,
-                        anulado
-                    `)
-                    .eq(
-                        "anulado",
-                        false
-                    )
-
-            ]);
 
         if (
-            resultadoGastos.error ||
-            resultadoRetiros.error ||
-            resultadoIngresos.error
+            costoPendiente
         ) {
 
-            console.error(
-                "Error al calcular disponible (gastos/retiros/ingresos):",
-                resultadoGastos.error ||
-                resultadoRetiros.error ||
-                resultadoIngresos.error
-            );
-
             return {
-                disponible: 0,
-                capitalReponer: 0,
+                ...resultadoError,
+                totalCobrado,
                 costoPendiente: true
             };
+
         }
 
+
+        // =====================================================
+        // GASTOS
+        // =====================================================
+
+        const gastos =
+            Array.isArray(
+                resultadoGastos.data
+            )
+                ? resultadoGastos.data
+                : [];
+
+
         const totalGastos =
-            (
-                Array.isArray(
-                    resultadoGastos.data
-                )
-                    ? resultadoGastos.data
-                    : []
-            ).reduce(
+            gastos.reduce(
                 (total, gasto) =>
                     total +
-                    (Number(gasto.monto) || 0),
+                    (
+                        Number(
+                            gasto.monto
+                        ) || 0
+                    ),
                 0
             );
+
+
+        gastos.forEach(
+            (gasto) => {
+
+                agregarEvento(
+                    gasto.fecha_gasto,
+                    "gasto",
+                    {
+                        monto:
+                            Math.max(
+                                0,
+                                Number(
+                                    gasto.monto
+                                ) || 0
+                            )
+                    }
+                );
+
+            }
+        );
+
+
+        // =====================================================
+        // RETIROS
+        // =====================================================
+
+        const retiros =
+            Array.isArray(
+                resultadoRetiros.data
+            )
+                ? resultadoRetiros.data
+                : [];
+
 
         const totalRetiros =
-            (
-                Array.isArray(
-                    resultadoRetiros.data
-                )
-                    ? resultadoRetiros.data
-                    : []
-            ).reduce(
+            retiros.reduce(
                 (total, retiro) =>
                     total +
-                    (Number(retiro.monto) || 0),
+                    (
+                        Number(
+                            retiro.monto
+                        ) || 0
+                    ),
                 0
             );
 
-        let totalExtras = 0;
-        let totalAportes = 0;
 
-        (
+        retiros.forEach(
+            (retiro) => {
+
+                agregarEvento(
+                    retiro.fecha_retiro,
+                    "retiro",
+                    {
+                        monto:
+                            Math.max(
+                                0,
+                                Number(
+                                    retiro.monto
+                                ) || 0
+                            )
+                    }
+                );
+
+            }
+        );
+
+
+        // =====================================================
+        // INGRESOS EXTRA + APORTES
+        // =====================================================
+
+        const ingresos =
             Array.isArray(
                 resultadoIngresos.data
             )
                 ? resultadoIngresos.data
-                : []
-        ).forEach(
+                : [];
+
+
+        let totalExtras = 0;
+        let totalAportes = 0;
+
+
+        ingresos.forEach(
             (ingreso) => {
 
                 const monto =
-                    Number(ingreso.monto) || 0;
+                    Math.max(
+                        0,
+                        Number(
+                            ingreso.monto
+                        ) || 0
+                    );
+
+
+                if (
+                    monto <= 0
+                ) {
+                    return;
+                }
+
 
                 if (
                     ingreso.tipo ===
                     "extra"
                 ) {
-                    totalExtras += monto;
+
+                    totalExtras +=
+                        monto;
+
+
+                    agregarEvento(
+                        ingreso.fecha_ingreso,
+                        "extra",
+                        {
+                            monto
+                        }
+                    );
+
                 }
+
 
                 if (
                     ingreso.tipo ===
                     "aporte"
                 ) {
-                    totalAportes += monto;
+
+                    totalAportes +=
+                        monto;
+
+
+                    agregarEvento(
+                        ingreso.fecha_ingreso,
+                        "aporte",
+                        {
+                            monto
+                        }
+                    );
+
                 }
 
             }
         );
 
-        const disponibleAntesAportes =
-            totalCobrado +
-            totalExtras -
-            reservaReposicion -
-            totalGastos -
-            totalRetiros;
 
-        // Un aporte personal sirve para recomponer capital.
-        // No lo transformamos artificialmente en ganancia retirable.
-        const aportesAplicados =
-            Math.min(
-                totalAportes,
+        // =====================================================
+        // REPOSICIONES
+        // =====================================================
+
+        const reposiciones =
+            Array.isArray(
+                resultadoReposiciones.data
+            )
+                ? resultadoReposiciones.data
+                : [];
+
+
+        let totalReposiciones = 0;
+
+
+        reposiciones.forEach(
+            (reposicion) => {
+
+                const items =
+                    Array.isArray(
+                        reposicion.reposicion_items
+                    )
+                        ? reposicion.reposicion_items
+                        : [];
+
+
+                const totalReposicion =
+                    items.reduce(
+                        (
+                            total,
+                            item
+                        ) =>
+                            total +
+                            (
+                                Number(
+                                    item.subtotal
+                                ) || 0
+                            ),
+                        0
+                    );
+
+
+                if (
+                    totalReposicion <= 0
+                ) {
+                    return;
+                }
+
+
+                totalReposiciones +=
+                    totalReposicion;
+
+
+                agregarEvento(
+                    reposicion.created_at,
+                    "reposicion",
+                    {
+                        monto:
+                            totalReposicion
+                    }
+                );
+
+            }
+        );
+
+
+        // =====================================================
+        // ORDEN CRONOLÓGICO
+        // =====================================================
+
+        const prioridadEvento = {
+            pago: 1,
+            extra: 2,
+            aporte: 3,
+            reposicion: 4,
+            gasto: 5,
+            retiro: 6
+        };
+
+
+        eventos.sort(
+            (a, b) => {
+
+                if (
+                    a.fechaMs !==
+                    b.fechaMs
+                ) {
+
+                    return (
+                        a.fechaMs -
+                        b.fechaMs
+                    );
+
+                }
+
+
+                return (
+                    (
+                        prioridadEvento[
+                            a.tipo
+                        ] || 99
+                    ) -
+                    (
+                        prioridadEvento[
+                            b.tipo
+                        ] || 99
+                    )
+                );
+
+            }
+        );
+
+
+        // =====================================================
+        // ESTADO FINANCIERO
+        // =====================================================
+
+        let capitalParaReinvertir =
+            capitalInicial;
+
+        let disponiblePositivo =
+            0;
+
+
+        // Parte del faltante que corresponde a capital del negocio
+        // que fue consumido y debe volver al fondo de reinversión.
+        let deficitReinversion =
+            deficitInicial;
+
+
+        // Parte del faltante que quedó sin respaldo de caja/capital.
+        // Primero se cancela y recién después se vuelve a formar fondo.
+        let deficitCaja =
+            0;
+
+
+        let aportesAplicados =
+            0;
+
+        let gananciasAplicadasAReponer =
+            0;
+
+
+        function obtenerCapitalReponer() {
+
+            return Math.max(
+                0,
+                deficitReinversion +
+                deficitCaja
+            );
+
+        }
+
+
+        function repararCapital(
+            monto,
+            origen
+        ) {
+
+            let restante =
                 Math.max(
                     0,
-                    -disponibleAntesAportes
-                )
-            );
+                    Number(monto) || 0
+                );
 
-        const disponible =
-            disponibleAntesAportes +
-            aportesAplicados;
 
-        const capitalReponer =
+            if (
+                restante <= 0
+            ) {
+                return 0;
+            }
+
+
+            let aplicado = 0;
+
+
+            // Primero cancelamos cualquier faltante sin respaldo.
+            if (
+                deficitCaja > 0
+            ) {
+
+                const reparacionCaja =
+                    Math.min(
+                        restante,
+                        deficitCaja
+                    );
+
+
+                deficitCaja -=
+                    reparacionCaja;
+
+                restante -=
+                    reparacionCaja;
+
+                aplicado +=
+                    reparacionCaja;
+
+            }
+
+
+            // Después reconstruimos el capital del negocio consumido.
+            if (
+                restante > 0 &&
+                deficitReinversion > 0
+            ) {
+
+                const reparacionCapital =
+                    Math.min(
+                        restante,
+                        deficitReinversion
+                    );
+
+
+                deficitReinversion -=
+                    reparacionCapital;
+
+                capitalParaReinvertir +=
+                    reparacionCapital;
+
+                restante -=
+                    reparacionCapital;
+
+                aplicado +=
+                    reparacionCapital;
+
+            }
+
+
+            if (
+                origen === "ganancia"
+            ) {
+
+                gananciasAplicadasAReponer +=
+                    aplicado;
+
+            }
+
+
+            if (
+                origen === "aporte"
+            ) {
+
+                aportesAplicados +=
+                    aplicado;
+
+            }
+
+
+            return restante;
+
+        }
+
+
+        function aplicarGanancia(
+            monto
+        ) {
+
+            const restante =
+                repararCapital(
+                    monto,
+                    "ganancia"
+                );
+
+
+            disponiblePositivo +=
+                restante;
+
+        }
+
+
+        function aplicarAporte(
+            monto
+        ) {
+
+            const valor =
+                Math.max(
+                    0,
+                    Number(monto) || 0
+                );
+
+
+            if (
+                valor <= 0
+            ) {
+                return;
+            }
+
+
+            const restante =
+                repararCapital(
+                    valor,
+                    "aporte"
+                );
+
+
+            // Un aporte que supera el faltante sigue siendo capital
+            // del negocio, nunca ganancia disponible para retirar.
+            capitalParaReinvertir +=
+                restante;
+
+        }
+
+
+        function aplicarSalidaGeneral(
+            monto
+        ) {
+
+            let restante =
+                Math.max(
+                    0,
+                    Number(monto) || 0
+                );
+
+
+            if (
+                restante <= 0
+            ) {
+                return;
+            }
+
+
+            // Gastos y retiros consumen primero la ganancia libre.
+            const desdeDisponible =
+                Math.min(
+                    disponiblePositivo,
+                    restante
+                );
+
+
+            disponiblePositivo -=
+                desdeDisponible;
+
+            restante -=
+                desdeDisponible;
+
+
+            if (
+                restante <= 0
+            ) {
+                return;
+            }
+
+
+            // Si no alcanzó la ganancia, se está usando capital.
+            const desdeCapital =
+                Math.min(
+                    capitalParaReinvertir,
+                    restante
+                );
+
+
+            capitalParaReinvertir -=
+                desdeCapital;
+
+            deficitReinversion +=
+                desdeCapital;
+
+            restante -=
+                desdeCapital;
+
+
+            // Si tampoco alcanzó el capital reservado, queda un
+            // faltante adicional de caja que también debe cubrirse.
+            if (
+                restante > 0
+            ) {
+
+                deficitCaja +=
+                    restante;
+
+            }
+
+        }
+
+
+        function aplicarReposicion(
+            monto
+        ) {
+
+            let restante =
+                Math.max(
+                    0,
+                    Number(monto) || 0
+                );
+
+
+            if (
+                restante <= 0
+            ) {
+                return;
+            }
+
+
+            // La reposición usa primero el fondo reservado para stock.
+            const desdeCapital =
+                Math.min(
+                    capitalParaReinvertir,
+                    restante
+                );
+
+
+            capitalParaReinvertir -=
+                desdeCapital;
+
+            restante -=
+                desdeCapital;
+
+
+            // Si se decide comprar más mercadería, puede usarse
+            // ganancia libre para hacer crecer el capital del negocio.
+            const desdeDisponible =
+                Math.min(
+                    disponiblePositivo,
+                    restante
+                );
+
+
+            disponiblePositivo -=
+                desdeDisponible;
+
+            restante -=
+                desdeDisponible;
+
+
+            // Una reposición que supera ambos fondos deja una
+            // obligación de caja, pero la mercadería ya quedó en stock.
+            if (
+                restante > 0
+            ) {
+
+                deficitCaja +=
+                    restante;
+
+            }
+
+        }
+
+
+        function aplicarPerdidaVenta(
+            monto
+        ) {
+
+            const perdida =
+                Math.max(
+                    0,
+                    Number(monto) || 0
+                );
+
+
+            if (
+                perdida <= 0
+            ) {
+                return;
+            }
+
+
+            // Si una venta termina cobrándose por debajo de su costo,
+            // esa parte del capital nunca volvió y queda para reponer.
+            deficitReinversion +=
+                perdida;
+
+        }
+
+
+        // =====================================================
+        // PROCESAR TODOS LOS MOVIMIENTOS
+        // =====================================================
+
+        eventos.forEach(
+            (evento) => {
+
+                if (
+                    evento.tipo ===
+                    "pago"
+                ) {
+
+                    capitalParaReinvertir +=
+                        Math.max(
+                            0,
+                            Number(
+                                evento.costo
+                            ) || 0
+                        );
+
+
+                    aplicarGanancia(
+                        evento.ganancia
+                    );
+
+
+                    aplicarPerdidaVenta(
+                        evento.perdida
+                    );
+
+
+                    return;
+
+                }
+
+
+                if (
+                    evento.tipo ===
+                    "extra"
+                ) {
+
+                    aplicarGanancia(
+                        evento.monto
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    evento.tipo ===
+                    "aporte"
+                ) {
+
+                    aplicarAporte(
+                        evento.monto
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    evento.tipo ===
+                    "reposicion"
+                ) {
+
+                    aplicarReposicion(
+                        evento.monto
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    evento.tipo ===
+                    "gasto" ||
+                    evento.tipo ===
+                    "retiro"
+                ) {
+
+                    aplicarSalidaGeneral(
+                        evento.monto
+                    );
+
+                }
+
+            }
+        );
+
+
+        capitalParaReinvertir =
             Math.max(
                 0,
-                -disponible
+                capitalParaReinvertir
             );
+
+
+        disponiblePositivo =
+            Math.max(
+                0,
+                disponiblePositivo
+            );
+
+
+        deficitReinversion =
+            Math.max(
+                0,
+                deficitReinversion
+            );
+
+
+        deficitCaja =
+            Math.max(
+                0,
+                deficitCaja
+            );
+
+
+        const capitalReponer =
+            obtenerCapitalReponer();
+
+
+        // Mientras exista capital faltante, no hay dinero libre para
+        // retirar. Lo mostramos negativo para que el faltante sea claro.
+        const disponible =
+            capitalReponer > 0
+                ? -capitalReponer
+                : disponiblePositivo;
+
 
         return {
             disponible,
             capitalReponer,
-            costoPendiente,
+            capitalParaReinvertir,
+            costoPendiente: false,
+
             totalCobrado,
-            reservaReposicion,
+
+            reservaReposicion:
+                costoRecuperado,
+
+            costoRecuperado,
+            gananciaCobrada,
+            perdidasVenta,
+
+            totalReposiciones,
             totalGastos,
             totalRetiros,
             totalExtras,
             totalAportes,
-            aportesAplicados
+
+            aportesAplicados,
+            gananciasAplicadasAReponer,
+
+            capitalInicial,
+            deficitInicial,
+            deficitReinversion,
+            deficitCaja
         };
 
     };
 
+
+// =========================================================
+// CAPITAL PARA REINVERTIR
+// =========================================================
+
+async function calcularCapitalParaReinvertirGestion(
+    resultadoDisponible
+) {
+
+    if (
+        !resultadoDisponible ||
+        resultadoDisponible.costoPendiente
+    ) {
+
+        return {
+            capitalParaReinvertir: 0,
+            totalReposiciones: 0,
+            costoPendiente: true
+        };
+
+    }
+
+
+    return {
+        capitalParaReinvertir:
+            Math.max(
+                0,
+                Number(
+                    resultadoDisponible
+                        .capitalParaReinvertir
+                ) || 0
+            ),
+
+        totalReposiciones:
+            Math.max(
+                0,
+                Number(
+                    resultadoDisponible
+                        .totalReposiciones
+                ) || 0
+            ),
+
+        reservaReposicion:
+            Math.max(
+                0,
+                Number(
+                    resultadoDisponible
+                        .reservaReposicion
+                ) || 0
+            ),
+
+        capitalReponer:
+            Math.max(
+                0,
+                Number(
+                    resultadoDisponible
+                        .capitalReponer
+                ) || 0
+            ),
+
+        costoPendiente: false
+    };
+
+}
 
 function mostrarDisponibleRetirarResultadoGestion(
     resultado
@@ -28520,7 +29811,7 @@ function mostrarDisponibleRetirarResultadoGestion(
             "Costo pendiente";
 
         disponibleRetirar.title =
-            "Falta cargar el costo actual de uno o más productos vendidos.";
+            "Falta el costo histórico de uno o más productos que tuvieron cobros desde el inicio del nuevo control.";
 
         capitalReponerResumenGestion
             ?.classList.add(
@@ -28565,7 +29856,7 @@ function mostrarDisponibleRetirarResultadoGestion(
     }
 
     disponibleRetirar.title =
-        "Cobrado + ganancias extra - reserva de reposición - gastos - retiros. Los aportes personales solo recomponen faltantes de capital.";
+        "Los cobros recuperan primero el costo histórico. La ganancia cubre cualquier capital faltante antes de quedar disponible para retirar.";
 
 }
 
@@ -28594,6 +29885,7 @@ actualizarResumenGeneral =
 
         actualizarCapitalStockGestion();
 
+
         const [
             totalVentasMes,
             resultadoGananciaMes,
@@ -28607,19 +29899,76 @@ actualizarResumenGeneral =
                 calcularDisponibleRetirarGestion()
             ]);
 
+
+        const resultadoCapitalReinversion =
+            await calcularCapitalParaReinvertirGestion(
+                resultadoDisponible
+            );
+
+
+        // ================================================
+        // CAPITAL PARA REINVERTIR
+        // ================================================
+
+        if (capitalReinversionGestion) {
+
+            if (
+                resultadoCapitalReinversion.costoPendiente
+            ) {
+
+                capitalReinversionGestion.textContent =
+                    "Costo pendiente";
+
+                capitalReinversionGestion.title =
+                    "Falta información para calcular correctamente el capital disponible para reinvertir.";
+
+            } else {
+
+                capitalReinversionGestion.textContent =
+                    formatearPrecio(
+                        resultadoCapitalReinversion
+                            .capitalParaReinvertir
+                    );
+
+                capitalReinversionGestion.title =
+                    "Capital recuperado de productos vendidos que todavía está disponible para volver a comprar mercadería.";
+
+            }
+
+        }
+
+
+        // ================================================
+        // VENTAS DEL MES
+        // ================================================
+
         if (ventasMes) {
+
             ventasMes.textContent =
                 formatearPrecio(
                     totalVentasMes
                 );
+
         }
 
+
+        // ================================================
+        // EXTRAS DEL MES
+        // ================================================
+
         if (extrasMesResumenGestion) {
+
             extrasMesResumenGestion.textContent =
                 formatearPrecio(
                     totalExtrasMes
                 );
+
         }
+
+
+        // ================================================
+        // GANANCIA DEL MES
+        // ================================================
 
         if (gananciaMes) {
 
@@ -28647,6 +29996,11 @@ actualizarResumenGeneral =
 
         }
 
+
+        // ================================================
+        // GANANCIA TOTAL GENERADA
+        // ================================================
+
         if (gananciaTotalGeneradaGestion) {
 
             if (
@@ -28673,6 +30027,11 @@ actualizarResumenGeneral =
             }
 
         }
+
+
+        // ================================================
+        // DISPONIBLE PARA RETIRAR / CAPITAL A REPONER
+        // ================================================
 
         mostrarDisponibleRetirarResultadoGestion(
             resultadoDisponible
