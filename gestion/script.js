@@ -32507,3 +32507,2192 @@ document.addEventListener(
 
 // Estado inicial.
 mostrarInicioGestion(false);
+
+
+// =========================================================
+// EDICIÓN MASIVA DE PRODUCTOS
+// =========================================================
+
+const botonEdicionMasivaStockGestion =
+    document.getElementById("edicion-masiva-stock");
+
+let productosSeleccionadosMasivoGestion =
+    new Set();
+
+let modoMayoristaMasivoGestion = null;
+let modoMinoristaMasivoGestion = null;
+
+
+// =========================================================
+// CREAR MODAL
+// =========================================================
+
+let modalEdicionMasivaGestion =
+    document.getElementById("modal-edicion-masiva-gestion");
+
+if (!modalEdicionMasivaGestion) {
+
+    modalEdicionMasivaGestion =
+        document.createElement("div");
+
+    modalEdicionMasivaGestion.id =
+        "modal-edicion-masiva-gestion";
+
+    modalEdicionMasivaGestion.className =
+        "modal-edicion-masiva oculto";
+
+    modalEdicionMasivaGestion.innerHTML = `
+        <div class="modal-edicion-masiva-contenido">
+
+            <div class="modal-edicion-masiva-encabezado">
+                <div>
+                    <h3>Edición masiva</h3>
+                    <p>
+                        Elegí una categoría y marcá solamente los productos que querés modificar.
+                    </p>
+                </div>
+
+                <button
+                    type="button"
+                    id="cerrar-edicion-masiva"
+                    aria-label="Cerrar"
+                >
+                    ×
+                </button>
+            </div>
+
+            <form id="form-edicion-masiva-gestion">
+
+                <div class="edicion-masiva-bloque">
+                    <div class="edicion-masiva-bloque-titulo">
+                        <strong>1. Elegí la categoría</strong>
+                        <span>Ningún producto se marca automáticamente</span>
+                    </div>
+
+                    <div class="campo">
+                        <label for="edicion-masiva-categoria">
+                            Categoría
+                        </label>
+
+                        <select id="edicion-masiva-categoria">
+                            <option value="">Seleccionar categoría...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div
+                    class="edicion-masiva-bloque oculto"
+                    id="edicion-masiva-seleccion-bloque"
+                >
+                    <div class="edicion-masiva-bloque-titulo">
+                        <strong>2. Seleccioná los productos</strong>
+                        <span id="edicion-masiva-contador">0 seleccionados</span>
+                    </div>
+
+                    <div class="edicion-masiva-filtros">
+                        <input
+                            type="search"
+                            id="edicion-masiva-buscar"
+                            placeholder="Buscar dentro de la categoría..."
+                            autocomplete="off"
+                        >
+
+                        <div class="edicion-masiva-seleccion-acciones">
+                            <button
+                                type="button"
+                                id="edicion-masiva-marcar-todos"
+                            >
+                                Marcar todos
+                            </button>
+
+                            <button
+                                type="button"
+                                id="edicion-masiva-desmarcar-todos"
+                            >
+                                Desmarcar todos
+                            </button>
+                        </div>
+                    </div>
+
+                    <div
+                        class="edicion-masiva-productos"
+                        id="edicion-masiva-productos"
+                    ></div>
+                </div>
+
+                <div
+                    class="edicion-masiva-bloque oculto"
+                    id="edicion-masiva-datos-bloque"
+                >
+                    <div class="edicion-masiva-bloque-titulo">
+                        <strong>3. Datos a aplicar</strong>
+                        <span>Los campos vacíos no se modifican</span>
+                    </div>
+
+                    <div class="edicion-masiva-aviso">
+                        <strong>Importante</strong>
+                        <span>
+                            Esto sirve para correcciones masivas. Las compras nuevas se siguen cargando desde Registrar reposición.
+                        </span>
+                    </div>
+
+                    <div class="edicion-masiva-seccion edicion-masiva-seccion-stock">
+                        <div class="edicion-masiva-seccion-titulo">
+                            <strong>Stock</strong>
+                            <span>Opcional</span>
+                        </div>
+
+                        <div class="campo">
+                            <label for="edicion-masiva-stock">
+                                Stock actual
+                            </label>
+
+                            <input
+                                type="number"
+                                id="edicion-masiva-stock"
+                                min="0"
+                                step="1"
+                                placeholder="Dejar vacío para no modificar"
+                            >
+
+                            <small>
+                                Si ponés 5, todos los productos seleccionados quedarán con stock 5.
+                            </small>
+                        </div>
+                    </div>
+
+                    <div
+                        class="edicion-masiva-seccion edicion-masiva-seccion-costo oculto"
+                        id="edicion-masiva-costo-manual-bloque"
+                    >
+                        <div class="edicion-masiva-seccion-titulo">
+                            <strong>Costo</strong>
+                            <span>Opcional</span>
+                        </div>
+
+                        <div class="campo">
+                            <label for="edicion-masiva-costo-manual">
+                                Costo actual
+                            </label>
+
+                            <input
+                                type="number"
+                                id="edicion-masiva-costo-manual"
+                                min="0"
+                                step="0.01"
+                                placeholder="Dejar vacío para conservar el costo actual"
+                            >
+
+                            <small>
+                                Si lo completás, el mismo costo se aplicará a todos los productos seleccionados.
+                            </small>
+                        </div>
+                    </div>
+
+                    <div
+                        class="edicion-masiva-seccion edicion-masiva-seccion-costo oculto"
+                        id="edicion-masiva-costo-usdt-bloque"
+                    >
+                        <div class="edicion-masiva-seccion-titulo">
+                            <strong>Costo en USDT</strong>
+                            <span>Opcional · misma lógica que la edición individual</span>
+                        </div>
+
+                        <div class="edicion-masiva-usdt-grid">
+                            <div class="campo">
+                                <label for="edicion-masiva-proveedor-usdt">
+                                    Precio proveedor
+                                </label>
+                                <div class="edicion-masiva-input-unidad">
+                                    <input
+                                        type="number"
+                                        id="edicion-masiva-proveedor-usdt"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="Ej: 30"
+                                    >
+                                    <span>USDT</span>
+                                </div>
+                            </div>
+
+                            <div class="campo">
+                                <label for="edicion-masiva-recargo-usdt">
+                                    Recargo
+                                </label>
+                                <div class="edicion-masiva-input-unidad">
+                                    <input
+                                        type="number"
+                                        id="edicion-masiva-recargo-usdt"
+                                        min="0"
+                                        step="0.01"
+                                        placeholder="Ej: 4"
+                                    >
+                                    <span>USDT</span>
+                                </div>
+                            </div>
+
+                            <div class="campo">
+                                <label for="edicion-masiva-dolar-costo">
+                                    Dólar de costo
+                                </label>
+                                <div class="edicion-masiva-input-unidad edicion-masiva-input-pesos">
+                                    <span>$</span>
+                                    <input
+                                        type="number"
+                                        id="edicion-masiva-dolar-costo"
+                                        min="0.01"
+                                        step="0.01"
+                                        placeholder="Ej: 1600"
+                                    >
+                                </div>
+                            </div>
+                        </div>
+
+                        <small class="edicion-masiva-formula">
+                            Fórmula: (precio proveedor + recargo) × dólar de costo. Si dejás estos campos vacíos, el costo no cambia.
+                        </small>
+
+                        <div class="edicion-masiva-costo-preview">
+                            <span>Costo resultante</span>
+                            <strong id="edicion-masiva-costo-usdt-preview">—</strong>
+                        </div>
+                    </div>
+
+                    <div
+                        class="edicion-masiva-seccion edicion-masiva-seccion-costo oculto"
+                        id="edicion-masiva-costo-decant-bloque"
+                    >
+                        <div class="edicion-masiva-seccion-titulo">
+                            <strong>Costo</strong>
+                            <span>Protegido</span>
+                        </div>
+
+                        <div class="edicion-masiva-decant-aviso">
+                            El costo de cada decant <b>no se modifica masivamente</b>.
+                            Sigue calculándose desde su perfume base, tester, ml, insumos y redondeo.
+                        </div>
+                    </div>
+
+                    <div class="edicion-masiva-precios-separados">
+
+                        <div class="edicion-masiva-seccion edicion-masiva-seccion-precio">
+                            <div class="edicion-masiva-seccion-titulo">
+                                <strong>Mayorista</strong>
+                                <span>Editá margen o precio</span>
+                            </div>
+
+                            <div class="campo">
+                                <label for="edicion-masiva-markup-mayorista">
+                                    Porcentaje sobre costo (%)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="edicion-masiva-markup-mayorista"
+                                    min="0"
+                                    step="0.000001"
+                                    placeholder="Ej: 40"
+                                >
+                            </div>
+
+                            <div class="campo">
+                                <label for="edicion-masiva-precio-mayorista">
+                                    Precio mayorista
+                                </label>
+                                <input
+                                    type="number"
+                                    id="edicion-masiva-precio-mayorista"
+                                    min="0"
+                                    step="1"
+                                    placeholder="Dejar vacío para no modificar"
+                                >
+                                <small id="edicion-masiva-ayuda-mayorista">
+                                    Podés editar margen o precio.
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="edicion-masiva-seccion edicion-masiva-seccion-precio">
+                            <div class="edicion-masiva-seccion-titulo">
+                                <strong>Minorista</strong>
+                                <span>Editá margen o precio</span>
+                            </div>
+
+                            <div class="campo">
+                                <label for="edicion-masiva-markup-minorista">
+                                    Porcentaje sobre costo (%)
+                                </label>
+                                <input
+                                    type="number"
+                                    id="edicion-masiva-markup-minorista"
+                                    min="0"
+                                    step="0.000001"
+                                    placeholder="Ej: 90"
+                                >
+                            </div>
+
+                            <div class="campo">
+                                <label for="edicion-masiva-precio-minorista">
+                                    Precio minorista
+                                </label>
+                                <input
+                                    type="number"
+                                    id="edicion-masiva-precio-minorista"
+                                    min="0"
+                                    step="1"
+                                    placeholder="Dejar vacío para no modificar"
+                                >
+                                <small id="edicion-masiva-ayuda-minorista">
+                                    Podés editar margen o precio.
+                                </small>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <p
+                        class="venta-mensaje"
+                        id="mensaje-edicion-masiva"
+                    ></p>
+
+                    <div class="edicion-masiva-botones">
+                        <button
+                            type="submit"
+                            id="guardar-edicion-masiva"
+                        >
+                            Aplicar a seleccionados
+                        </button>
+
+                        <button
+                            type="button"
+                            id="cancelar-edicion-masiva"
+                        >
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(
+        modalEdicionMasivaGestion
+    );
+}
+
+
+// =========================================================
+// ELEMENTOS
+// =========================================================
+
+const formEdicionMasivaGestion =
+    document.getElementById("form-edicion-masiva-gestion");
+
+const categoriaEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-categoria");
+
+const seleccionBloqueEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-seleccion-bloque");
+
+const datosBloqueEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-datos-bloque");
+
+const buscarEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-buscar");
+
+const productosEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-productos");
+
+const contadorEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-contador");
+
+const botonMarcarTodosEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-marcar-todos");
+
+const botonDesmarcarTodosEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-desmarcar-todos");
+
+const stockEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-stock");
+
+const costoManualBloqueEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-costo-manual-bloque");
+
+const costoUsdtBloqueEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-costo-usdt-bloque");
+
+const costoDecantBloqueEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-costo-decant-bloque");
+
+const costoManualEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-costo-manual");
+
+const proveedorUsdtEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-proveedor-usdt");
+
+const recargoUsdtEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-recargo-usdt");
+
+const dolarCostoEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-dolar-costo");
+
+const costoUsdtPreviewEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-costo-usdt-preview");
+
+const markupMayoristaEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-markup-mayorista");
+
+const precioMayoristaEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-precio-mayorista");
+
+const markupMinoristaEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-markup-minorista");
+
+const precioMinoristaEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-precio-minorista");
+
+const ayudaMayoristaEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-ayuda-mayorista");
+
+const ayudaMinoristaEdicionMasivaGestion =
+    document.getElementById("edicion-masiva-ayuda-minorista");
+
+const mensajeEdicionMasivaGestion =
+    document.getElementById("mensaje-edicion-masiva");
+
+const botonGuardarEdicionMasivaGestion =
+    document.getElementById("guardar-edicion-masiva");
+
+const botonCerrarEdicionMasivaGestion =
+    document.getElementById("cerrar-edicion-masiva");
+
+const botonCancelarEdicionMasivaGestion =
+    document.getElementById("cancelar-edicion-masiva");
+
+
+// =========================================================
+// CATEGORÍAS
+// =========================================================
+
+if (categoriaEdicionMasivaGestion) {
+
+    categoriaEdicionMasivaGestion.innerHTML =
+        `<option value="">Seleccionar categoría...</option>` +
+        CATEGORIAS_STOCK
+            .map(
+                (categoria) => `
+                    <option value="${categoria.clave}">
+                        ${escaparHTML(categoria.nombre)}
+                    </option>
+                `
+            )
+            .join("");
+}
+
+
+function obtenerCategoriaEdicionMasivaGestion() {
+
+    const clave =
+        categoriaEdicionMasivaGestion?.value || "";
+
+    return CATEGORIAS_STOCK.find(
+        (categoria) =>
+            categoria.clave === clave
+    ) || null;
+}
+
+
+function categoriaMasivaEsDecantGestion() {
+
+    const clave =
+        categoriaEdicionMasivaGestion?.value || "";
+
+    return (
+        clave === "decants-arabes" ||
+        clave === "decants-disenador"
+    );
+}
+
+
+function categoriaMasivaUsaUsdtGestion() {
+
+    const clave =
+        categoriaEdicionMasivaGestion?.value || "";
+
+    return (
+        clave === "perfumes-grandes" ||
+        clave === "maison-30ml"
+    );
+}
+
+
+function categoriaMasivaUsaCostoManualGestion() {
+
+    return (
+        categoriaEdicionMasivaGestion?.value ===
+        "inspiraciones-disenador"
+    );
+}
+
+
+// =========================================================
+// PRODUCTOS DE LA CATEGORÍA
+// =========================================================
+
+function obtenerProductosCategoriaMasivaGestion() {
+
+    const categoria =
+        obtenerCategoriaEdicionMasivaGestion();
+
+    if (!categoria) {
+        return [];
+    }
+
+    return productosGestion
+        .filter(
+            (producto) =>
+                producto.retirado !== true &&
+                categoria.coincide(producto)
+        )
+        .sort(
+            (a, b) =>
+                String(a.nombre_mostrar || "")
+                    .localeCompare(
+                        String(b.nombre_mostrar || ""),
+                        "es",
+                        {
+                            numeric: true,
+                            sensitivity: "base"
+                        }
+                    )
+        );
+}
+
+
+function normalizarTextoEdicionMasivaGestion(valor) {
+
+    return String(valor || "")
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .trim();
+}
+
+
+function obtenerProductosVisiblesEdicionMasivaGestion() {
+
+    const termino =
+        normalizarTextoEdicionMasivaGestion(
+            buscarEdicionMasivaGestion?.value || ""
+        );
+
+    const productosCategoria =
+        obtenerProductosCategoriaMasivaGestion();
+
+    if (!termino) {
+        return productosCategoria;
+    }
+
+    return productosCategoria.filter(
+        (producto) => {
+
+            const contenido =
+                normalizarTextoEdicionMasivaGestion(
+                    [
+                        producto.nombre_mostrar,
+                        producto.marca_mostrar,
+                        producto.slug,
+                        producto.codigo_barras
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
+                );
+
+            return contenido.includes(termino);
+        }
+    );
+}
+
+
+function actualizarContadorEdicionMasivaGestion() {
+
+    const cantidad =
+        productosSeleccionadosMasivoGestion.size;
+
+    if (contadorEdicionMasivaGestion) {
+        contadorEdicionMasivaGestion.textContent =
+            `${cantidad} ${cantidad === 1 ? "seleccionado" : "seleccionados"}`;
+    }
+}
+
+
+function renderizarProductosEdicionMasivaGestion() {
+
+    if (!productosEdicionMasivaGestion) {
+        return;
+    }
+
+    const productosVisibles =
+        obtenerProductosVisiblesEdicionMasivaGestion();
+
+    if (productosVisibles.length === 0) {
+
+        productosEdicionMasivaGestion.innerHTML = `
+            <p class="edicion-masiva-sin-productos">
+                No hay productos para mostrar.
+            </p>
+        `;
+
+        actualizarContadorEdicionMasivaGestion();
+        return;
+    }
+
+    productosEdicionMasivaGestion.innerHTML =
+        productosVisibles
+            .map(
+                (producto) => {
+
+                    const seleccionado =
+                        productosSeleccionadosMasivoGestion.has(
+                            Number(producto.id)
+                        );
+
+                    const costoTexto =
+                        producto.costo_actual === null ||
+                        producto.costo_actual === undefined ||
+                        producto.costo_actual === ""
+                            ? "Sin costo"
+                            : formatearPrecio(
+                                producto.costo_actual
+                            );
+
+                    return `
+                        <label class="edicion-masiva-producto">
+                            <input
+                                type="checkbox"
+                                class="edicion-masiva-producto-check"
+                                data-producto-id="${producto.id}"
+                                ${seleccionado ? "checked" : ""}
+                            >
+
+                            <span class="edicion-masiva-producto-info">
+                                <strong>
+                                    ${escaparHTML(
+                                        producto.nombre_mostrar || "Producto"
+                                    )}
+                                </strong>
+
+                                <small>
+                                    Stock ${Number(producto.stock) || 0}
+                                    · Costo ${costoTexto}
+                                    · May. ${formatearPrecio(producto.precio_mayorista)}
+                                    · Min. ${formatearPrecio(producto.precio_minorista)}
+                                </small>
+                            </span>
+                        </label>
+                    `;
+                }
+            )
+            .join("");
+
+    actualizarContadorEdicionMasivaGestion();
+}
+
+
+// =========================================================
+// COSTO / PRECIOS DE REFERENCIA
+// =========================================================
+
+function obtenerCostoUsdtMasivoGestion() {
+
+    const proveedorTexto =
+        proveedorUsdtEdicionMasivaGestion?.value.trim() || "";
+
+    const recargoTexto =
+        recargoUsdtEdicionMasivaGestion?.value.trim() || "";
+
+    const dolarTexto =
+        dolarCostoEdicionMasivaGestion?.value.trim() || "";
+
+    if (
+        proveedorTexto === "" ||
+        recargoTexto === "" ||
+        dolarTexto === ""
+    ) {
+        return null;
+    }
+
+    const proveedor = Number(proveedorTexto);
+    const recargo = Number(recargoTexto);
+    const dolar = Number(dolarTexto);
+
+    if (
+        !Number.isFinite(proveedor) ||
+        !Number.isFinite(recargo) ||
+        !Number.isFinite(dolar) ||
+        proveedor < 0 ||
+        recargo < 0 ||
+        dolar <= 0
+    ) {
+        return null;
+    }
+
+    return Math.round(
+        (proveedor + recargo) * dolar
+    );
+}
+
+
+function obtenerCostoReferenciaMasivoGestion() {
+
+    if (categoriaMasivaUsaCostoManualGestion()) {
+
+        const texto =
+            costoManualEdicionMasivaGestion?.value.trim() || "";
+
+        if (texto === "") {
+            return null;
+        }
+
+        const costo = Number(texto);
+
+        return (
+            Number.isFinite(costo) &&
+            costo >= 0
+        )
+            ? costo
+            : null;
+    }
+
+    if (categoriaMasivaUsaUsdtGestion()) {
+        return obtenerCostoUsdtMasivoGestion();
+    }
+
+    return null;
+}
+
+
+function actualizarPreviewCostoUsdtMasivoGestion() {
+
+    if (!costoUsdtPreviewEdicionMasivaGestion) {
+        return;
+    }
+
+    const costo =
+        obtenerCostoUsdtMasivoGestion();
+
+    costoUsdtPreviewEdicionMasivaGestion.textContent =
+        costo === null
+            ? "—"
+            : formatearPrecio(costo);
+}
+
+
+function sincronizarParPrecioMasivoGestion(
+    tipo,
+    origen
+) {
+
+    const esMayorista =
+        tipo === "mayorista";
+
+    const campoMarkup =
+        esMayorista
+            ? markupMayoristaEdicionMasivaGestion
+            : markupMinoristaEdicionMasivaGestion;
+
+    const campoPrecio =
+        esMayorista
+            ? precioMayoristaEdicionMasivaGestion
+            : precioMinoristaEdicionMasivaGestion;
+
+    const campoAyuda =
+        esMayorista
+            ? ayudaMayoristaEdicionMasivaGestion
+            : ayudaMinoristaEdicionMasivaGestion;
+
+    if (!campoMarkup || !campoPrecio) {
+        return;
+    }
+
+    const costoReferencia =
+        obtenerCostoReferenciaMasivoGestion();
+
+    if (origen === "markup") {
+
+        const texto =
+            campoMarkup.value.trim();
+
+        if (esMayorista) {
+            modoMayoristaMasivoGestion =
+                texto === "" ? null : "markup";
+        } else {
+            modoMinoristaMasivoGestion =
+                texto === "" ? null : "markup";
+        }
+
+        if (texto === "") {
+            campoPrecio.value = "";
+            return;
+        }
+
+        const markup = Number(texto);
+
+        if (
+            costoReferencia !== null &&
+            Number.isFinite(markup) &&
+            markup >= 0
+        ) {
+
+            campoPrecio.value =
+                Math.round(
+                    costoReferencia *
+                    (1 + markup / 100)
+                );
+
+            if (campoAyuda) {
+                campoAyuda.textContent =
+                    "Precio calculado con el costo masivo ingresado.";
+            }
+
+        } else {
+
+            campoPrecio.value = "";
+
+            if (campoAyuda) {
+                campoAyuda.textContent =
+                    "Se aplicará el mismo margen y cada producto calculará su precio según su propio costo.";
+            }
+        }
+
+        return;
+    }
+
+    const texto =
+        campoPrecio.value.trim();
+
+    if (esMayorista) {
+        modoMayoristaMasivoGestion =
+            texto === "" ? null : "precio";
+    } else {
+        modoMinoristaMasivoGestion =
+            texto === "" ? null : "precio";
+    }
+
+    if (texto === "") {
+        campoMarkup.value = "";
+        return;
+    }
+
+    const precio = Number(texto);
+
+    if (
+        costoReferencia !== null &&
+        costoReferencia > 0 &&
+        Number.isFinite(precio) &&
+        precio >= 0
+    ) {
+
+        campoMarkup.value =
+            Number(
+                (
+                    (
+                        precio /
+                        costoReferencia -
+                        1
+                    ) * 100
+                ).toFixed(6)
+            );
+
+        if (campoAyuda) {
+            campoAyuda.textContent =
+                "Margen ajustado automáticamente con el costo masivo ingresado.";
+        }
+
+    } else {
+
+        campoMarkup.value = "";
+
+        if (campoAyuda) {
+            campoAyuda.textContent =
+                "Se aplicará el mismo precio y el margen se calculará por producto según su propio costo.";
+        }
+    }
+}
+
+
+function resincronizarPreciosMasivosGestion() {
+
+    actualizarPreviewCostoUsdtMasivoGestion();
+
+    if (modoMayoristaMasivoGestion === "markup") {
+        sincronizarParPrecioMasivoGestion(
+            "mayorista",
+            "markup"
+        );
+    } else if (modoMayoristaMasivoGestion === "precio") {
+        sincronizarParPrecioMasivoGestion(
+            "mayorista",
+            "precio"
+        );
+    }
+
+    if (modoMinoristaMasivoGestion === "markup") {
+        sincronizarParPrecioMasivoGestion(
+            "minorista",
+            "markup"
+        );
+    } else if (modoMinoristaMasivoGestion === "precio") {
+        sincronizarParPrecioMasivoGestion(
+            "minorista",
+            "precio"
+        );
+    }
+}
+
+
+// =========================================================
+// COSTO DECANT CALCULADO DESDE SU PERFUME BASE
+// =========================================================
+
+function obtenerCostoCalculadoDecantMasivoGestion(
+    decant
+) {
+
+    const productoBaseId =
+        Number(decant?.producto_base_id || 0);
+
+    const productoBase =
+        productosGestion.find(
+            (producto) =>
+                Number(producto.id) ===
+                productoBaseId
+        );
+
+    const costoBase =
+        Number(productoBase?.costo_actual);
+
+    const mlBase =
+        Number(decant?.ml_perfume_base);
+
+    const mlTester =
+        Number(decant?.ml_tester);
+
+    const mlDecant =
+        Number(decant?.ml_decant);
+
+    const insumos =
+        Number(decant?.costo_insumos_decant);
+
+    const redondeo =
+        Number(decant?.redondeo_costo_decant);
+
+    const vendibles =
+        Number.isFinite(mlBase) &&
+        Number.isFinite(mlTester) &&
+        Number.isFinite(mlDecant) &&
+        mlBase > 0 &&
+        mlTester >= 0 &&
+        mlTester < mlBase &&
+        mlDecant > 0
+            ? Math.floor(
+                (mlBase - mlTester) /
+                mlDecant
+            )
+            : 0;
+
+    if (
+        !productoBase ||
+        !Number.isFinite(costoBase) ||
+        costoBase < 0 ||
+        vendibles <= 0 ||
+        !Number.isFinite(insumos) ||
+        insumos < 0 ||
+        !Number.isFinite(redondeo) ||
+        redondeo <= 0
+    ) {
+        return null;
+    }
+
+    const costoSinRedondear =
+        costoBase / vendibles +
+        insumos;
+
+    return Math.ceil(
+        costoSinRedondear /
+        redondeo
+    ) * redondeo;
+}
+
+
+function obtenerMarkupActualMasivoGestion(
+    producto,
+    tipo,
+    costo
+) {
+
+    const valorGuardado =
+        tipo === "mayorista"
+            ? Number(producto?.markup_mayorista)
+            : Number(producto?.markup_minorista);
+
+    if (
+        Number.isFinite(valorGuardado) &&
+        valorGuardado >= 0
+    ) {
+        return valorGuardado;
+    }
+
+    const precio =
+        tipo === "mayorista"
+            ? Number(producto?.precio_mayorista)
+            : Number(producto?.precio_minorista);
+
+    if (
+        Number.isFinite(costo) &&
+        costo > 0 &&
+        Number.isFinite(precio) &&
+        precio >= 0
+    ) {
+
+        return (
+            (precio / costo) - 1
+        ) * 100;
+    }
+
+    return null;
+}
+
+
+// =========================================================
+// MOSTRAR / OCULTAR COSTO SEGÚN CATEGORÍA
+// =========================================================
+
+function actualizarTipoCostoEdicionMasivaGestion() {
+
+    const esDecant =
+        categoriaMasivaEsDecantGestion();
+
+    const usaUsdt =
+        categoriaMasivaUsaUsdtGestion();
+
+    const usaManual =
+        categoriaMasivaUsaCostoManualGestion();
+
+    costoManualBloqueEdicionMasivaGestion
+        ?.classList.toggle(
+            "oculto",
+            !usaManual
+        );
+
+    costoUsdtBloqueEdicionMasivaGestion
+        ?.classList.toggle(
+            "oculto",
+            !usaUsdt
+        );
+
+    costoDecantBloqueEdicionMasivaGestion
+        ?.classList.toggle(
+            "oculto",
+            !esDecant
+        );
+}
+
+
+// =========================================================
+// ABRIR / CERRAR
+// =========================================================
+
+function limpiarCamposEdicionMasivaGestion() {
+
+    productosSeleccionadosMasivoGestion =
+        new Set();
+
+    modoMayoristaMasivoGestion = null;
+    modoMinoristaMasivoGestion = null;
+
+    if (buscarEdicionMasivaGestion) {
+        buscarEdicionMasivaGestion.value = "";
+    }
+
+    [
+        stockEdicionMasivaGestion,
+        costoManualEdicionMasivaGestion,
+        proveedorUsdtEdicionMasivaGestion,
+        recargoUsdtEdicionMasivaGestion,
+        dolarCostoEdicionMasivaGestion,
+        markupMayoristaEdicionMasivaGestion,
+        precioMayoristaEdicionMasivaGestion,
+        markupMinoristaEdicionMasivaGestion,
+        precioMinoristaEdicionMasivaGestion
+    ].forEach(
+        (campo) => {
+            if (campo) {
+                campo.value = "";
+            }
+        }
+    );
+
+    if (costoUsdtPreviewEdicionMasivaGestion) {
+        costoUsdtPreviewEdicionMasivaGestion.textContent = "—";
+    }
+
+    if (ayudaMayoristaEdicionMasivaGestion) {
+        ayudaMayoristaEdicionMasivaGestion.textContent =
+            "Podés editar margen o precio.";
+    }
+
+    if (ayudaMinoristaEdicionMasivaGestion) {
+        ayudaMinoristaEdicionMasivaGestion.textContent =
+            "Podés editar margen o precio.";
+    }
+
+    limpiarMensaje(
+        mensajeEdicionMasivaGestion
+    );
+
+    actualizarContadorEdicionMasivaGestion();
+}
+
+
+function abrirEdicionMasivaGestion() {
+
+    if (categoriaEdicionMasivaGestion) {
+        categoriaEdicionMasivaGestion.value = "";
+    }
+
+    limpiarCamposEdicionMasivaGestion();
+
+    seleccionBloqueEdicionMasivaGestion
+        ?.classList.add("oculto");
+
+    datosBloqueEdicionMasivaGestion
+        ?.classList.add("oculto");
+
+    costoManualBloqueEdicionMasivaGestion
+        ?.classList.add("oculto");
+
+    costoUsdtBloqueEdicionMasivaGestion
+        ?.classList.add("oculto");
+
+    costoDecantBloqueEdicionMasivaGestion
+        ?.classList.add("oculto");
+
+    modalEdicionMasivaGestion
+        ?.classList.remove("oculto");
+}
+
+
+function cerrarEdicionMasivaGestion() {
+
+    modalEdicionMasivaGestion
+        ?.classList.add("oculto");
+
+    limpiarCamposEdicionMasivaGestion();
+}
+
+
+// =========================================================
+// EVENTOS DE SELECCIÓN
+// =========================================================
+
+botonEdicionMasivaStockGestion?.addEventListener(
+    "click",
+    abrirEdicionMasivaGestion
+);
+
+botonCerrarEdicionMasivaGestion?.addEventListener(
+    "click",
+    cerrarEdicionMasivaGestion
+);
+
+botonCancelarEdicionMasivaGestion?.addEventListener(
+    "click",
+    cerrarEdicionMasivaGestion
+);
+
+modalEdicionMasivaGestion?.addEventListener(
+    "click",
+    (evento) => {
+        if (
+            evento.target ===
+            modalEdicionMasivaGestion
+        ) {
+            cerrarEdicionMasivaGestion();
+        }
+    }
+);
+
+categoriaEdicionMasivaGestion?.addEventListener(
+    "change",
+    () => {
+
+        limpiarCamposEdicionMasivaGestion();
+
+        const categoria =
+            obtenerCategoriaEdicionMasivaGestion();
+
+        if (!categoria) {
+
+            seleccionBloqueEdicionMasivaGestion
+                ?.classList.add("oculto");
+
+            datosBloqueEdicionMasivaGestion
+                ?.classList.add("oculto");
+
+            return;
+        }
+
+        seleccionBloqueEdicionMasivaGestion
+            ?.classList.remove("oculto");
+
+        datosBloqueEdicionMasivaGestion
+            ?.classList.remove("oculto");
+
+        actualizarTipoCostoEdicionMasivaGestion();
+        renderizarProductosEdicionMasivaGestion();
+    }
+);
+
+buscarEdicionMasivaGestion?.addEventListener(
+    "input",
+    renderizarProductosEdicionMasivaGestion
+);
+
+productosEdicionMasivaGestion?.addEventListener(
+    "change",
+    (evento) => {
+
+        const checkbox =
+            evento.target.closest(
+                ".edicion-masiva-producto-check"
+            );
+
+        if (!checkbox) {
+            return;
+        }
+
+        const productoId =
+            Number(checkbox.dataset.productoId);
+
+        if (!productoId) {
+            return;
+        }
+
+        if (checkbox.checked) {
+            productosSeleccionadosMasivoGestion.add(
+                productoId
+            );
+        } else {
+            productosSeleccionadosMasivoGestion.delete(
+                productoId
+            );
+        }
+
+        actualizarContadorEdicionMasivaGestion();
+    }
+);
+
+botonMarcarTodosEdicionMasivaGestion?.addEventListener(
+    "click",
+    () => {
+
+        obtenerProductosVisiblesEdicionMasivaGestion()
+            .forEach(
+                (producto) => {
+                    productosSeleccionadosMasivoGestion.add(
+                        Number(producto.id)
+                    );
+                }
+            );
+
+        renderizarProductosEdicionMasivaGestion();
+    }
+);
+
+botonDesmarcarTodosEdicionMasivaGestion?.addEventListener(
+    "click",
+    () => {
+
+        productosSeleccionadosMasivoGestion =
+            new Set();
+
+        renderizarProductosEdicionMasivaGestion();
+    }
+);
+
+
+// =========================================================
+// EVENTOS COSTO / MARGEN / PRECIO
+// =========================================================
+
+costoManualEdicionMasivaGestion?.addEventListener(
+    "input",
+    resincronizarPreciosMasivosGestion
+);
+
+[
+    proveedorUsdtEdicionMasivaGestion,
+    recargoUsdtEdicionMasivaGestion,
+    dolarCostoEdicionMasivaGestion
+].forEach(
+    (campo) => {
+        campo?.addEventListener(
+            "input",
+            resincronizarPreciosMasivosGestion
+        );
+    }
+);
+
+markupMayoristaEdicionMasivaGestion?.addEventListener(
+    "input",
+    () => {
+        sincronizarParPrecioMasivoGestion(
+            "mayorista",
+            "markup"
+        );
+    }
+);
+
+precioMayoristaEdicionMasivaGestion?.addEventListener(
+    "input",
+    () => {
+        sincronizarParPrecioMasivoGestion(
+            "mayorista",
+            "precio"
+        );
+    }
+);
+
+markupMinoristaEdicionMasivaGestion?.addEventListener(
+    "input",
+    () => {
+        sincronizarParPrecioMasivoGestion(
+            "minorista",
+            "markup"
+        );
+    }
+);
+
+precioMinoristaEdicionMasivaGestion?.addEventListener(
+    "input",
+    () => {
+        sincronizarParPrecioMasivoGestion(
+            "minorista",
+            "precio"
+        );
+    }
+);
+
+
+// =========================================================
+// PREPARAR CAMBIOS
+// =========================================================
+
+function obtenerNumeroOpcionalMasivoGestion(
+    campo
+) {
+
+    const texto =
+        campo?.value.trim() || "";
+
+    if (texto === "") {
+        return {
+            presente: false,
+            valor: null
+        };
+    }
+
+    return {
+        presente: true,
+        valor: Number(texto)
+    };
+}
+
+
+function prepararPlanEdicionMasivaGestion() {
+
+    const categoria =
+        obtenerCategoriaEdicionMasivaGestion();
+
+    if (!categoria) {
+        throw new Error(
+            "Elegí una categoría."
+        );
+    }
+
+    const idsSeleccionados =
+        Array.from(
+            productosSeleccionadosMasivoGestion
+        );
+
+    if (idsSeleccionados.length === 0) {
+        throw new Error(
+            "Marcá al menos un producto."
+        );
+    }
+
+    const stockDato =
+        obtenerNumeroOpcionalMasivoGestion(
+            stockEdicionMasivaGestion
+        );
+
+    if (
+        stockDato.presente &&
+        (
+            !Number.isInteger(stockDato.valor) ||
+            stockDato.valor < 0
+        )
+    ) {
+        throw new Error(
+            "El stock debe ser un número entero igual o mayor a 0."
+        );
+    }
+
+    const usaCostoManual =
+        categoriaMasivaUsaCostoManualGestion();
+
+    const usaUsdt =
+        categoriaMasivaUsaUsdtGestion();
+
+    const esDecant =
+        categoriaMasivaEsDecantGestion();
+
+    const costoManualDato =
+        obtenerNumeroOpcionalMasivoGestion(
+            costoManualEdicionMasivaGestion
+        );
+
+    if (
+        usaCostoManual &&
+        costoManualDato.presente &&
+        (
+            !Number.isFinite(costoManualDato.valor) ||
+            costoManualDato.valor < 0
+        )
+    ) {
+        throw new Error(
+            "Revisá el costo ingresado."
+        );
+    }
+
+    const proveedorTexto =
+        proveedorUsdtEdicionMasivaGestion?.value.trim() || "";
+
+    const recargoTexto =
+        recargoUsdtEdicionMasivaGestion?.value.trim() || "";
+
+    const dolarTexto =
+        dolarCostoEdicionMasivaGestion?.value.trim() || "";
+
+    const hayFormulaUsdt =
+        usaUsdt &&
+        (
+            proveedorTexto !== "" ||
+            recargoTexto !== "" ||
+            dolarTexto !== ""
+        );
+
+    let proveedorUsdt = null;
+    let recargoUsdt = null;
+    let dolarCosto = null;
+    let costoUsdt = null;
+
+    if (hayFormulaUsdt) {
+
+        if (
+            proveedorTexto === "" ||
+            recargoTexto === "" ||
+            dolarTexto === ""
+        ) {
+            throw new Error(
+                "Para modificar el costo en USDT completá precio proveedor, recargo y dólar de costo."
+            );
+        }
+
+        proveedorUsdt = Number(proveedorTexto);
+        recargoUsdt = Number(recargoTexto);
+        dolarCosto = Number(dolarTexto);
+
+        if (
+            !Number.isFinite(proveedorUsdt) ||
+            proveedorUsdt < 0 ||
+            !Number.isFinite(recargoUsdt) ||
+            recargoUsdt < 0 ||
+            !Number.isFinite(dolarCosto) ||
+            dolarCosto <= 0
+        ) {
+            throw new Error(
+                "Revisá el precio proveedor, recargo y dólar de costo."
+            );
+        }
+
+        costoUsdt = Math.round(
+            (proveedorUsdt + recargoUsdt) *
+            dolarCosto
+        );
+    }
+
+    const markupMayoristaDato =
+        obtenerNumeroOpcionalMasivoGestion(
+            markupMayoristaEdicionMasivaGestion
+        );
+
+    const precioMayoristaDato =
+        obtenerNumeroOpcionalMasivoGestion(
+            precioMayoristaEdicionMasivaGestion
+        );
+
+    const markupMinoristaDato =
+        obtenerNumeroOpcionalMasivoGestion(
+            markupMinoristaEdicionMasivaGestion
+        );
+
+    const precioMinoristaDato =
+        obtenerNumeroOpcionalMasivoGestion(
+            precioMinoristaEdicionMasivaGestion
+        );
+
+    if (
+        modoMayoristaMasivoGestion === "markup" &&
+        (
+            !markupMayoristaDato.presente ||
+            !Number.isFinite(markupMayoristaDato.valor) ||
+            markupMayoristaDato.valor < 0
+        )
+    ) {
+        throw new Error(
+            "Revisá el margen mayorista."
+        );
+    }
+
+    if (
+        modoMayoristaMasivoGestion === "precio" &&
+        (
+            !precioMayoristaDato.presente ||
+            !Number.isFinite(precioMayoristaDato.valor) ||
+            precioMayoristaDato.valor < 0
+        )
+    ) {
+        throw new Error(
+            "Revisá el precio mayorista."
+        );
+    }
+
+    if (
+        modoMinoristaMasivoGestion === "markup" &&
+        (
+            !markupMinoristaDato.presente ||
+            !Number.isFinite(markupMinoristaDato.valor) ||
+            markupMinoristaDato.valor < 0
+        )
+    ) {
+        throw new Error(
+            "Revisá el margen minorista."
+        );
+    }
+
+    if (
+        modoMinoristaMasivoGestion === "precio" &&
+        (
+            !precioMinoristaDato.presente ||
+            !Number.isFinite(precioMinoristaDato.valor) ||
+            precioMinoristaDato.valor < 0
+        )
+    ) {
+        throw new Error(
+            "Revisá el precio minorista."
+        );
+    }
+
+    const cambiaCosto =
+        (
+            usaCostoManual &&
+            costoManualDato.presente
+        ) ||
+        hayFormulaUsdt;
+
+    const cambiaMayorista =
+        modoMayoristaMasivoGestion !== null;
+
+    const cambiaMinorista =
+        modoMinoristaMasivoGestion !== null;
+
+    const hayCambios =
+        stockDato.presente ||
+        cambiaCosto ||
+        cambiaMayorista ||
+        cambiaMinorista;
+
+    if (!hayCambios) {
+        throw new Error(
+            "Completá al menos un dato para modificar."
+        );
+    }
+
+    const productosSeleccionados =
+        idsSeleccionados
+            .map(
+                (id) =>
+                    productosGestion.find(
+                        (producto) =>
+                            Number(producto.id) ===
+                            Number(id)
+                    )
+            )
+            .filter(Boolean);
+
+    if (
+        productosSeleccionados.length !==
+        idsSeleccionados.length
+    ) {
+        throw new Error(
+            "No se pudieron identificar todos los productos seleccionados."
+        );
+    }
+
+    const planes =
+        productosSeleccionados.map(
+            (producto) => {
+
+                const costoActual =
+                    Number(producto.costo_actual);
+
+                let costoFinal =
+                    Number.isFinite(costoActual) &&
+                    costoActual >= 0
+                        ? costoActual
+                        : null;
+
+                if (esDecant) {
+
+                    costoFinal =
+                        obtenerCostoCalculadoDecantMasivoGestion(
+                            producto
+                        );
+
+                    if (
+                        (
+                            cambiaMayorista ||
+                            cambiaMinorista
+                        ) &&
+                        costoFinal === null
+                    ) {
+                        throw new Error(
+                            `${producto.nombre_mostrar}: el decant no tiene una configuración de costo válida. Configuralo primero desde Editar producto.`
+                        );
+                    }
+
+                } else if (
+                    usaCostoManual &&
+                    costoManualDato.presente
+                ) {
+
+                    costoFinal =
+                        costoManualDato.valor;
+
+                } else if (hayFormulaUsdt) {
+
+                    costoFinal =
+                        costoUsdt;
+                }
+
+                const necesitaPrecios =
+                    cambiaCosto ||
+                    cambiaMayorista ||
+                    cambiaMinorista;
+
+                if (
+                    necesitaPrecios &&
+                    (
+                        costoFinal === null ||
+                        !Number.isFinite(costoFinal) ||
+                        costoFinal < 0
+                    )
+                ) {
+                    throw new Error(
+                        `${producto.nombre_mostrar}: no tiene costo cargado. Cargalo primero o incluí el costo en esta edición masiva.`
+                    );
+                }
+
+                let markupMayorista =
+                    obtenerMarkupActualMasivoGestion(
+                        producto,
+                        "mayorista",
+                        costoActual
+                    );
+
+                let markupMinorista =
+                    obtenerMarkupActualMasivoGestion(
+                        producto,
+                        "minorista",
+                        costoActual
+                    );
+
+                let precioMayorista =
+                    Number(producto.precio_mayorista) || 0;
+
+                let precioMinorista =
+                    Number(producto.precio_minorista) || 0;
+
+                if (
+                    modoMayoristaMasivoGestion ===
+                    "markup"
+                ) {
+
+                    markupMayorista =
+                        markupMayoristaDato.valor;
+
+                    precioMayorista =
+                        Math.round(
+                            costoFinal *
+                            (1 + markupMayorista / 100)
+                        );
+
+                } else if (
+                    modoMayoristaMasivoGestion ===
+                    "precio"
+                ) {
+
+                    if (!(costoFinal > 0)) {
+                        throw new Error(
+                            `${producto.nombre_mostrar}: el costo debe ser mayor a 0 para calcular el margen desde el precio mayorista.`
+                        );
+                    }
+
+                    precioMayorista =
+                        precioMayoristaDato.valor;
+
+                    markupMayorista =
+                        (
+                            precioMayorista /
+                            costoFinal -
+                            1
+                        ) * 100;
+
+                } else if (cambiaCosto) {
+
+                    if (
+                        !Number.isFinite(markupMayorista) ||
+                        markupMayorista < 0
+                    ) {
+                        throw new Error(
+                            `${producto.nombre_mostrar}: no tiene margen mayorista válido para recalcular el precio con el nuevo costo.`
+                        );
+                    }
+
+                    precioMayorista =
+                        Math.round(
+                            costoFinal *
+                            (1 + markupMayorista / 100)
+                        );
+                }
+
+                if (
+                    modoMinoristaMasivoGestion ===
+                    "markup"
+                ) {
+
+                    markupMinorista =
+                        markupMinoristaDato.valor;
+
+                    precioMinorista =
+                        Math.round(
+                            costoFinal *
+                            (1 + markupMinorista / 100)
+                        );
+
+                } else if (
+                    modoMinoristaMasivoGestion ===
+                    "precio"
+                ) {
+
+                    if (!(costoFinal > 0)) {
+                        throw new Error(
+                            `${producto.nombre_mostrar}: el costo debe ser mayor a 0 para calcular el margen desde el precio minorista.`
+                        );
+                    }
+
+                    precioMinorista =
+                        precioMinoristaDato.valor;
+
+                    markupMinorista =
+                        (
+                            precioMinorista /
+                            costoFinal -
+                            1
+                        ) * 100;
+
+                } else if (cambiaCosto) {
+
+                    if (
+                        !Number.isFinite(markupMinorista) ||
+                        markupMinorista < 0
+                    ) {
+                        throw new Error(
+                            `${producto.nombre_mostrar}: no tiene margen minorista válido para recalcular el precio con el nuevo costo.`
+                        );
+                    }
+
+                    precioMinorista =
+                        Math.round(
+                            costoFinal *
+                            (1 + markupMinorista / 100)
+                        );
+                }
+
+                if (
+                    necesitaPrecios &&
+                    (
+                        !Number.isFinite(markupMayorista) ||
+                        markupMayorista < 0 ||
+                        !Number.isFinite(markupMinorista) ||
+                        markupMinorista < 0 ||
+                        !Number.isFinite(precioMayorista) ||
+                        precioMayorista < 0 ||
+                        !Number.isFinite(precioMinorista) ||
+                        precioMinorista < 0
+                    )
+                ) {
+                    throw new Error(
+                        `${producto.nombre_mostrar}: no se pudieron calcular los márgenes y precios.`
+                    );
+                }
+
+                if (
+                    esDecant &&
+                    necesitaPrecios
+                ) {
+
+                    const baseId =
+                        Number(producto.producto_base_id || 0);
+
+                    const mlBase =
+                        Number(producto.ml_perfume_base);
+
+                    const mlTester =
+                        Number(producto.ml_tester);
+
+                    const mlDecant =
+                        Number(producto.ml_decant);
+
+                    const insumos =
+                        Number(producto.costo_insumos_decant);
+
+                    const redondeo =
+                        Number(producto.redondeo_costo_decant);
+
+                    if (
+                        baseId <= 0 ||
+                        !Number.isFinite(mlBase) ||
+                        mlBase <= 0 ||
+                        !Number.isFinite(mlTester) ||
+                        mlTester < 0 ||
+                        mlTester >= mlBase ||
+                        !Number.isFinite(mlDecant) ||
+                        mlDecant <= 0 ||
+                        !Number.isFinite(insumos) ||
+                        insumos < 0 ||
+                        !Number.isFinite(redondeo) ||
+                        redondeo <= 0
+                    ) {
+                        throw new Error(
+                            `${producto.nombre_mostrar}: revisá la configuración del decant antes de editarlo masivamente.`
+                        );
+                    }
+                }
+
+                return {
+                    producto,
+                    stockFinal:
+                        stockDato.presente
+                            ? stockDato.valor
+                            : Number(producto.stock) || 0,
+                    activoFinal:
+                        producto.activo !== false,
+                    costoFinal,
+                    markupMayorista,
+                    markupMinorista,
+                    precioMayorista,
+                    precioMinorista,
+                    cambiaCosto,
+                    cambiaMayorista,
+                    cambiaMinorista,
+                    necesitaPrecios,
+                    esDecant,
+                    hayFormulaUsdt,
+                    proveedorUsdt,
+                    recargoUsdt,
+                    dolarCosto
+                };
+            }
+        );
+
+    return {
+        categoria,
+        planes,
+        stockDato,
+        cambiaCosto,
+        cambiaMayorista,
+        cambiaMinorista
+    };
+}
+
+
+// =========================================================
+// GUARDAR
+// =========================================================
+
+async function guardarPlanProductoMasivoGestion(
+    plan
+) {
+
+    const producto =
+        plan.producto;
+
+    if (plan.necesitaPrecios) {
+
+        if (plan.esDecant) {
+
+            const {
+                error: errorCostos
+            } =
+                await supabaseClient.rpc(
+                    "configurar_decant",
+                    {
+                        p_decant_id:
+                            Number(producto.id),
+                        p_producto_base_id:
+                            Number(producto.producto_base_id),
+                        p_ml_perfume_base:
+                            Number(producto.ml_perfume_base),
+                        p_ml_decant:
+                            Number(producto.ml_decant),
+                        p_ml_tester:
+                            Number(producto.ml_tester),
+                        p_costo_insumos:
+                            Number(producto.costo_insumos_decant),
+                        p_redondeo:
+                            Number(producto.redondeo_costo_decant),
+                        p_markup_mayorista:
+                            plan.markupMayorista,
+                        p_markup_minorista:
+                            plan.markupMinorista
+                    }
+                );
+
+            if (errorCostos) {
+                throw errorCostos;
+            }
+
+        } else if (
+            plan.hayFormulaUsdt
+        ) {
+
+            const {
+                error: errorCostos
+            } =
+                await supabaseClient.rpc(
+                    "actualizar_costos_producto_usdt",
+                    {
+                        p_producto_id:
+                            Number(producto.id),
+                        p_precio_proveedor_usdt:
+                            plan.proveedorUsdt,
+                        p_recargo_usdt:
+                            plan.recargoUsdt,
+                        p_dolar_costo:
+                            plan.dolarCosto,
+                        p_markup_mayorista:
+                            plan.markupMayorista,
+                        p_markup_minorista:
+                            plan.markupMinorista
+                    }
+                );
+
+            if (errorCostos) {
+                throw errorCostos;
+            }
+
+        } else {
+
+            const {
+                error: errorCostos
+            } =
+                await supabaseClient.rpc(
+                    "actualizar_costos_producto",
+                    {
+                        p_producto_id:
+                            Number(producto.id),
+                        p_costo:
+                            plan.costoFinal,
+                        p_markup_mayorista:
+                            plan.markupMayorista,
+                        p_markup_minorista:
+                            plan.markupMinorista
+                    }
+                );
+
+            if (errorCostos) {
+                throw errorCostos;
+            }
+        }
+    }
+
+    const {
+        error
+    } =
+        await supabaseClient.rpc(
+            "editar_producto_gestion",
+            {
+                p_producto_id:
+                    Number(producto.id),
+                p_stock:
+                    plan.stockFinal,
+                p_precio_minorista:
+                    plan.precioMinorista,
+                p_precio_mayorista:
+                    plan.precioMayorista,
+                p_activo:
+                    plan.activoFinal
+            }
+        );
+
+    if (error) {
+        throw error;
+    }
+}
+
+
+formEdicionMasivaGestion?.addEventListener(
+    "submit",
+    async (evento) => {
+
+        evento.preventDefault();
+
+        limpiarMensaje(
+            mensajeEdicionMasivaGestion
+        );
+
+        let planGeneral;
+
+        try {
+            planGeneral =
+                prepararPlanEdicionMasivaGestion();
+        } catch (error) {
+
+            mostrarMensaje(
+                mensajeEdicionMasivaGestion,
+                error.message ||
+                "Revisá los datos ingresados."
+            );
+
+            return;
+        }
+
+        const cantidad =
+            planGeneral.planes.length;
+
+        const cambios = [];
+
+        if (planGeneral.stockDato.presente) {
+            cambios.push(
+                `stock ${planGeneral.stockDato.valor}`
+            );
+        }
+
+        if (planGeneral.cambiaCosto) {
+            cambios.push("costo");
+        }
+
+        if (planGeneral.cambiaMayorista) {
+            cambios.push("mayorista");
+        }
+
+        if (planGeneral.cambiaMinorista) {
+            cambios.push("minorista");
+        }
+
+        const confirmar =
+            window.confirm(
+                `Vas a modificar ${cantidad} ${cantidad === 1 ? "producto" : "productos"}.\n\n` +
+                `Cambios: ${cambios.join(", ")}.\n\n` +
+                "Solo se modificarán los productos que marcaste. ¿Confirmar?"
+            );
+
+        if (!confirmar) {
+            return;
+        }
+
+        botonGuardarEdicionMasivaGestion.disabled =
+            true;
+
+        let guardados = 0;
+
+        try {
+
+            for (
+                let indice = 0;
+                indice < planGeneral.planes.length;
+                indice++
+            ) {
+
+                const plan =
+                    planGeneral.planes[indice];
+
+                botonGuardarEdicionMasivaGestion.textContent =
+                    `Guardando ${indice + 1}/${cantidad}...`;
+
+                await guardarPlanProductoMasivoGestion(
+                    plan
+                );
+
+                guardados++;
+            }
+
+            await cargarProductosGestion();
+            renderizarStock();
+
+            cerrarEdicionMasivaGestion();
+
+            mostrarMensaje(
+                mensajeStockGestion,
+                `${cantidad} ${cantidad === 1 ? "producto actualizado" : "productos actualizados"} correctamente.`,
+                "exito"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "Error en edición masiva:",
+                error
+            );
+
+            try {
+                await cargarProductosGestion();
+                renderizarStock();
+            } catch (errorRecarga) {
+                console.error(
+                    "No se pudo recargar stock después del error:",
+                    errorRecarga
+                );
+            }
+
+            mostrarMensaje(
+                mensajeEdicionMasivaGestion,
+                guardados > 0
+                    ? `Se actualizaron ${guardados} de ${cantidad} productos. Se detuvo por un error: ${error.message || "revisá la conexión y volvé a intentar con los restantes."}`
+                    : error.message ||
+                        "No se pudieron guardar los cambios."
+            );
+
+        } finally {
+
+            botonGuardarEdicionMasivaGestion.disabled =
+                false;
+
+            botonGuardarEdicionMasivaGestion.textContent =
+                "Aplicar a seleccionados";
+        }
+    }
+);
