@@ -4454,14 +4454,21 @@ function obtenerClientesFiltrados() {
             ?.toLowerCase() || "";
 
 
+    const clientesActivos =
+        clientesGestion.filter(
+            (cliente) =>
+                cliente.activo !== false
+        );
+
+
     if (!termino) {
 
-        return clientesGestion;
+        return clientesActivos;
 
     }
 
 
-    return clientesGestion.filter(
+    return clientesActivos.filter(
         (cliente) => {
 
             const nombre =
@@ -4501,20 +4508,27 @@ function renderizarClientes() {
     }
 
 
+    const clientesActivos =
+        clientesGestion.filter(
+            (cliente) =>
+                cliente.activo !== false
+        );
+
+
     const clientesFiltrados =
         obtenerClientesFiltrados();
 
 
     clientesContador.textContent =
-        `${clientesGestion.length} ${
-            clientesGestion.length === 1
+        `${clientesActivos.length} ${
+            clientesActivos.length === 1
                 ? "cliente"
                 : "clientes"
         }`;
 
 
     if (
-        clientesGestion.length ===
+        clientesActivos.length ===
         0
     ) {
 
@@ -4585,13 +4599,41 @@ function renderizarClientes() {
                         </div>
 
 
-                        <button
-                            type="button"
-                            class="editar-cliente"
-                            data-cliente-id="${cliente.id}"
+                        <div
+                            style="
+                                display: flex;
+                                gap: 8px;
+                                align-items: center;
+                            "
                         >
-                            Editar
-                        </button>
+
+                            <button
+                                type="button"
+                                class="editar-cliente"
+                                data-cliente-id="${cliente.id}"
+                            >
+                                Editar
+                            </button>
+
+
+                            <button
+                                type="button"
+                                class="eliminar-cliente"
+                                data-cliente-id="${cliente.id}"
+                                style="
+                                    border: 1px solid #ef4444;
+                                    color: #dc2626;
+                                    background: #ffffff;
+                                    border-radius: 10px;
+                                    padding: 10px 16px;
+                                    font-weight: 700;
+                                    cursor: pointer;
+                                "
+                            >
+                                Eliminar
+                            </button>
+
+                        </div>
 
                     </article>
 
@@ -4599,6 +4641,10 @@ function renderizarClientes() {
             )
             .join("");
 
+
+    // ========================================
+    // EDITAR
+    // ========================================
 
     document
         .querySelectorAll(
@@ -4622,6 +4668,162 @@ function renderizarClientes() {
 
             }
         );
+
+
+    // ========================================
+    // ELIMINAR
+    // ========================================
+
+    document
+        .querySelectorAll(
+            ".eliminar-cliente"
+        )
+        .forEach(
+            (boton) => {
+
+                boton.addEventListener(
+                    "click",
+                    async () => {
+
+                        await eliminarClienteGestion(
+                            Number(
+                                boton.dataset.clienteId
+                            ),
+                            boton
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+// ========================================
+// ELIMINAR CLIENTE
+// ========================================
+
+async function eliminarClienteGestion(
+    clienteId,
+    boton = null
+) {
+
+    const cliente =
+        clientesGestion.find(
+            (cliente) =>
+                Number(cliente.id) ===
+                Number(clienteId)
+        );
+
+
+    if (!cliente) {
+        return;
+    }
+
+
+    const confirmar =
+        window.confirm(
+            `¿Seguro que querés eliminar a ${cliente.nombre}?\n\n` +
+            "El cliente dejará de aparecer en la lista y en nuevas ventas, " +
+            "pero sus ventas anteriores se conservarán."
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    if (boton) {
+
+        boton.disabled = true;
+
+        boton.textContent =
+            "Eliminando...";
+
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient.rpc(
+                "eliminar_cliente",
+                {
+                    p_cliente_id:
+                        Number(clienteId)
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Error al eliminar cliente:",
+                error
+            );
+
+            mostrarMensaje(
+                mensajeCliente,
+                error.message ||
+                "No se pudo eliminar el cliente."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            Number(clienteEditandoId) ===
+            Number(clienteId)
+        ) {
+
+            limpiarFormularioCliente();
+
+        }
+
+
+        await cargarClientesGestion();
+
+
+        mostrarMensaje(
+            mensajeCliente,
+            `${cliente.nombre} fue eliminado correctamente.`,
+            "exito"
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Error al eliminar cliente:",
+            error
+        );
+
+
+        mostrarMensaje(
+            mensajeCliente,
+            "No se pudo eliminar el cliente."
+        );
+
+
+    } finally {
+
+        if (boton) {
+
+            boton.disabled = false;
+
+            boton.textContent =
+                "Eliminar";
+
+        }
+
+    }
 
 }
 
