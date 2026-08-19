@@ -32643,13 +32643,13 @@ if (!modalEdicionMasivaGestion) {
                         </div>
 
                         <div class="campo">
-                            <label for="edicion-masiva-stock">
+                            <label for="edicion-masiva-stock-valor">
                                 Stock actual
                             </label>
 
                             <input
                                 type="number"
-                                id="edicion-masiva-stock"
+                                id="edicion-masiva-stock-valor"
                                 min="0"
                                 step="1"
                                 placeholder="Dejar vacío para no modificar"
@@ -32913,7 +32913,7 @@ const botonDesmarcarTodosEdicionMasivaGestion =
     document.getElementById("edicion-masiva-desmarcar-todos");
 
 const stockEdicionMasivaGestion =
-    document.getElementById("edicion-masiva-stock");
+    document.getElementById("edicion-masiva-stock-valor");
 
 const costoManualBloqueEdicionMasivaGestion =
     document.getElementById("edicion-masiva-costo-manual-bloque");
@@ -34415,6 +34415,8 @@ function prepararPlanEdicionMasivaGestion() {
                     markupMinorista,
                     precioMayorista,
                     precioMinorista,
+                    cambiaStock:
+                        stockDato.presente,
                     cambiaCosto,
                     cambiaMayorista,
                     cambiaMinorista,
@@ -34561,6 +34563,10 @@ async function guardarPlanProductoMasivoGestion(
     if (error) {
         throw error;
     }
+
+    // El stock masivo se fija en un único paso al terminar el lote.
+    // Así evitamos que una edición individual intermedia vuelva a dejar
+    // el valor anterior cuando el stock elegido es 0.
 }
 
 
@@ -34648,6 +34654,34 @@ formEdicionMasivaGestion?.addEventListener(
                 );
 
                 guardados++;
+            }
+
+            // Si se indicó stock, se aplica UNA SOLA VEZ a todos los IDs
+            // seleccionados directamente en la base. Esto acepta 0
+            // expresamente y deja el lote completo con el mismo stock.
+            if (planGeneral.stockDato.presente) {
+
+                const idsStockMasivo =
+                    planGeneral.planes.map(
+                        (plan) => Number(plan.producto.id)
+                    );
+
+                const {
+                    error: errorStockMasivo
+                } =
+                    await supabaseClient.rpc(
+                        "actualizar_stock_productos_masivo",
+                        {
+                            p_producto_ids:
+                                idsStockMasivo,
+                            p_stock:
+                                Number(planGeneral.stockDato.valor)
+                        }
+                    );
+
+                if (errorStockMasivo) {
+                    throw errorStockMasivo;
+                }
             }
 
             await cargarProductosGestion();
