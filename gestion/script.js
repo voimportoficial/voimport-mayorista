@@ -33682,6 +33682,167 @@ function formatearFechaPedidoWebGestion(fecha) {
 
 
 // =========================================================
+// WHATSAPP CLIENTE - PEDIDO WEB
+// =========================================================
+
+function normalizarWhatsappPedidoWebGestion(
+    telefono
+) {
+
+    let numero =
+        String(
+            telefono || ""
+        )
+            .replace(
+                /[^0-9]/g,
+                ""
+            );
+
+
+    if (!numero) {
+        return "";
+    }
+
+
+    if (
+        numero.startsWith("0054")
+    ) {
+        numero =
+            numero.slice(4);
+    } else if (
+        numero.startsWith("54")
+    ) {
+        numero =
+            numero.slice(2);
+    }
+
+
+    if (
+        numero.length === 11 &&
+        numero.startsWith("9")
+    ) {
+        numero =
+            numero.slice(1);
+    }
+
+
+    if (
+        numero.startsWith("0")
+    ) {
+        numero =
+            numero.slice(1);
+    }
+
+
+    if (
+        numero.length === 12
+    ) {
+
+        for (
+            const largoArea of [2, 3, 4]
+        ) {
+
+            if (
+                numero.slice(
+                    largoArea,
+                    largoArea + 2
+                ) === "15"
+            ) {
+
+                const candidato =
+                    numero.slice(
+                        0,
+                        largoArea
+                    ) +
+                    numero.slice(
+                        largoArea + 2
+                    );
+
+                if (
+                    candidato.length === 10
+                ) {
+                    numero =
+                        candidato;
+                    break;
+                }
+
+            }
+
+        }
+
+    }
+
+
+    if (
+        numero.length === 11 &&
+        numero.startsWith("9")
+    ) {
+        numero =
+            numero.slice(1);
+    }
+
+
+    if (
+        numero.length === 10 &&
+        numero.startsWith("15")
+    ) {
+        return "";
+    }
+
+
+    return numero;
+
+}
+
+
+function obtenerEnlaceWhatsappPedidoWebGestion(
+    pedido
+) {
+
+    const telefono =
+        normalizarWhatsappPedidoWebGestion(
+            pedido?.cliente_telefono
+        );
+
+
+    if (
+        telefono.length !==
+        10
+    ) {
+        return "";
+    }
+
+
+    const nombre =
+        String(
+            pedido?.cliente_nombre || ""
+        )
+            .trim();
+
+
+    const codigo =
+        String(
+            pedido?.codigo ||
+            `Pedido #${pedido?.pedido_id || ""}`
+        )
+            .trim();
+
+
+    const saludo =
+        nombre
+            ? `Hola ${nombre}, te escribo de VO IMPORT por tu pedido ${codigo}.`
+            : `Hola, te escribo de VO IMPORT por tu pedido ${codigo}.`;
+
+
+    return (
+        `https://wa.me/549${telefono}` +
+        `?text=${encodeURIComponent(saludo)}`
+    );
+
+}
+
+
+// =========================================================
 // RENDER PEDIDOS
 // =========================================================
 
@@ -33744,6 +33905,99 @@ function renderizarPedidosWebGestion() {
                     const reservado =
                         pedido.reservado === true;
 
+                    const clienteNombre =
+                        [
+                            pedido.cliente_nombre,
+                            pedido.cliente_apellido
+                        ]
+                            .filter(Boolean)
+                            .join(" ")
+                            .trim();
+
+                    const clienteTelefono =
+                        String(
+                            pedido.cliente_telefono || ""
+                        )
+                            .trim();
+
+                    const clienteTelefonoNormalizado =
+                        normalizarWhatsappPedidoWebGestion(
+                            clienteTelefono
+                        );
+
+                    const clienteTelefonoMostrar =
+                        clienteTelefonoNormalizado.length === 10
+                            ? `+54 ${clienteTelefonoNormalizado}`
+                            : clienteTelefono;
+
+                    const enlaceWhatsappCliente =
+                        obtenerEnlaceWhatsappPedidoWebGestion(
+                            pedido
+                        );
+
+                    const clienteHTML =
+                        clienteNombre ||
+                        clienteTelefono
+                            ? `
+                                <div class="pedido-web-cliente">
+                                    <div class="pedido-web-cliente-datos">
+                                        <span>Cliente</span>
+
+                                        <strong>
+                                            ${escaparHTML(
+                                                clienteNombre ||
+                                                "Sin nombre"
+                                            )}
+                                        </strong>
+
+                                        ${
+                                            clienteTelefono
+                                                ? `
+                                                    <small>
+                                                        WhatsApp:
+                                                        ${escaparHTML(
+                                                            clienteTelefonoMostrar
+                                                        )}
+                                                    </small>
+                                                `
+                                                : ""
+                                        }
+                                    </div>
+
+                                    ${
+                                        enlaceWhatsappCliente
+                                            ? `
+                                                <a
+                                                    href="${escaparHTML(
+                                                        enlaceWhatsappCliente
+                                                    )}"
+                                                    class="contactar-pedido-web-whatsapp"
+                                                    target="_blank"
+                                                    rel="noopener"
+                                                >
+                                                    Contactar por WhatsApp
+                                                </a>
+                                            `
+                                            : ""
+                                    }
+                                </div>
+                            `
+                            : `
+                                <div class="pedido-web-cliente pedido-web-cliente-sin-datos">
+                                    <div class="pedido-web-cliente-datos">
+                                        <span>Cliente</span>
+
+                                        <strong>
+                                            Sin identificar
+                                        </strong>
+
+                                        <small>
+                                            Pedido creado antes de solicitar datos del cliente.
+                                        </small>
+                                    </div>
+                                </div>
+                            `;
+
                     return `
                         <article
                             class="pedido-web-card"
@@ -33778,6 +34032,8 @@ function renderizarPedidosWebGestion() {
                                         : "Pedido anterior: el stock se descontará al confirmar"
                                 }
                             </div>
+
+                            ${clienteHTML}
 
                             <div class="pedido-web-items">
                                 ${itemsHTML}
@@ -33994,8 +34250,23 @@ function abrirConfirmarPedidoWebGestion(
         Number(pedidoId);
 
     if (confirmarPedidoWebInfoGestion) {
+
+        const clienteNombre =
+            [
+                pedido.cliente_nombre,
+                pedido.cliente_apellido
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .trim();
+
         confirmarPedidoWebInfoGestion.textContent =
-            `${pedido.codigo} · ${formatearPrecio(Number(pedido.total) || 0)}`;
+            `${pedido.codigo} · ${formatearPrecio(Number(pedido.total) || 0)}` +
+            (
+                clienteNombre
+                    ? ` · ${clienteNombre}`
+                    : ""
+            );
     }
 
     if (confirmarPedidoWebMetodoGestion) {

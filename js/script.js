@@ -240,12 +240,27 @@ botonCopiarAlias?.addEventListener("click", async () => {
 const botonEnviarComprobante =
     document.getElementById("enviar-comprobante");
 
-botonEnviarComprobante?.addEventListener("click", async () => {
+botonEnviarComprobante?.addEventListener(
+    "click",
+    () => {
 
-    if (carrito.length === 0) {
-        alert("Agregá productos al carrito antes de enviar el comprobante.");
-        return;
+        if (carrito.length === 0) {
+            alert("Agregá productos al carrito antes de enviar el comprobante.");
+            return;
+        }
+
+
+        abrirModalClienteWeb(
+            procesarEnvioComprobanteWeb
+        );
+
     }
+);
+
+
+async function procesarEnvioComprobanteWeb(
+    cliente
+) {
 
     const ventanaWhatsApp =
         window.open("", "_blank");
@@ -268,11 +283,15 @@ botonEnviarComprobante?.addEventListener("click", async () => {
 
         const pedido =
             await registrarPedidoWebPendiente(
-                "transferencia"
+                "transferencia",
+                cliente
             );
 
         const detallePedido =
-            crearMensajePedido(pedido.codigo)
+            crearMensajePedido(
+                pedido.codigo,
+                cliente
+            )
                 .replace(
                     "Hola, quiero realizar el siguiente pedido:\n\n",
                     ""
@@ -283,15 +302,7 @@ botonEnviarComprobante?.addEventListener("click", async () => {
                 );
 
         const mensaje = encodeURIComponent(
-            `Hola, realicé la transferencia para confirmar mi pedido.
-
-Detalle del pedido:
-
-${detallePedido}
-
-Adjunto el comprobante de pago.
-
-Quedo a la espera de la confirmación y para coordinar la entrega.`
+            `Hola, realicé la transferencia para confirmar mi pedido.\n\nDetalle del pedido:\n\n${detallePedido}\n\nAdjunto el comprobante de pago.\n\nQuedo a la espera de la confirmación y para coordinar la entrega.`
         );
 
         const enlaceWhatsApp =
@@ -322,7 +333,7 @@ Quedo a la espera de la confirmación y para coordinar la entrega.`
 
     }
 
-});
+}
 
 
 // =============================
@@ -376,6 +387,856 @@ const botonVaciarCarrito =
 const botonFinalizarPedido =
     document.getElementById("finalizar-pedido");
 
+
+// =============================
+// DATOS DEL CLIENTE PARA PEDIDOS WEB
+// Se solicitan recién al finalizar el pedido.
+// =============================
+
+const CLIENTE_WEB_RECORDADO_KEY =
+    "voimport-cliente-web";
+
+let accionClienteWebPendiente =
+    null;
+
+let clienteWebModoEdicion =
+    false;
+
+function normalizarWhatsappClienteWeb(
+    telefono
+) {
+
+    let numero =
+        String(
+            telefono || ""
+        )
+            .replace(
+                /[^0-9]/g,
+                ""
+            );
+
+
+    if (!numero) {
+        return "";
+    }
+
+
+    // Aceptamos si el cliente pega el número internacional completo.
+    if (
+        numero.startsWith("0054")
+    ) {
+        numero =
+            numero.slice(4);
+    } else if (
+        numero.startsWith("54")
+    ) {
+        numero =
+            numero.slice(2);
+    }
+
+
+    // En formato internacional de celulares argentinos aparece el 9.
+    if (
+        numero.length === 11 &&
+        numero.startsWith("9")
+    ) {
+        numero =
+            numero.slice(1);
+    }
+
+
+    // Quitamos el 0 de larga distancia nacional.
+    if (
+        numero.startsWith("0")
+    ) {
+        numero =
+            numero.slice(1);
+    }
+
+
+    // Formato argentino antiguo: código de área + 15 + número.
+    // El código de área puede tener 2, 3 o 4 dígitos.
+    if (
+        numero.length === 12
+    ) {
+
+        for (
+            const largoArea of [2, 3, 4]
+        ) {
+
+            if (
+                numero.slice(
+                    largoArea,
+                    largoArea + 2
+                ) === "15"
+            ) {
+
+                const candidato =
+                    numero.slice(
+                        0,
+                        largoArea
+                    ) +
+                    numero.slice(
+                        largoArea + 2
+                    );
+
+                if (
+                    candidato.length === 10
+                ) {
+                    numero =
+                        candidato;
+                    break;
+                }
+
+            }
+
+        }
+
+    }
+
+
+    // También aceptamos si escribieron el 9 nacional sin +54.
+    if (
+        numero.length === 11 &&
+        numero.startsWith("9")
+    ) {
+        numero =
+            numero.slice(1);
+    }
+
+
+    // "15 + número" sin código de área no alcanza para identificarlo.
+    if (
+        numero.length === 10 &&
+        numero.startsWith("15")
+    ) {
+        return "";
+    }
+
+
+    return numero;
+
+}
+
+
+function limpiarTextoClienteWeb(
+    valor
+) {
+
+    return String(
+        valor || ""
+    )
+        .trim()
+        .replace(
+            /\s+/g,
+            " "
+        );
+
+}
+
+
+function obtenerClienteWebRecordado() {
+
+    try {
+
+        const guardado =
+            JSON.parse(
+                localStorage.getItem(
+                    CLIENTE_WEB_RECORDADO_KEY
+                )
+            );
+
+
+        if (
+            !guardado ||
+            !limpiarTextoClienteWeb(
+                guardado.nombre
+            ) ||
+            !limpiarTextoClienteWeb(
+                guardado.apellido
+            ) ||
+            !normalizarWhatsappClienteWeb(
+                guardado.telefono
+            )
+        ) {
+            return null;
+        }
+
+
+        return {
+            nombre:
+                limpiarTextoClienteWeb(
+                    guardado.nombre
+                ),
+
+            apellido:
+                limpiarTextoClienteWeb(
+                    guardado.apellido
+                ),
+
+            telefono:
+                normalizarWhatsappClienteWeb(
+                    guardado.telefono
+                )
+        };
+
+    } catch (error) {
+
+        console.warn(
+            "No se pudieron recuperar los datos del cliente:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+function guardarClienteWebRecordado(
+    cliente
+) {
+
+    try {
+
+        localStorage.setItem(
+            CLIENTE_WEB_RECORDADO_KEY,
+            JSON.stringify({
+                nombre:
+                    cliente.nombre,
+
+                apellido:
+                    cliente.apellido,
+
+                telefono:
+                    normalizarWhatsappClienteWeb(
+                        cliente.telefono
+                    )
+            })
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "No se pudieron recordar los datos del cliente:",
+            error
+        );
+
+    }
+
+}
+
+
+function crearModalClienteWeb() {
+
+    if (
+        document.getElementById(
+            "modal-cliente-web"
+        )
+    ) {
+        return;
+    }
+
+
+    const modal =
+        document.createElement(
+            "div"
+        );
+
+
+    modal.id =
+        "modal-cliente-web";
+
+    modal.className =
+        "modal-cliente-web";
+
+    modal.hidden =
+        true;
+
+
+    modal.innerHTML = `
+        <div
+            class="modal-cliente-web-contenido"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="modal-cliente-web-titulo"
+        >
+            <button
+                type="button"
+                class="modal-cliente-web-cerrar"
+                id="modal-cliente-web-cerrar"
+                aria-label="Cerrar"
+            >
+                ×
+            </button>
+
+            <div
+                id="modal-cliente-web-cuerpo"
+            ></div>
+        </div>
+    `;
+
+
+    document.body.appendChild(
+        modal
+    );
+
+
+    document
+        .getElementById(
+            "modal-cliente-web-cerrar"
+        )
+        ?.addEventListener(
+            "click",
+            cerrarModalClienteWeb
+        );
+
+
+    modal.addEventListener(
+        "click",
+        (evento) => {
+
+            if (
+                evento.target ===
+                modal
+            ) {
+                cerrarModalClienteWeb();
+            }
+
+        }
+    );
+
+}
+
+
+function cerrarModalClienteWeb() {
+
+    const modal =
+        document.getElementById(
+            "modal-cliente-web"
+        );
+
+
+    if (modal) {
+        modal.hidden =
+            true;
+    }
+
+
+    accionClienteWebPendiente =
+        null;
+
+    clienteWebModoEdicion =
+        false;
+
+}
+
+
+function mostrarMensajeClienteWeb(
+    mensaje = ""
+) {
+
+    const elemento =
+        document.getElementById(
+            "modal-cliente-web-mensaje"
+        );
+
+
+    if (!elemento) {
+        return;
+    }
+
+
+    elemento.textContent =
+        mensaje;
+
+    elemento.hidden =
+        !mensaje;
+
+}
+
+
+function renderizarModalClienteWeb() {
+
+    crearModalClienteWeb();
+
+
+    const cuerpo =
+        document.getElementById(
+            "modal-cliente-web-cuerpo"
+        );
+
+
+    if (!cuerpo) {
+        return;
+    }
+
+
+    const guardado =
+        obtenerClienteWebRecordado();
+
+
+    if (
+        guardado &&
+        !clienteWebModoEdicion
+    ) {
+
+        cuerpo.innerHTML = `
+            <div class="modal-cliente-web-encabezado">
+                <span class="modal-cliente-web-paso">
+                    Antes de finalizar
+                </span>
+
+                <h3 id="modal-cliente-web-titulo">
+                    Confirmá tus datos
+                </h3>
+
+                <p>
+                    Usamos estos datos para identificar tu pedido.
+                </p>
+            </div>
+
+            <div class="modal-cliente-web-recordado">
+                <span>Pedido a nombre de</span>
+
+                <strong>
+                    ${escaparHTML(
+                        `${guardado.nombre} ${guardado.apellido}`
+                    )}
+                </strong>
+
+                <small>
+                    WhatsApp:
+                    +54 ${escaparHTML(
+                        guardado.telefono
+                    )}
+                </small>
+            </div>
+
+            <div class="modal-cliente-web-acciones">
+                <button
+                    type="button"
+                    class="modal-cliente-web-principal"
+                    id="modal-cliente-web-continuar-recordado"
+                >
+                    Continuar con el pedido
+                </button>
+
+                <button
+                    type="button"
+                    class="modal-cliente-web-secundario"
+                    id="modal-cliente-web-cambiar"
+                >
+                    Cambiar datos
+                </button>
+            </div>
+        `;
+
+
+        document
+            .getElementById(
+                "modal-cliente-web-continuar-recordado"
+            )
+            ?.addEventListener(
+                "click",
+                () => {
+
+                    ejecutarAccionClienteWeb(
+                        guardado
+                    );
+
+                }
+            );
+
+
+        document
+            .getElementById(
+                "modal-cliente-web-cambiar"
+            )
+            ?.addEventListener(
+                "click",
+                () => {
+
+                    clienteWebModoEdicion =
+                        true;
+
+                    renderizarModalClienteWeb();
+
+                    document
+                        .getElementById(
+                            "modal-cliente-web-nombre"
+                        )
+                        ?.focus();
+
+                }
+            );
+
+
+        return;
+    }
+
+
+    cuerpo.innerHTML = `
+        <div class="modal-cliente-web-encabezado">
+            <span class="modal-cliente-web-paso">
+                Antes de finalizar
+            </span>
+
+            <h3 id="modal-cliente-web-titulo">
+                Tus datos
+            </h3>
+
+            <p>
+                Los usamos para identificar tu pedido. No necesitás crear una cuenta.
+            </p>
+        </div>
+
+        <form id="modal-cliente-web-formulario">
+            <div class="modal-cliente-web-campos">
+                <label>
+                    <span>Nombre</span>
+
+                    <input
+                        type="text"
+                        id="modal-cliente-web-nombre"
+                        autocomplete="given-name"
+                        maxlength="60"
+                        value="${escaparHTML(
+                            guardado?.nombre || ""
+                        )}"
+                    >
+                </label>
+
+                <label>
+                    <span>Apellido</span>
+
+                    <input
+                        type="text"
+                        id="modal-cliente-web-apellido"
+                        autocomplete="family-name"
+                        maxlength="60"
+                        value="${escaparHTML(
+                            guardado?.apellido || ""
+                        )}"
+                    >
+                </label>
+
+                <label class="modal-cliente-web-whatsapp">
+                    <span>WhatsApp (Argentina)</span>
+
+                    <div class="modal-cliente-web-telefono">
+                        <span
+                            class="modal-cliente-web-prefijo"
+                            aria-hidden="true"
+                        >
+                            +54
+                        </span>
+
+                        <input
+                            type="tel"
+                            id="modal-cliente-web-whatsapp"
+                            autocomplete="tel-national"
+                            inputmode="tel"
+                            maxlength="30"
+                            placeholder="Código de área + número"
+                            value="${escaparHTML(
+                                guardado?.telefono || ""
+                            )}"
+                        >
+                    </div>
+
+                    <small class="modal-cliente-web-ayuda-whatsapp">
+                        Ej: 11 3429-3000 · Interior: 351 555-1234
+                    </small>
+                </label>
+            </div>
+
+            <p
+                class="modal-cliente-web-mensaje"
+                id="modal-cliente-web-mensaje"
+                hidden
+            ></p>
+
+            <div class="modal-cliente-web-acciones">
+                <button
+                    type="submit"
+                    class="modal-cliente-web-principal"
+                >
+                    Continuar con el pedido
+                </button>
+
+                ${
+                    guardado
+                        ? `
+                            <button
+                                type="button"
+                                class="modal-cliente-web-secundario"
+                                id="modal-cliente-web-volver"
+                            >
+                                Volver
+                            </button>
+                        `
+                        : ""
+                }
+            </div>
+        </form>
+    `;
+
+
+    document
+        .getElementById(
+            "modal-cliente-web-formulario"
+        )
+        ?.addEventListener(
+            "submit",
+            (evento) => {
+
+                evento.preventDefault();
+
+                let cliente;
+
+                try {
+                    cliente =
+                        obtenerDatosClienteWebParaPedido();
+                } catch (error) {
+                    return;
+                }
+
+
+                ejecutarAccionClienteWeb(
+                    cliente
+                );
+
+            }
+        );
+
+
+    document
+        .getElementById(
+            "modal-cliente-web-volver"
+        )
+        ?.addEventListener(
+            "click",
+            () => {
+
+                clienteWebModoEdicion =
+                    false;
+
+                renderizarModalClienteWeb();
+
+            }
+        );
+
+}
+
+
+function obtenerDatosClienteWebParaPedido() {
+
+    const nombre =
+        limpiarTextoClienteWeb(
+            document.getElementById(
+                "modal-cliente-web-nombre"
+            )?.value
+        );
+
+    const apellido =
+        limpiarTextoClienteWeb(
+            document.getElementById(
+                "modal-cliente-web-apellido"
+            )?.value
+        );
+
+    const telefono =
+        limpiarTextoClienteWeb(
+            document.getElementById(
+                "modal-cliente-web-whatsapp"
+            )?.value
+        );
+
+
+    mostrarMensajeClienteWeb("");
+
+
+    if (!nombre) {
+
+        mostrarMensajeClienteWeb(
+            "Ingresá tu nombre."
+        );
+
+        document
+            .getElementById(
+                "modal-cliente-web-nombre"
+            )
+            ?.focus();
+
+        throw new Error(
+            "Ingresá tu nombre."
+        );
+
+    }
+
+
+    if (!apellido) {
+
+        mostrarMensajeClienteWeb(
+            "Ingresá tu apellido."
+        );
+
+        document
+            .getElementById(
+                "modal-cliente-web-apellido"
+            )
+            ?.focus();
+
+        throw new Error(
+            "Ingresá tu apellido."
+        );
+
+    }
+
+
+    const telefonoNormalizado =
+        normalizarWhatsappClienteWeb(
+            telefono
+        );
+
+
+    if (
+        telefonoNormalizado.length !==
+        10
+    ) {
+
+        mostrarMensajeClienteWeb(
+            "Ingresá código de área + número. Ej: 11 3429-3000 o 351 555-1234."
+        );
+
+        document
+            .getElementById(
+                "modal-cliente-web-whatsapp"
+            )
+            ?.focus();
+
+        throw new Error(
+            "Ingresá código de área + número. Ej: 11 3429-3000 o 351 555-1234."
+        );
+
+    }
+
+
+    return {
+        nombre,
+        apellido,
+        telefono:
+            telefonoNormalizado
+    };
+
+}
+
+
+function ejecutarAccionClienteWeb(
+    cliente
+) {
+
+    const accion =
+        accionClienteWebPendiente;
+
+
+    if (
+        typeof accion !==
+        "function"
+    ) {
+        cerrarModalClienteWeb();
+        return;
+    }
+
+
+    const modal =
+        document.getElementById(
+            "modal-cliente-web"
+        );
+
+
+    if (modal) {
+        modal.hidden =
+            true;
+    }
+
+
+    accionClienteWebPendiente =
+        null;
+
+    clienteWebModoEdicion =
+        false;
+
+
+    // La acción se ejecuta desde el click del usuario.
+    // Así WhatsApp puede abrirse sin que el navegador lo bloquee.
+    accion(
+        cliente
+    );
+
+}
+
+
+function abrirModalClienteWeb(
+    accion
+) {
+
+    if (
+        typeof accion !==
+        "function"
+    ) {
+        return;
+    }
+
+
+    crearModalClienteWeb();
+
+    accionClienteWebPendiente =
+        accion;
+
+    clienteWebModoEdicion =
+        false;
+
+    renderizarModalClienteWeb();
+
+
+    const modal =
+        document.getElementById(
+            "modal-cliente-web"
+        );
+
+
+    if (modal) {
+        modal.hidden =
+            false;
+    }
+
+
+    if (
+        !obtenerClienteWebRecordado()
+    ) {
+
+        setTimeout(
+            () => {
+
+                document
+                    .getElementById(
+                        "modal-cliente-web-nombre"
+                    )
+                    ?.focus();
+
+            },
+            0
+        );
+
+    }
+
+}
+
+
+crearModalClienteWeb();
 
 // =============================
 // MENÚ HAMBURGUESA
@@ -2001,22 +2862,47 @@ const PEDIDO_WEB_TEMPORAL_KEY =
 const PEDIDO_WEB_REUTILIZAR_MS =
     30 * 60 * 1000;
 
-function crearHuellaPedidoWeb() {
+function crearHuellaPedidoWeb(
+    cliente = null
+) {
 
-    return JSON.stringify(
-        carrito
-            .map((producto) => ({
-                slug: producto.slug || "",
-                cantidad: Number(producto.cantidad) || 0
-            }))
-            .sort((a, b) =>
-                a.slug.localeCompare(b.slug)
-            )
-    );
+    return JSON.stringify({
+        carrito:
+            carrito
+                .map((producto) => ({
+                    slug: producto.slug || "",
+                    cantidad: Number(producto.cantidad) || 0
+                }))
+                .sort((a, b) =>
+                    a.slug.localeCompare(b.slug)
+                ),
+
+        cliente:
+            cliente
+                ? {
+                    nombre:
+                        limpiarTextoClienteWeb(
+                            cliente.nombre
+                        ),
+
+                    apellido:
+                        limpiarTextoClienteWeb(
+                            cliente.apellido
+                        ),
+
+                    telefono:
+                        normalizarWhatsappClienteWeb(
+                            cliente.telefono
+                        )
+                }
+                : null
+    });
 
 }
 
-function obtenerPedidoWebTemporal() {
+function obtenerPedidoWebTemporal(
+    cliente = null
+) {
 
     try {
 
@@ -2030,7 +2916,9 @@ function obtenerPedidoWebTemporal() {
 
         if (
             guardado.huella !==
-            crearHuellaPedidoWeb()
+            crearHuellaPedidoWeb(
+                cliente
+            )
         ) {
             return null;
         }
@@ -2069,7 +2957,10 @@ function obtenerPedidoWebTemporal() {
 
 }
 
-function guardarPedidoWebTemporal(pedido) {
+function guardarPedidoWebTemporal(
+    pedido,
+    cliente = null
+) {
 
     try {
 
@@ -2079,7 +2970,10 @@ function guardarPedidoWebTemporal(pedido) {
                 pedidoId: pedido.pedidoId,
                 codigo: pedido.codigo,
                 total: pedido.total,
-                huella: crearHuellaPedidoWeb(),
+                huella:
+                    crearHuellaPedidoWeb(
+                        cliente
+                    ),
                 creadoEn: Date.now()
             })
         );
@@ -2096,11 +2990,20 @@ function guardarPedidoWebTemporal(pedido) {
 }
 
 async function registrarPedidoWebPendiente(
-    origen = "web"
+    origen = "web",
+    cliente = null
 ) {
 
+    if (!cliente) {
+        throw new Error(
+            "Completá tus datos para continuar."
+        );
+    }
+
     const pedidoTemporal =
-        obtenerPedidoWebTemporal();
+        obtenerPedidoWebTemporal(
+            cliente
+        );
 
     if (pedidoTemporal) {
         return pedidoTemporal;
@@ -2126,7 +3029,13 @@ async function registrarPedidoWebPendiente(
             "crear_pedido_web",
             {
                 p_items: items,
-                p_origen: origen
+                p_origen: origen,
+                p_nombre:
+                    cliente.nombre,
+                p_apellido:
+                    cliente.apellido,
+                p_telefono:
+                    cliente.telefono
             }
         );
 
@@ -2154,7 +3063,14 @@ async function registrarPedidoWebPendiente(
         total: Number(resultado.total) || 0
     };
 
-    guardarPedidoWebTemporal(pedido);
+    guardarClienteWebRecordado(
+        cliente
+    );
+
+    guardarPedidoWebTemporal(
+        pedido,
+        cliente
+    );
 
     return pedido;
 
@@ -2165,7 +3081,10 @@ async function registrarPedidoWebPendiente(
 // FINALIZAR PEDIDO POR WHATSAPP
 // =============================
 
-function crearMensajePedido(codigoPedido = "") {
+function crearMensajePedido(
+    codigoPedido = "",
+    cliente = null
+) {
     const cantidadTotal = obtenerCantidadTotal();
 
     const nombresDisenadoresPedido = {
@@ -2202,6 +3121,16 @@ function crearMensajePedido(codigoPedido = "") {
     if (codigoPedido) {
         mensaje +=
             `Pedido: ${codigoPedido}\n\n`;
+    }
+
+    if (cliente) {
+        mensaje +=
+            `Cliente: ${cliente.nombre} ${cliente.apellido}\n`;
+
+        mensaje +=
+            `WhatsApp: +54 ${normalizarWhatsappClienteWeb(
+                cliente.telefono
+            )}\n\n`;
     }
 
     carrito.forEach((producto, indice) => {
@@ -2326,12 +3255,27 @@ function crearMensajePedido(codigoPedido = "") {
 }
 
 
-botonFinalizarPedido?.addEventListener("click", async () => {
+botonFinalizarPedido?.addEventListener(
+    "click",
+    () => {
 
-    if (carrito.length === 0) {
-        alert("Tu carrito está vacío.");
-        return;
+        if (carrito.length === 0) {
+            alert("Tu carrito está vacío.");
+            return;
+        }
+
+
+        abrirModalClienteWeb(
+            procesarFinalizacionPedidoWeb
+        );
+
     }
+);
+
+
+async function procesarFinalizacionPedidoWeb(
+    cliente
+) {
 
     const ventanaWhatsApp =
         window.open("", "_blank");
@@ -2354,12 +3298,14 @@ botonFinalizarPedido?.addEventListener("click", async () => {
 
         const pedido =
             await registrarPedidoWebPendiente(
-                "web"
+                "web",
+                cliente
             );
 
         const mensaje = encodeURIComponent(
             crearMensajePedido(
-                pedido.codigo
+                pedido.codigo,
+                cliente
             )
         );
 
@@ -2391,7 +3337,7 @@ botonFinalizarPedido?.addEventListener("click", async () => {
 
     }
 
-});
+}
 
 
 // =============================
