@@ -7997,3 +7997,78 @@ header .cerrar-venta:hover {
         max-height: 240px;
     }
 }
+
+
+/* =========================
+   NOTIFICACIONES PUSH / PWA
+   ========================= */
+
+.notificaciones-gestion-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: -20px;
+    margin-bottom: 35px;
+    padding: 18px 20px;
+    background: #ffffff;
+    border: 1px solid rgba(37, 99, 235, 0.25);
+    border-radius: 14px;
+}
+
+.notificaciones-gestion-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.notificaciones-gestion-info strong {
+    color: #172033;
+    font-size: 15px;
+}
+
+.notificaciones-gestion-info span {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.4;
+}
+
+#activar-notificaciones-gestion {
+    flex: 0 0 auto;
+    min-height: 44px;
+    padding: 10px 16px;
+    background: #2563eb;
+    color: #ffffff;
+    border: 1px solid #2563eb;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+#activar-notificaciones-gestion:disabled {
+    opacity: 0.65;
+    cursor: default;
+}
+
+.notificaciones-ok {
+    color: #15803d !important;
+}
+
+.notificaciones-error {
+    color: #dc2626 !important;
+}
+
+@media (max-width: 768px) {
+    .notificaciones-gestion-panel {
+        flex-direction: column;
+        align-items: stretch;
+        margin-top: -10px;
+        margin-bottom: 28px;
+        padding: 16px;
+    }
+
+    #activar-notificaciones-gestion {
+        width: 100%;
+    }
+}

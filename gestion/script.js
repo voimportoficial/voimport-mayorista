@@ -78,6 +78,24 @@ const disponibleRetirar =
 
 
 // ========================================
+// NOTIFICACIONES PUSH / PWA
+// ========================================
+
+const botonActivarNotificacionesGestion =
+    document.getElementById(
+        "activar-notificaciones-gestion"
+    );
+
+const estadoNotificacionesGestion =
+    document.getElementById(
+        "notificaciones-gestion-estado"
+    );
+
+let registroServiceWorkerGestion = null;
+
+
+
+// ========================================
 // BOTONES PRINCIPALES
 // ========================================
 
@@ -5941,6 +5959,498 @@ botonRegistrarReposicion?.addEventListener(
 );
 
 
+
+
+// =========================================================
+// NOTIFICACIONES PUSH / PWA
+// =========================================================
+
+function mostrarEstadoNotificacionesGestion(
+    texto,
+    tipo = "normal"
+) {
+    if (!estadoNotificacionesGestion) {
+        return;
+    }
+
+    estadoNotificacionesGestion.textContent = texto;
+
+    estadoNotificacionesGestion.classList.remove(
+        "notificaciones-ok",
+        "notificaciones-error"
+    );
+
+    if (tipo === "ok") {
+        estadoNotificacionesGestion.classList.add(
+            "notificaciones-ok"
+        );
+    }
+
+    if (tipo === "error") {
+        estadoNotificacionesGestion.classList.add(
+            "notificaciones-error"
+        );
+    }
+}
+
+
+function esIOSGestion() {
+    return /iphone|ipad|ipod/i.test(
+        navigator.userAgent
+    );
+}
+
+
+function esModoAppGestion() {
+    return (
+        window.matchMedia(
+            "(display-mode: standalone)"
+        ).matches ||
+        window.navigator.standalone === true
+    );
+}
+
+
+function convertirClaveVapidGestion(
+    claveBase64
+) {
+    const relleno =
+        "=".repeat(
+            (4 - (claveBase64.length % 4)) % 4
+        );
+
+    const base64 =
+        (claveBase64 + relleno)
+            .replace(/-/g, "+")
+            .replace(/_/g, "/");
+
+    const datosCrudos =
+        window.atob(base64);
+
+    const salida =
+        new Uint8Array(
+            datosCrudos.length
+        );
+
+    for (
+        let indice = 0;
+        indice < datosCrudos.length;
+        indice += 1
+    ) {
+        salida[indice] =
+            datosCrudos.charCodeAt(indice);
+    }
+
+    return salida;
+}
+
+
+async function registrarServiceWorkerGestion() {
+    if (
+        !("serviceWorker" in navigator)
+    ) {
+        return null;
+    }
+
+    if (registroServiceWorkerGestion) {
+        return registroServiceWorkerGestion;
+    }
+
+    try {
+        registroServiceWorkerGestion =
+            await navigator.serviceWorker.register(
+                "./sw.js",
+                {
+                    scope: "./"
+                }
+            );
+
+        await navigator.serviceWorker.ready;
+
+        return registroServiceWorkerGestion;
+
+    } catch (error) {
+        console.error(
+            "Error al registrar service worker:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+async function obtenerClaveVapidPublicaGestion() {
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("push_config")
+            .select("vapid_public_key")
+            .eq("id", 1)
+            .maybeSingle();
+
+    if (error) {
+        throw error;
+    }
+
+    return (
+        data?.vapid_public_key || ""
+    ).trim();
+}
+
+
+async function guardarSuscripcionPushGestion(
+    suscripcion
+) {
+    const {
+        data: datosUsuario,
+        error: errorUsuario
+    } =
+        await supabaseClient.auth.getUser();
+
+    if (
+        errorUsuario ||
+        !datosUsuario?.user?.id
+    ) {
+        throw (
+            errorUsuario ||
+            new Error(
+                "No hay una sesión válida para guardar las notificaciones."
+            )
+        );
+    }
+
+    const datosSuscripcion =
+        suscripcion.toJSON();
+
+    const endpoint =
+        datosSuscripcion.endpoint ||
+        suscripcion.endpoint;
+
+    const p256dh =
+        datosSuscripcion.keys?.p256dh ||
+        "";
+
+    const auth =
+        datosSuscripcion.keys?.auth ||
+        "";
+
+    if (
+        !endpoint ||
+        !p256dh ||
+        !auth
+    ) {
+        throw new Error(
+            "El navegador no devolvió todos los datos de la suscripción push."
+        );
+    }
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .from("push_subscriptions")
+            .upsert(
+                {
+                    user_id:
+                        datosUsuario.user.id,
+                    endpoint,
+                    p256dh,
+                    auth,
+                    user_agent:
+                        navigator.userAgent,
+                    updated_at:
+                        new Date().toISOString()
+                },
+                {
+                    onConflict: "endpoint"
+                }
+            );
+
+    if (error) {
+        throw error;
+    }
+}
+
+
+async function actualizarEstadoNotificacionesGestion() {
+    if (
+        !botonActivarNotificacionesGestion
+    ) {
+        return;
+    }
+
+    if (
+        !("Notification" in window) ||
+        !("PushManager" in window) ||
+        !("serviceWorker" in navigator)
+    ) {
+        botonActivarNotificacionesGestion.disabled =
+            true;
+
+        botonActivarNotificacionesGestion.textContent =
+            "No disponible";
+
+        mostrarEstadoNotificacionesGestion(
+            "Este navegador no admite notificaciones push.",
+            "error"
+        );
+
+        return;
+    }
+
+    if (
+        esIOSGestion() &&
+        !esModoAppGestion()
+    ) {
+        botonActivarNotificacionesGestion.disabled =
+            false;
+
+        botonActivarNotificacionesGestion.textContent =
+            "Cómo activarlas en iPhone";
+
+        mostrarEstadoNotificacionesGestion(
+            "En iPhone primero agregá Gestión a la pantalla de inicio."
+        );
+
+        return;
+    }
+
+    const registro =
+        await registrarServiceWorkerGestion();
+
+    if (!registro) {
+        botonActivarNotificacionesGestion.disabled =
+            true;
+
+        botonActivarNotificacionesGestion.textContent =
+            "No disponible";
+
+        mostrarEstadoNotificacionesGestion(
+            "No se pudo preparar el servicio de notificaciones.",
+            "error"
+        );
+
+        return;
+    }
+
+    const suscripcion =
+        await registro.pushManager
+            .getSubscription();
+
+    if (
+        Notification.permission ===
+            "granted" &&
+        suscripcion
+    ) {
+        try {
+            await guardarSuscripcionPushGestion(
+                suscripcion
+            );
+        } catch (error) {
+            console.error(
+                "No se pudo actualizar la suscripción push:",
+                error
+            );
+        }
+
+        botonActivarNotificacionesGestion.disabled =
+            true;
+
+        botonActivarNotificacionesGestion.textContent =
+            "Notificaciones activadas";
+
+        mostrarEstadoNotificacionesGestion(
+            "Te vamos a avisar apenas entre un pedido web.",
+            "ok"
+        );
+
+        return;
+    }
+
+    if (
+        Notification.permission ===
+        "denied"
+    ) {
+        botonActivarNotificacionesGestion.disabled =
+            true;
+
+        botonActivarNotificacionesGestion.textContent =
+            "Permiso bloqueado";
+
+        mostrarEstadoNotificacionesGestion(
+            "Las notificaciones están bloqueadas en los ajustes del dispositivo.",
+            "error"
+        );
+
+        return;
+    }
+
+    botonActivarNotificacionesGestion.disabled =
+        false;
+
+    botonActivarNotificacionesGestion.textContent =
+        "Activar notificaciones";
+
+    mostrarEstadoNotificacionesGestion(
+        "Activá los avisos para enterarte apenas entre un pedido."
+    );
+}
+
+
+async function activarNotificacionesGestion() {
+    if (
+        esIOSGestion() &&
+        !esModoAppGestion()
+    ) {
+        window.alert(
+            "En iPhone hacé esto:\n\n1. Abrí Gestión en Safari.\n2. Tocá Compartir.\n3. Elegí ‘Agregar a pantalla de inicio’.\n4. Abrí VO IMPORT desde el ícono nuevo.\n5. Volvé a tocar ‘Activar notificaciones’."
+        );
+
+        return;
+    }
+
+    botonActivarNotificacionesGestion.disabled =
+        true;
+
+    botonActivarNotificacionesGestion.textContent =
+        "Activando...";
+
+    mostrarEstadoNotificacionesGestion(
+        "Preparando notificaciones..."
+    );
+
+    try {
+        const registro =
+            await registrarServiceWorkerGestion();
+
+        if (!registro) {
+            throw new Error(
+                "No se pudo registrar el service worker."
+            );
+        }
+
+        const permiso =
+            await Notification.requestPermission();
+
+        if (permiso !== "granted") {
+            throw new Error(
+                "No se otorgó permiso para mostrar notificaciones."
+            );
+        }
+
+        let suscripcion =
+            await registro.pushManager
+                .getSubscription();
+
+        if (!suscripcion) {
+            const claveVapid =
+                await obtenerClaveVapidPublicaGestion();
+
+            if (!claveVapid) {
+                throw new Error(
+                    "Todavía falta configurar la clave de notificaciones en Supabase."
+                );
+            }
+
+            suscripcion =
+                await registro.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey:
+                        convertirClaveVapidGestion(
+                            claveVapid
+                        )
+                });
+        }
+
+        await guardarSuscripcionPushGestion(
+            suscripcion
+        );
+
+        botonActivarNotificacionesGestion.textContent =
+            "Notificaciones activadas";
+
+        botonActivarNotificacionesGestion.disabled =
+            true;
+
+        mostrarEstadoNotificacionesGestion(
+            "Listo. Te vamos a avisar apenas entre un pedido web.",
+            "ok"
+        );
+
+    } catch (error) {
+        console.error(
+            "Error al activar notificaciones:",
+            error
+        );
+
+        botonActivarNotificacionesGestion.disabled =
+            false;
+
+        botonActivarNotificacionesGestion.textContent =
+            "Activar notificaciones";
+
+        mostrarEstadoNotificacionesGestion(
+            error?.message ||
+                "No se pudieron activar las notificaciones.",
+            "error"
+        );
+    }
+}
+
+
+async function procesarAccesoDesdeNotificacionGestion() {
+    const parametros =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    if (
+        parametros.get("pedidos_web") !==
+        "1"
+    ) {
+        return;
+    }
+
+    await abrirPedidosWebGestion();
+
+    parametros.delete(
+        "pedidos_web"
+    );
+
+    const consultaRestante =
+        parametros.toString();
+
+    const nuevaURL =
+        `${window.location.pathname}${
+            consultaRestante
+                ? `?${consultaRestante}`
+                : ""
+        }${window.location.hash}`;
+
+    window.history.replaceState(
+        {},
+        document.title,
+        nuevaURL
+    );
+}
+
+
+async function iniciarNotificacionesGestion() {
+    await registrarServiceWorkerGestion();
+    await actualizarEstadoNotificacionesGestion();
+}
+
+
+botonActivarNotificacionesGestion
+    ?.addEventListener(
+        "click",
+        activarNotificacionesGestion
+    );
+
+
 // ========================================
 // INICIAR GESTIÓN
 // ========================================
@@ -5972,6 +6482,10 @@ async function iniciarGestion() {
     actualizarPrecioVentaPreview();
 
     actualizarEstadoCobroUI();
+
+    await iniciarNotificacionesGestion();
+
+    await procesarAccesoDesdeNotificacionGestion();
 
 }
 
@@ -33378,6 +33892,27 @@ async function cargarPedidosWebGestion() {
     }
 
     renderizarPedidosWebGestion();
+
+    try {
+        if (
+            "setAppBadge" in navigator
+        ) {
+            if (pedidosWebGestion.length > 0) {
+                await navigator.setAppBadge(
+                    pedidosWebGestion.length
+                );
+            } else if (
+                "clearAppBadge" in navigator
+            ) {
+                await navigator.clearAppBadge();
+            }
+        }
+    } catch (error) {
+        console.warn(
+            "No se pudo actualizar el indicador de pedidos:",
+            error
+        );
+    }
 
     return pedidosWebGestion;
 }

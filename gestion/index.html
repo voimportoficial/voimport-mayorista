@@ -9,6 +9,14 @@
         content="width=device-width, initial-scale=1.0"
     >
 
+    <meta name="theme-color" content="#173f73">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="VO IMPORT">
+
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
     <link
         rel="stylesheet"
         href="style.css"
@@ -453,6 +461,30 @@
 
             </section>
 
+
+
+            <!-- ========================================
+                 NOTIFICACIONES DE PEDIDOS
+                 ======================================== -->
+
+            <section
+                class="notificaciones-gestion-panel"
+                id="notificaciones-gestion-panel"
+            >
+                <div class="notificaciones-gestion-info">
+                    <strong>🔔 Avisos de pedidos web</strong>
+                    <span id="notificaciones-gestion-estado">
+                        Activá los avisos para enterarte apenas entre un pedido.
+                    </span>
+                </div>
+
+                <button
+                    type="button"
+                    id="activar-notificaciones-gestion"
+                >
+                    Activar notificaciones
+                </button>
+            </section>
 
             <!-- ========================================
                  ACCIONES RÁPIDAS
