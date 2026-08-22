@@ -500,11 +500,11 @@ async function procesarPagoMercadoPagoWeb(
         /*
             Primero registramos el pedido pendiente.
             Los pedidos iniciados desde Mercado Pago
-            quedan identificados con origen mercado_pago.
+            se registran con el origen web aceptado por Supabase.
         */
         let pedido =
             await registrarPedidoWebPendiente(
-                "mercado_pago",
+                "web",
                 cliente
             );
 
@@ -561,7 +561,7 @@ async function procesarPagoMercadoPagoWeb(
 
             pedido =
                 await registrarPedidoWebPendiente(
-                    "mercado_pago",
+                    "web",
                     cliente
                 );
 
