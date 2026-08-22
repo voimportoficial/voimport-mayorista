@@ -499,12 +499,12 @@ async function procesarPagoMercadoPagoWeb(
 
         /*
             Primero registramos el pedido pendiente.
-            Así el pedido ya existe en Supabase antes
-            de enviar al cliente al checkout.
+            Los pedidos iniciados desde Mercado Pago
+            quedan identificados con origen mercado_pago.
         */
-        const pedido =
+        let pedido =
             await registrarPedidoWebPendiente(
-                "web",
+                "mercado_pago",
                 cliente
             );
 
@@ -512,7 +512,7 @@ async function procesarPagoMercadoPagoWeb(
             A Mercado Pago NO le mandamos precios.
             Solo slug + cantidad.
             La Edge Function consulta nuevamente
-            precios, stock y condición minorista
+            precios y condición minorista
             directamente en Supabase.
         */
         const items =
@@ -527,19 +527,59 @@ async function procesarPagoMercadoPagoWeb(
                 })
             );
 
-        const preferencia =
-            await crearPreferenciaMercadoPago({
-                items,
-                pedidoId:
-                    pedido.pedidoId,
-                codigoPedido:
-                    pedido.codigo,
-                cliente
-            });
+        let preferencia;
+
+        try {
+
+            preferencia =
+                await crearPreferenciaMercadoPago({
+                    items,
+                    pedidoId:
+                        pedido.pedidoId,
+                    codigoPedido:
+                        pedido.codigo,
+                    cliente
+                });
+
+        } catch (errorPreferencia) {
+
+            /*
+                Puede pasar que el navegador conserve
+                un pedido que fue cancelado desde Gestión.
+                En ese caso borramos solo esa referencia,
+                creamos un pedido nuevo y reintentamos una vez.
+            */
+            if (
+                !esErrorPedidoWebNoPendiente(
+                    errorPreferencia
+                )
+            ) {
+                throw errorPreferencia;
+            }
+
+            borrarPedidoWebTemporal();
+
+            pedido =
+                await registrarPedidoWebPendiente(
+                    "mercado_pago",
+                    cliente
+                );
+
+            preferencia =
+                await crearPreferenciaMercadoPago({
+                    items,
+                    pedidoId:
+                        pedido.pedidoId,
+                    codigoPedido:
+                        pedido.codigo,
+                    cliente
+                });
+
+        }
 
         const checkoutUrl =
-    preferencia.init_point ||
-    "";
+            preferencia.init_point ||
+            "";
 
         if (!checkoutUrl) {
             throw new Error(
@@ -3105,9 +3145,6 @@ botonVaciarCarrito?.addEventListener("click", () => {
 const PEDIDO_WEB_TEMPORAL_KEY =
     "voimport-pedido-web-temporal";
 
-const PEDIDO_WEB_REUTILIZAR_MS =
-    30 * 60 * 1000;
-
 function crearHuellaPedidoWeb(
     cliente = null
 ) {
@@ -3169,18 +3206,6 @@ function obtenerPedidoWebTemporal(
             return null;
         }
 
-        const antiguedad =
-            Date.now() -
-            Number(guardado.creadoEn || 0);
-
-        if (
-            !Number.isFinite(antiguedad) ||
-            antiguedad < 0 ||
-            antiguedad > PEDIDO_WEB_REUTILIZAR_MS
-        ) {
-            return null;
-        }
-
         if (
             !guardado.pedidoId ||
             !guardado.codigo
@@ -3235,6 +3260,84 @@ function guardarPedidoWebTemporal(
 
 }
 
+function borrarPedidoWebTemporal() {
+
+    try {
+
+        localStorage.removeItem(
+            PEDIDO_WEB_TEMPORAL_KEY
+        );
+
+    } catch (error) {
+
+        console.warn(
+            "No se pudo borrar el pedido web temporal:",
+            error
+        );
+
+    }
+
+}
+
+function esErrorPedidoWebNoPendiente(
+    error
+) {
+
+    const mensaje = String(
+        error?.message ||
+        error?.error ||
+        error ||
+        ""
+    ).toLowerCase();
+
+    return (
+        mensaje.includes(
+            "el pedido ya no está pendiente"
+        ) ||
+        mensaje.includes(
+            "el pedido ya no esta pendiente"
+        ) ||
+        mensaje.includes(
+            "el pedido no existe"
+        )
+    );
+
+}
+
+async function pedidoWebTemporalSiguePendiente(
+    pedidoTemporal
+) {
+
+    if (
+        typeof supabaseClient === "undefined" ||
+        !supabaseClient?.rpc
+    ) {
+        throw new Error(
+            "No se pudo conectar con el sistema de pedidos. Intentá nuevamente."
+        );
+    }
+
+    const { data, error } =
+        await supabaseClient.rpc(
+            "pedido_web_sigue_pendiente",
+            {
+                p_pedido_id:
+                    Number(
+                        pedidoTemporal.pedidoId
+                    ),
+                p_origen:
+                    null
+            }
+        );
+
+    if (error) {
+        throw error;
+    }
+
+    return data === true;
+
+}
+
 async function registrarPedidoWebPendiente(
     origen = "web",
     cliente = null
@@ -3252,7 +3355,18 @@ async function registrarPedidoWebPendiente(
         );
 
     if (pedidoTemporal) {
-        return pedidoTemporal;
+
+        const siguePendiente =
+            await pedidoWebTemporalSiguePendiente(
+                pedidoTemporal
+            );
+
+        if (siguePendiente) {
+            return pedidoTemporal;
+        }
+
+        borrarPedidoWebTemporal();
+
     }
 
     if (
