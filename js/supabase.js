@@ -38,3 +38,67 @@ async function obtenerDatosProductos() {
 
     return data;
 }
+
+// =============================
+// MERCADO PAGO - EDGE FUNCTION
+// =============================
+
+async function crearPreferenciaMercadoPago({
+    items = [],
+    pedidoId = null,
+    codigoPedido = "",
+    cliente = null
+} = {}) {
+
+    if (
+        !supabaseClient?.functions ||
+        typeof supabaseClient.functions.invoke !== "function"
+    ) {
+        throw new Error(
+            "Mercado Pago no está disponible en este momento."
+        );
+    }
+
+    const { data, error } =
+        await supabaseClient.functions.invoke(
+            "mp-crear-preferencia",
+            {
+                body: {
+                    items,
+                    pedido_id: pedidoId,
+                    codigo_pedido: codigoPedido,
+                    cliente
+                }
+            }
+        );
+
+    if (error) {
+
+        let mensaje =
+            error.message ||
+            "No se pudo iniciar Mercado Pago.";
+
+        try {
+            const detalle =
+                await error.context?.json();
+
+            if (detalle?.error) {
+                mensaje = detalle.error;
+            }
+        } catch (_) {
+            // Si la respuesta no trae JSON, usamos el mensaje original.
+        }
+
+        throw new Error(mensaje);
+    }
+
+    if (!data?.ok) {
+        throw new Error(
+            data?.error ||
+            "No se pudo iniciar Mercado Pago."
+        );
+    }
+
+    return data;
+}
+

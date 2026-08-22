@@ -214,6 +214,42 @@ if (
 }
 
 // =============================
+// MERCADO PAGO - BOTÓN
+// =============================
+
+const bloqueTotalCarrito =
+    document.querySelector(".carrito-total");
+
+if (
+    bloqueTotalCarrito &&
+    !document.getElementById("pagar-mercado-pago")
+) {
+    bloqueTotalCarrito.insertAdjacentHTML(
+        "afterend",
+        `
+       <button
+    type="button"
+    class="boton-mercado-pago"
+    id="pagar-mercado-pago"
+>
+    <img
+    src="images/MP_RGB_HANDSHAKE_color_horizontal.svg"
+    alt="Mercado Pago"
+    class="mercado-pago-logo"
+>
+
+</button>
+
+        <p
+            id="mensaje-mercado-pago"
+            class="carrito-reserva-aviso"
+            hidden
+        ></p>
+        `
+    );
+}
+
+// =============================
 // COPIAR ALIAS
 // =============================
 
@@ -386,6 +422,156 @@ const botonVaciarCarrito =
 
 const botonFinalizarPedido =
     document.getElementById("finalizar-pedido");
+
+
+// =============================
+// PAGAR CON MERCADO PAGO
+// =============================
+
+const botonPagarMercadoPago =
+    document.getElementById(
+        "pagar-mercado-pago"
+    );
+
+botonPagarMercadoPago?.addEventListener(
+    "click",
+    () => {
+
+        if (carrito.length === 0) {
+            alert(
+                "Agregá productos al carrito antes de pagar."
+            );
+            return;
+        }
+
+        const esMayorista =
+            carrito.some(
+                (producto) =>
+                    aplicaMayorista(producto)
+            );
+
+        if (esMayorista) {
+            alert(
+                "Mercado Pago está disponible únicamente para compras minoristas."
+            );
+            actualizarCarrito();
+            return;
+        }
+
+        abrirModalClienteWeb(
+            procesarPagoMercadoPagoWeb
+        );
+
+    }
+);
+
+
+async function procesarPagoMercadoPagoWeb(
+    cliente
+) {
+
+    if (
+        typeof crearPreferenciaMercadoPago !==
+        "function"
+    ) {
+        alert(
+            "No se pudo conectar con Mercado Pago. Intentá nuevamente."
+        );
+        return;
+    }
+
+    const boton =
+        document.getElementById(
+            "pagar-mercado-pago"
+        );
+
+    if (!boton) {
+        return;
+    }
+
+    boton.disabled = true;
+    boton.setAttribute(
+        "aria-busy",
+        "true"
+    );
+
+    try {
+
+        /*
+            Primero registramos el pedido pendiente.
+            Así el pedido ya existe en Supabase antes
+            de enviar al cliente al checkout.
+        */
+        const pedido =
+            await registrarPedidoWebPendiente(
+                "web",
+                cliente
+            );
+
+        /*
+            A Mercado Pago NO le mandamos precios.
+            Solo slug + cantidad.
+            La Edge Function consulta nuevamente
+            precios, stock y condición minorista
+            directamente en Supabase.
+        */
+        const items =
+            carrito.map(
+                (producto) => ({
+                    slug:
+                        producto.slug || "",
+                    quantity:
+                        Number(
+                            producto.cantidad
+                        ) || 0
+                })
+            );
+
+        const preferencia =
+            await crearPreferenciaMercadoPago({
+                items,
+                pedidoId:
+                    pedido.pedidoId,
+                codigoPedido:
+                    pedido.codigo,
+                cliente
+            });
+
+        const checkoutUrl =
+    preferencia.init_point ||
+    "";
+
+        if (!checkoutUrl) {
+            throw new Error(
+                "Mercado Pago no devolvió el enlace de pago."
+            );
+        }
+
+        window.location.href =
+            checkoutUrl;
+
+    } catch (error) {
+
+        console.error(
+            "No se pudo iniciar Mercado Pago:",
+            error
+        );
+
+        alert(
+            error?.message ||
+            "No se pudo iniciar Mercado Pago. Intentá nuevamente."
+        );
+
+    } finally {
+
+        boton.disabled = false;
+        boton.removeAttribute(
+            "aria-busy"
+        );
+
+    }
+
+}
 
 
 // =============================
@@ -2538,9 +2724,69 @@ function actualizarCarrito() {
 
 
     if (carritoTotal) {
-        carritoTotal.textContent =
-            formatearPrecio(total);
+
+    carritoTotal.textContent =
+
+        formatearPrecio(total);
+
+}
+
+
+// =============================
+// MERCADO PAGO SOLO MINORISTA
+// =============================
+
+const botonMercadoPago =
+    document.getElementById(
+        "pagar-mercado-pago"
+    );
+
+const mensajeMercadoPago =
+    document.getElementById(
+        "mensaje-mercado-pago"
+    );
+
+const carritoEsMayorista =
+    carrito.some(
+        (producto) =>
+            aplicaMayorista(producto)
+    );
+
+
+if (botonMercadoPago) {
+
+    botonMercadoPago.hidden =
+        carrito.length === 0 ||
+        carritoEsMayorista;
+
+}
+
+
+if (mensajeMercadoPago) {
+
+    if (
+        carrito.length > 0 &&
+        carritoEsMayorista
+    ) {
+
+        mensajeMercadoPago.textContent =
+            "Mercado Pago está disponible únicamente para compras minoristas.";
+
+        mensajeMercadoPago.hidden =
+            false;
+
+    } else {
+
+        mensajeMercadoPago.textContent =
+            "";
+
+        mensajeMercadoPago.hidden =
+            true;
+
     }
+
+}
+
 }
 
 
