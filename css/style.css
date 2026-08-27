@@ -6788,3 +6788,44 @@ body[data-linea="inspiraciones"] .productos {
         box-sizing: border-box;
     }
 }
+
+/* =========================================================
+   MOBILE - BANDERITA 20% OFF MAS COMPACTA
+   Evita que la etiqueta se superponga con frascos altos o anchos.
+   Solo modifica la version movil; escritorio queda igual.
+   ========================================================= */
+@media (max-width: 520px) {
+    .producto-card::before {
+        top: 12px;
+        left: -22px;
+        width: 92px;
+        padding: 5px 0;
+        font-size: 10px;
+        letter-spacing: 0.2px;
+        box-shadow: 0 4px 10px rgba(212, 175, 55, 0.24);
+    }
+
+    .producto-card::after {
+        top: 12px;
+        left: -22px;
+        width: 92px;
+        height: 20px;
+    }
+
+    .producto-detalle-imagen::before {
+        top: 14px;
+        left: -24px;
+        width: 100px;
+        padding: 6px 0;
+        font-size: 10px;
+        letter-spacing: 0.2px;
+        box-shadow: 0 4px 10px rgba(212, 175, 55, 0.24);
+    }
+
+    .producto-detalle-imagen::after {
+        top: 14px;
+        left: -24px;
+        width: 100px;
+        height: 22px;
+    }
+}

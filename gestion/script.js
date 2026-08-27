@@ -19492,11 +19492,12 @@ function calcularCostoUsdtProductoGestion() {
 
 const DESCUENTO_EFECTIVO_TRANSFERENCIA_GESTION = 20;
 
-// Inspiraciones de diseñador: los precios calculados se redondean
-// siempre hacia arriba al próximo múltiplo de $100.
-const REDONDEO_PRECIO_INSPIRACIONES_DISENADOR_GESTION = 100;
+// Inspiraciones de diseñador 60 ml y Maison Alhambra 30 ml:
+// los precios calculados se redondean siempre hacia arriba
+// al próximo múltiplo de $100.
+const REDONDEO_PRECIO_CATEGORIAS_CIEN_GESTION = 100;
 
-function redondearPrecioInspiracionDisenadorGestion(
+function redondearPrecioCategoriaCienGestion(
     precio
 ) {
 
@@ -19513,9 +19514,9 @@ function redondearPrecioInspiracionDisenadorGestion(
     return (
         Math.ceil(
             valor /
-            REDONDEO_PRECIO_INSPIRACIONES_DISENADOR_GESTION
+            REDONDEO_PRECIO_CATEGORIAS_CIEN_GESTION
         ) *
-        REDONDEO_PRECIO_INSPIRACIONES_DISENADOR_GESTION
+        REDONDEO_PRECIO_CATEGORIAS_CIEN_GESTION
     );
 
 }
@@ -19685,6 +19686,10 @@ function calcularPreciosProductoGestion() {
         productoEditando?.categoria_mostrar ===
         "inspiraciones-disenador";
 
+    const esMaison30ml =
+        productoEditando?.categoria_mostrar ===
+        "maison-30ml";
+
 
     const redondeoDecant =
         Math.max(
@@ -19717,9 +19722,12 @@ function calcularPreciosProductoGestion() {
         }
 
 
-        if (esInspiracionDisenador) {
+        if (
+            esInspiracionDisenador ||
+            esMaison30ml
+        ) {
 
-            return redondearPrecioInspiracionDisenadorGestion(
+            return redondearPrecioCategoriaCienGestion(
                 precioSinRedondear
             );
 
@@ -25549,8 +25557,11 @@ function calcularPreciosNuevoProductoGestion() {
 
     const redondearPrecioCalculado =
         (precio) =>
-            categoria === "inspiraciones-disenador"
-                ? redondearPrecioInspiracionDisenadorGestion(
+            (
+                categoria === "inspiraciones-disenador" ||
+                categoria === "maison-30ml"
+            )
+                ? redondearPrecioCategoriaCienGestion(
                     precio
                 )
                 : Math.round(precio);
@@ -37611,10 +37622,15 @@ function sincronizarParPrecioMasivoGestion(
                 costoReferencia *
                 (1 + markup / 100);
 
+            const categoriaMasiva =
+                categoriaEdicionMasivaGestion?.value || "";
+
             campoPrecio.value =
-                categoriaEdicionMasivaGestion?.value ===
-                "inspiraciones-disenador"
-                    ? redondearPrecioInspiracionDisenadorGestion(
+                (
+                    categoriaMasiva === "inspiraciones-disenador" ||
+                    categoriaMasiva === "maison-30ml"
+                )
+                    ? redondearPrecioCategoriaCienGestion(
                         precioCalculado
                     )
                     : Math.round(
@@ -38233,6 +38249,10 @@ function prepararPlanEdicionMasivaGestion() {
         categoria.clave ===
         "inspiraciones-disenador";
 
+    const esMaison30ml =
+        categoria.clave ===
+        "maison-30ml";
+
     const costoManualDato =
         obtenerNumeroOpcionalMasivoGestion(
             costoManualEdicionMasivaGestion
@@ -38547,9 +38567,12 @@ function prepararPlanEdicionMasivaGestion() {
                     }
 
 
-                    if (esInspiracionDisenador) {
+                    if (
+                        esInspiracionDisenador ||
+                        esMaison30ml
+                    ) {
 
-                        return redondearPrecioInspiracionDisenadorGestion(
+                        return redondearPrecioCategoriaCienGestion(
                             precioSinRedondear
                         );
 
