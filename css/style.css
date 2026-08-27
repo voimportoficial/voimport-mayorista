@@ -5807,8 +5807,8 @@ body[data-linea="inspiraciones"] .productos {
 
 @media (max-width: 768px) {
     .producto-card::before {
-        top: 12px;
-        left: -34px;
+        top: 14px;
+        left: -22px;
         width: 104px;
         padding: 6px 0;
         font-size: 10px;
@@ -5817,8 +5817,8 @@ body[data-linea="inspiraciones"] .productos {
     }
 
     .producto-card::after {
-        top: 12px;
-        left: -34px;
+        top: 14px;
+        left: -22px;
         width: 104px;
         height: 24px;
         transform: rotate(-38deg) translateX(-150%);
@@ -6043,16 +6043,16 @@ body[data-linea="inspiraciones"] .productos {
 
 @media (max-width: 768px) {
     .producto-detalle-imagen::before {
-        top: 15px;
-        left: -34px;
+        top: 17px;
+        left: -22px;
         width: 112px;
         padding: 6px 0;
         font-size: 10px;
     }
 
     .producto-detalle-imagen::after {
-        top: 15px;
-        left: -34px;
+        top: 17px;
+        left: -22px;
         width: 112px;
         height: 24px;
     }
@@ -6734,5 +6734,57 @@ body[data-linea="inspiraciones"] .productos {
 
     .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-volver-datos {
         margin-top: 9px;
+    }
+}
+
+/* =========================================================
+   CHECKOUT MOBILE - EVITAR ZOOM AUTOMATICO EN IOS / SAFARI
+   Mantiene el modal centrado y dentro del ancho visible al
+   completar WhatsApp y al pasar al paso de forma de pago.
+   ========================================================= */
+@media (max-width: 520px) {
+    .modal-cliente-web {
+        width: 100vw;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    .modal-cliente-web-contenido {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        overflow-x: hidden;
+    }
+
+    .modal-cliente-web-campos,
+    .modal-cliente-web-campos label,
+    .modal-cliente-web-whatsapp,
+    .modal-cliente-web-telefono {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    /* iOS Safari hace zoom automático al enfocar inputs menores a 16px. */
+    .modal-cliente-web-campos input,
+    .modal-cliente-web-telefono input {
+        font-size: 16px !important;
+    }
+
+    /* El prefijo +54 comparte fila con el input: evitamos que el 100% heredado desborde. */
+    .modal-cliente-web-telefono input {
+        width: 0;
+        min-width: 0;
+        flex: 1 1 0;
+    }
+
+    .checkout-metodos-pago,
+    .checkout-metodo-pago,
+    .checkout-pago-detalle,
+    .checkout-total-final,
+    .checkout-transferencia-datos {
+        max-width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
     }
 }
