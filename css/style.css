@@ -1246,6 +1246,7 @@ h1 {
     border: 1px solid rgba(212, 175, 55, 0.35);
     border-radius: 18px;
     overflow: hidden;
+    position: relative;
 }
 .producto-card .boton-producto {
     margin-top: auto;
@@ -5449,4 +5450,1289 @@ body[data-linea="inspiraciones"] .productos {
     text-align: center;
     font-size: 12px;
     line-height: 1.4;
+}
+
+/* =========================================================
+   PRECIO DE LISTA + 20% OFF + MEDIO DE PAGO DEL CARRITO
+   ========================================================= */
+
+.producto-precio.precio-lista {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.producto-precio.efectivo-transferencia,
+.detalle-precio.efectivo-transferencia {
+    color: #d4af37;
+    font-weight: 700;
+}
+
+.producto-precio.efectivo-transferencia {
+    font-size: 14px;
+    line-height: 1.3;
+}
+
+.detalle-precio.efectivo-transferencia {
+    margin-top: 6px;
+    line-height: 1.35;
+}
+
+.carrito-medio-pago {
+    margin: 14px 0 18px;
+    padding: 14px;
+    background: #0d0d0d;
+    border: 1px solid rgba(212, 175, 55, 0.45);
+    border-radius: 14px;
+}
+
+.carrito-medio-pago h3 {
+    margin: 0 0 12px;
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 1.25;
+}
+
+.carrito-medio-pago-opcion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 8px;
+    padding: 11px 12px;
+    background: #111111;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.carrito-medio-pago-opcion:first-of-type {
+    margin-top: 0;
+}
+
+.carrito-medio-pago-opcion:has(input:checked) {
+    border-color: #d4af37;
+    background: rgba(212, 175, 55, 0.08);
+}
+
+.carrito-medio-pago-opcion input {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    accent-color: #d4af37;
+}
+
+.carrito-medio-pago-opcion > span {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+}
+
+.carrito-medio-pago-opcion strong {
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.carrito-medio-pago-opcion small {
+    color: #d4af37;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: right;
+}
+
+.carrito-medio-pago[hidden],
+.carrito-pago-transferencia[hidden],
+.finalizar-pedido[hidden],
+.boton-mercado-pago[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 480px) {
+    .producto-precio.efectivo-transferencia {
+        font-size: 12px !important;
+    }
+
+    .carrito-medio-pago {
+        padding: 12px;
+    }
+
+    .carrito-medio-pago-opcion {
+        padding: 10px;
+    }
+
+    .carrito-medio-pago-opcion > span {
+        gap: 8px;
+    }
+
+    .carrito-medio-pago-opcion strong {
+        font-size: 13px;
+    }
+
+    .carrito-medio-pago-opcion small {
+        font-size: 11px;
+    }
+}
+
+/* =========================================================
+   TARJETAS DE PRODUCTO - PRECIOS ORDENADOS
+   Opción 2: efectivo destacado + tarjeta + mayorista
+   ========================================================= */
+
+.producto-precios-ordenados {
+    display: grid;
+    gap: 8px;
+    width: 100%;
+    margin: 10px 0 8px;
+}
+
+.precio-efectivo-destacado {
+    width: 100%;
+    padding: 10px 12px;
+    background: rgba(212, 175, 55, 0.10);
+    border: 1px solid rgba(212, 175, 55, 0.55);
+    border-left: 4px solid #d4af37;
+    border-radius: 11px;
+    box-sizing: border-box;
+    text-align: left;
+}
+
+.precio-efectivo-etiqueta {
+    display: block;
+    margin-bottom: 3px;
+    color: #d4af37;
+    font-size: 12px;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.precio-efectivo-destacado strong {
+    display: block;
+    color: #d4af37;
+    font-size: 20px;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.precio-secundario {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 3px 2px;
+    text-align: left;
+}
+
+.precio-secundario-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.precio-secundario strong {
+    flex: 0 0 auto;
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.precio-tarjeta,
+.precio-tarjeta .precio-secundario-etiqueta,
+.precio-tarjeta strong {
+    color: #55c985;
+}
+
+.icono-tarjeta-precio {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.precio-mayorista-nuevo,
+.precio-mayorista-nuevo .precio-secundario-etiqueta,
+.precio-mayorista-nuevo strong {
+    color: #ffffff;
+}
+
+.precio-mayorista-nuevo {
+    margin: 0 0 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Anula reglas antiguas de precio en tarjetas sin afectar detalle/carrito */
+.producto-card > .producto-precio.precio-lista,
+.producto-card > .producto-precio.efectivo-transferencia,
+.producto-card > .producto-precio.mayorista {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    .producto-precios-ordenados {
+        gap: 6px;
+        margin: 7px 0 6px;
+    }
+
+    .precio-efectivo-destacado {
+        padding: 8px 8px;
+        border-radius: 9px;
+        border-left-width: 3px;
+    }
+
+    .precio-efectivo-etiqueta {
+        font-size: 10px;
+    }
+
+    .precio-efectivo-destacado strong {
+        font-size: 17px;
+    }
+
+    .precio-secundario {
+        gap: 6px;
+        padding: 2px 0;
+        align-items: flex-start;
+    }
+
+    .precio-secundario-etiqueta {
+        gap: 4px;
+        font-size: 12px;
+        line-height: 1.18;
+    }
+
+    .precio-secundario strong {
+        font-size: 13px;
+    }
+
+    .icono-tarjeta-precio {
+        width: 14px;
+        height: 14px;
+    }
+
+    .precio-mayorista-nuevo {
+        margin-bottom: 5px;
+        padding-top: 5px;
+    }
+}
+
+
+/* =========================================================
+   BANDERITA 20% OFF - LLAMADO VISUAL
+   ========================================================= */
+
+.producto-card {
+    overflow: hidden;
+}
+
+.producto-card::before {
+    content: "20% OFF";
+    position: absolute;
+    top: 16px;
+    left: -28px;
+    z-index: 8;
+    width: 118px;
+    padding: 7px 0;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #f1d36b 0%, #d4af37 58%, #b78a16 100%);
+    color: #090909;
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: 0.35px;
+    text-align: center;
+    white-space: nowrap;
+    border-top: 1px solid rgba(255, 255, 255, 0.26);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.30);
+    transform: rotate(-38deg);
+    transform-origin: center;
+    pointer-events: none;
+}
+
+.producto-card::after {
+    content: "";
+    position: absolute;
+    top: 16px;
+    left: -28px;
+    z-index: 9;
+    width: 118px;
+    height: 28px;
+    pointer-events: none;
+    background: linear-gradient(
+        105deg,
+        transparent 0%,
+        transparent 38%,
+        rgba(255, 255, 255, 0.12) 43%,
+        rgba(255, 255, 255, 0.78) 50%,
+        rgba(255, 255, 255, 0.16) 57%,
+        transparent 62%,
+        transparent 100%
+    );
+    transform: rotate(-38deg) translateX(-150%);
+    transform-origin: center;
+    animation: brilloBanderaOffDiagonal 3.2s ease-in-out infinite;
+}
+
+@keyframes brilloBanderaOffDiagonal {
+    0%, 56% {
+        transform: rotate(-38deg) translateX(-150%);
+        opacity: 0;
+    }
+
+    62% {
+        opacity: 1;
+    }
+
+    82% {
+        transform: rotate(-38deg) translateX(135%);
+        opacity: 1;
+    }
+
+    83%, 100% {
+        transform: rotate(-38deg) translateX(135%);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .producto-card::before {
+        top: 12px;
+        left: -34px;
+        width: 104px;
+        padding: 6px 0;
+        font-size: 10px;
+        letter-spacing: 0.2px;
+        transform: rotate(-38deg);
+    }
+
+    .producto-card::after {
+        top: 12px;
+        left: -34px;
+        width: 104px;
+        height: 24px;
+        transform: rotate(-38deg) translateX(-150%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .producto-card::after {
+        animation: none;
+        display: none;
+    }
+}
+
+
+/* =========================================================
+   DETALLE DE PRODUCTO - PRECIOS ORDENADOS
+   Misma jerarquía visual que las tarjetas
+   ========================================================= */
+
+.detalle-precio-legacy {
+    display: none !important;
+}
+
+.producto-precios-detalle {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 0 14px;
+}
+
+.detalle-precio-efectivo {
+    width: 100%;
+    padding: 13px 15px;
+    box-sizing: border-box;
+    background: rgba(212, 175, 55, 0.10);
+    border: 1px solid rgba(212, 175, 55, 0.55);
+    border-left: 4px solid #d4af37;
+    border-radius: 12px;
+    text-align: left;
+}
+
+.detalle-precio-efectivo span {
+    display: block;
+    margin-bottom: 4px;
+    color: #d4af37;
+    font-size: 15px;
+    line-height: 1.25;
+    font-weight: 800;
+}
+
+.detalle-precio-efectivo strong {
+    display: block;
+    color: #d4af37;
+    font-size: 27px;
+    line-height: 1.08;
+    font-weight: 850;
+}
+
+.detalle-precio-secundario {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    width: 100%;
+    padding: 6px 2px;
+    box-sizing: border-box;
+}
+
+.detalle-precio-etiqueta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    font-size: 16px;
+    line-height: 1.25;
+    font-weight: 750;
+}
+
+.detalle-precio-secundario strong {
+    flex: 0 0 auto;
+    font-size: 19px;
+    line-height: 1.2;
+    font-weight: 850;
+    white-space: nowrap;
+}
+
+.detalle-precio-tarjeta,
+.detalle-precio-tarjeta .detalle-precio-etiqueta,
+.detalle-precio-tarjeta strong {
+    color: #55c985;
+}
+
+.detalle-precio-mayorista,
+.detalle-precio-mayorista .detalle-precio-etiqueta,
+.detalle-precio-mayorista strong {
+    color: #ffffff;
+}
+
+.detalle-precio-mayorista {
+    padding-top: 9px;
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.producto-precios-detalle .icono-tarjeta-precio {
+    width: 19px;
+    height: 19px;
+}
+
+@media (max-width: 768px) {
+    .producto-precios-detalle {
+        gap: 8px;
+        max-width: none;
+        margin-bottom: 12px;
+    }
+
+    .detalle-precio-efectivo {
+        padding: 11px 13px;
+    }
+
+    .detalle-precio-efectivo span {
+        font-size: 14px;
+    }
+
+    .detalle-precio-efectivo strong {
+        font-size: 24px;
+    }
+
+    .detalle-precio-etiqueta {
+        font-size: 14px;
+    }
+
+    .detalle-precio-secundario strong {
+        font-size: 17px;
+    }
+
+    .producto-precios-detalle .icono-tarjeta-precio {
+        width: 17px;
+        height: 17px;
+    }
+}
+
+
+/* =========================================================
+   DETALLE DE PRODUCTO - BANDERITA 20% OFF DIAGONAL IZQUIERDA
+   ========================================================= */
+
+.producto-detalle-imagen {
+    position: relative;
+    overflow: hidden;
+}
+
+.producto-detalle-imagen::before {
+    content: "20% OFF";
+    position: absolute;
+    top: 22px;
+    left: -34px;
+    z-index: 8;
+    width: 132px;
+    padding: 8px 0;
+    box-sizing: border-box;
+    background: linear-gradient(135deg, #f1d36b 0%, #d4af37 58%, #b78a16 100%);
+    color: #090909;
+    font-size: 13px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: 0.35px;
+    text-align: center;
+    white-space: nowrap;
+    border-top: 1px solid rgba(255, 255, 255, 0.26);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+    box-shadow: 0 6px 16px rgba(212, 175, 55, 0.30);
+    transform: rotate(-38deg);
+    transform-origin: center;
+    pointer-events: none;
+}
+
+.producto-detalle-imagen::after {
+    content: "";
+    position: absolute;
+    top: 22px;
+    left: -34px;
+    z-index: 9;
+    width: 132px;
+    height: 30px;
+    pointer-events: none;
+    background: linear-gradient(
+        105deg,
+        transparent 0%,
+        transparent 38%,
+        rgba(255, 255, 255, 0.12) 43%,
+        rgba(255, 255, 255, 0.78) 50%,
+        rgba(255, 255, 255, 0.16) 57%,
+        transparent 62%,
+        transparent 100%
+    );
+    transform: rotate(-38deg) translateX(-150%);
+    transform-origin: center;
+    animation: brilloBanderaDetalleOff 3.2s ease-in-out infinite;
+}
+
+@keyframes brilloBanderaDetalleOff {
+    0%, 56% {
+        transform: rotate(-38deg) translateX(-150%);
+        opacity: 0;
+    }
+
+    62% {
+        opacity: 1;
+    }
+
+    82% {
+        transform: rotate(-38deg) translateX(135%);
+        opacity: 1;
+    }
+
+    83%, 100% {
+        transform: rotate(-38deg) translateX(135%);
+        opacity: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .producto-detalle-imagen::before {
+        top: 15px;
+        left: -34px;
+        width: 112px;
+        padding: 6px 0;
+        font-size: 10px;
+    }
+
+    .producto-detalle-imagen::after {
+        top: 15px;
+        left: -34px;
+        width: 112px;
+        height: 24px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .producto-detalle-imagen::after {
+        animation: none;
+        display: none;
+    }
+}
+
+/* =========================================================
+   CHECKOUT POR PASOS - CARRITO LIMPIO
+   ========================================================= */
+
+/* El carrito solo muestra productos + subtotal + continuar. */
+.carrito-medio-pago,
+.carrito-pago-transferencia,
+#pagar-mercado-pago,
+#mensaje-mercado-pago {
+    display: none !important;
+}
+
+.carrito-productos {
+    padding: 14px 18px;
+}
+
+.carrito-item {
+    grid-template-columns: 76px 1fr;
+    gap: 12px;
+    padding: 13px 0;
+}
+
+.carrito-item img {
+    width: 76px;
+    height: 94px;
+}
+
+.carrito-item-info h3 {
+    margin-bottom: 4px;
+    font-size: 15px;
+    line-height: 1.25;
+}
+
+.carrito-item-categoria {
+    display: block;
+    margin-bottom: 6px;
+    color: #989898;
+    font-size: 11px;
+    line-height: 1.2;
+}
+
+.carrito-item-precio {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin: 0 0 8px !important;
+    color: #d4af37 !important;
+    font-size: 14px !important;
+    font-weight: 800 !important;
+}
+
+.carrito-item-mayorista {
+    display: inline-flex;
+    align-items: center;
+    min-height: 20px;
+    padding: 2px 7px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.carrito-stock {
+    margin: 0 0 8px !important;
+    font-size: 11px !important;
+}
+
+.carrito-item-acciones {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.carrito-cantidad {
+    gap: 8px;
+    margin-bottom: 0;
+}
+
+.carrito-cantidad button {
+    width: 29px;
+    height: 29px;
+    font-size: 18px;
+}
+
+.carrito-cantidad span {
+    min-width: 20px;
+    font-size: 15px;
+}
+
+.eliminar-producto {
+    font-size: 12px;
+}
+
+.carrito-resumen {
+    padding: 13px 18px 18px;
+}
+
+#mensaje-mayorista {
+    margin: 0 0 10px;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.vaciar-carrito {
+    width: auto;
+    margin: 0 0 9px auto;
+    padding: 3px 0;
+    display: block;
+    color: #969696;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.vaciar-carrito:hover {
+    color: #ffffff;
+    background: transparent;
+    border: 0;
+}
+
+.carrito-total {
+    margin: 0 0 12px;
+    padding-top: 11px;
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    font-size: 17px;
+}
+
+.carrito-total strong {
+    font-size: 21px;
+}
+
+.finalizar-pedido {
+    min-height: 48px;
+    padding: 13px 15px;
+    font-size: 15px;
+}
+
+/* Paso 2: forma de pago */
+.checkout-pago-encabezado {
+    margin-bottom: 15px;
+}
+
+.checkout-metodos-pago {
+    display: grid;
+    gap: 9px;
+}
+
+.checkout-metodo-pago {
+    width: 100%;
+    min-height: 66px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: #ffffff;
+    background: #0a0a0a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.checkout-metodo-pago:hover {
+    border-color: rgba(212, 175, 55, 0.55);
+    background: rgba(212, 175, 55, 0.04);
+}
+
+.checkout-metodo-pago.seleccionado {
+    border-color: #d4af37;
+    background: rgba(212, 175, 55, 0.08);
+    box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.10) inset;
+}
+
+.checkout-metodo-info {
+    min-width: 0;
+    display: grid;
+    gap: 3px;
+}
+
+.checkout-metodo-info strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.2;
+}
+
+.checkout-metodo-info small {
+    color: #d4af37;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.checkout-metodo-mp .checkout-metodo-info small {
+    color: #50d88b;
+}
+
+.checkout-metodo-precio {
+    flex: 0 0 auto;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.checkout-metodo-pago.seleccionado .checkout-metodo-precio {
+    color: #d4af37;
+}
+
+.checkout-icono-tarjeta,
+.checkout-mp-icono {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex: 0 0 auto;
+}
+
+.checkout-metodo-tarjeta {
+    color: #50d88b !important;
+}
+
+.checkout-pago-detalle {
+    margin-top: 14px;
+}
+
+.checkout-pago-ayuda {
+    margin: 0;
+    padding: 13px 14px;
+    color: #a9a9a9;
+    background: #090909;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.checkout-total-final {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px solid rgba(212, 175, 55, 0.42);
+    border-radius: 11px;
+}
+
+.checkout-total-final span {
+    color: #d6d6d6;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.checkout-total-final strong {
+    color: #d4af37;
+    font-size: 20px;
+    white-space: nowrap;
+}
+
+.checkout-total-mp {
+    background: rgba(80, 216, 139, 0.06);
+    border-color: rgba(80, 216, 139, 0.35);
+}
+
+.checkout-total-mp strong {
+    color: #50d88b;
+}
+
+.checkout-pago-nota {
+    margin: 11px 2px 13px;
+    color: #b5b5b5;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.checkout-pago-nota-mp {
+    color: #c3c3c3;
+}
+
+.checkout-transferencia-datos {
+    margin-top: 10px;
+    padding: 4px 13px;
+    background: #090909;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 11px;
+}
+
+.checkout-transferencia-datos > div {
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.checkout-transferencia-datos > div:last-child {
+    border-bottom: 0;
+}
+
+.checkout-transferencia-datos > div > span:first-child {
+    color: #8f8f8f;
+    font-size: 11px;
+}
+
+.checkout-transferencia-datos strong {
+    color: #ffffff;
+    font-size: 12px;
+    text-align: right;
+    overflow-wrap: anywhere;
+}
+
+.checkout-alias-linea {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 7px;
+}
+
+#checkout-copiar-alias {
+    padding: 5px 8px;
+    color: #0a0a0a;
+    background: #d4af37;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.checkout-finalizar {
+    margin-top: 0;
+}
+
+.checkout-pagar-mp {
+    width: 100%;
+    min-height: 46px;
+    padding: 11px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #ffffff;
+    background: #009ee3;
+    border: 0;
+    border-radius: 9px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.checkout-pagar-mp:hover {
+    background: #008ed0;
+}
+
+.checkout-pagar-mp:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.checkout-volver-datos {
+    margin-top: 12px;
+}
+
+@media (min-width: 700px) {
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) {
+        width: min(520px, 100%);
+    }
+}
+
+@media (max-width: 520px) {
+    .carrito-productos {
+        padding: 10px 14px;
+    }
+
+    .carrito-resumen {
+        padding: 11px 14px 14px;
+    }
+
+    .carrito-item {
+        grid-template-columns: 66px 1fr;
+        gap: 10px;
+        padding: 11px 0;
+    }
+
+    .carrito-item img {
+        width: 66px;
+        height: 82px;
+    }
+
+    .carrito-item-info h3 {
+        font-size: 14px;
+    }
+
+    .checkout-metodo-pago {
+        min-height: 62px;
+        padding: 11px 12px;
+        gap: 10px;
+    }
+
+    .checkout-metodo-info strong {
+        font-size: 13px;
+    }
+
+    .checkout-metodo-precio {
+        font-size: 14px;
+    }
+
+    .checkout-transferencia-datos > div {
+        align-items: flex-start;
+        padding: 8px 0;
+    }
+}
+
+/* =========================================================
+   CHECKOUT - AJUSTE COMPACTO PARA QUE ENTRE COMPLETO
+   Especialmente en Transferencia, sin quitar información.
+   ========================================================= */
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) {
+    max-height: calc(100dvh - 28px);
+    padding: 18px 24px;
+    overflow-y: auto;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-cerrar {
+    top: 8px;
+    right: 11px;
+    width: 30px;
+    height: 30px;
+    font-size: 25px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-encabezado,
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-pago-encabezado {
+    margin-bottom: 10px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-paso {
+    margin-bottom: 4px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-encabezado h3 {
+    margin-bottom: 4px;
+    font-size: 22px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-encabezado p {
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodos-pago {
+    gap: 7px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodo-pago {
+    min-height: 57px;
+    padding: 9px 14px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-pago-detalle {
+    margin-top: 9px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-total-final {
+    padding: 10px 14px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-total-final strong {
+    font-size: 19px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-transferencia-datos {
+    margin-top: 7px;
+    padding: 2px 13px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-transferencia-datos > div {
+    min-height: 34px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-pago-nota {
+    margin: 8px 2px 9px;
+    font-size: 11.5px;
+    line-height: 1.35;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-principal,
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-secundario,
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-pagar-mp {
+    min-height: 40px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-volver-datos {
+    margin-top: 8px;
+}
+
+@media (max-height: 720px) and (min-width: 521px) {
+    .modal-cliente-web {
+        padding: 10px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) {
+        max-height: calc(100dvh - 20px);
+        padding: 14px 22px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-paso {
+        font-size: 10px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-encabezado h3 {
+        font-size: 20px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodo-pago {
+        min-height: 52px;
+        padding: 8px 13px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodo-info strong {
+        font-size: 13px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodo-info small {
+        font-size: 10px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodo-precio {
+        font-size: 14px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-transferencia-datos > div {
+        min-height: 31px;
+    }
+}
+
+@media (max-width: 520px) {
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) {
+        max-height: calc(100dvh - 16px);
+        padding: 16px 15px 14px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodo-pago {
+        min-height: 55px;
+        padding: 9px 11px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-transferencia-datos > div {
+        min-height: 0;
+        padding: 7px 0;
+    }
+}
+
+/* =========================================================
+   CHECKOUT - TAMAÑO INTERMEDIO
+   Más cómodo y legible, manteniendo el modal dentro de pantalla.
+   ========================================================= */
+
+@media (min-width: 521px) and (min-height: 721px) {
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) {
+        padding: 21px 24px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-encabezado,
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-pago-encabezado {
+        margin-bottom: 12px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-paso {
+        margin-bottom: 5px;
+        font-size: 11px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-encabezado h3 {
+        margin-bottom: 5px;
+        font-size: 24px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-encabezado p {
+        font-size: 13px;
+        line-height: 1.4;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodos-pago {
+        gap: 8px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodo-pago {
+        min-height: 62px;
+        padding: 11px 14px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodo-info strong {
+        font-size: 14px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodo-info small {
+        font-size: 11px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-metodo-precio {
+        font-size: 15px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-pago-detalle {
+        margin-top: 11px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-total-final {
+        padding: 12px 14px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-total-final span {
+        font-size: 12px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-total-final strong {
+        font-size: 20px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-transferencia-datos {
+        margin-top: 8px;
+        padding: 3px 13px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-transferencia-datos > div {
+        min-height: 36px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-pago-nota {
+        margin: 9px 2px 10px;
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-principal,
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .modal-cliente-web-secundario,
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-pagar-mp {
+        min-height: 44px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-size: 13px;
+    }
+
+    .modal-cliente-web-contenido:has(.checkout-metodos-pago) .checkout-volver-datos {
+        margin-top: 9px;
+    }
 }

@@ -47,22 +47,15 @@
 
             <h1 id="producto-nombre"></h1>
 
-            <p
-                class="detalle-precio minorista"
-                id="precio-minorista"
-            ></p>
+            <div
+                class="producto-precios-detalle"
+                id="producto-precios-detalle"
+            ></div>
 
-            <p
-                class="detalle-precio mayorista"
-                id="precio-mayorista"
-            ></p>
-
-            <p
-                class="condicion-mayorista"
-                id="condicion-mayorista"
-            >
-                Desde 3 perfumes surtidos
-            </p>
+            <!-- Compatibilidad con la carga inicial/local -->
+            <p class="detalle-precio minorista detalle-precio-legacy" id="precio-minorista"></p>
+            <p class="detalle-precio mayorista detalle-precio-legacy" id="precio-mayorista"></p>
+            <p class="condicion-mayorista detalle-precio-legacy" id="condicion-mayorista"></p>
 
             <div class="producto-descripcion">
 
@@ -174,6 +167,50 @@
     }
 
 
+    function obtenerPrecioListaDetalle(precioEfectivo) {
+        const precio = Number(precioEfectivo || 0);
+        return precio > 0 ? Math.round(precio / 0.8) : 0;
+    }
+
+    function iconoTarjetaDetalle() {
+        return `
+            <svg class="icono-tarjeta-precio" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="6" width="18" height="12" rx="2"></rect>
+                <path d="M3 10h18"></path>
+            </svg>
+        `;
+    }
+
+    function renderizarPreciosDetalleLocal(producto) {
+        const contenedor = document.getElementById("producto-precios-detalle");
+        if (!contenedor || !producto) return;
+
+        const precioLista = obtenerPrecioListaDetalle(producto.precioMinorista);
+        const tieneMayorista = producto.categoria !== "decants";
+
+        contenedor.innerHTML = `
+            <div class="detalle-precio-efectivo">
+                <span>20% OFF efectivo / transferencia</span>
+                <strong>${formatearPrecioLocal(producto.precioMinorista)}</strong>
+            </div>
+
+            <div class="detalle-precio-secundario detalle-precio-tarjeta">
+                <span class="detalle-precio-etiqueta">
+                    ${iconoTarjetaDetalle()}
+                    Mercado Pago 3 cuotas sin interés
+                </span>
+                <strong>${formatearPrecioLocal(precioLista)}</strong>
+            </div>
+
+            ${tieneMayorista ? `
+                <div class="detalle-precio-secundario detalle-precio-mayorista">
+                    <span class="detalle-precio-etiqueta">Mayorista desde 3 surtidos</span>
+                    <strong>${formatearPrecioLocal(producto.precioMayorista)}</strong>
+                </div>
+            ` : ""}
+        `;
+    }
+
     function crearSlugMarca(marca) {
 
         return marca
@@ -233,6 +270,8 @@ volverMarca.textContent =
             "producto-nombre"
         ).textContent =
             producto.nombre;
+
+        renderizarPreciosDetalleLocal(producto);
 
 
         document.getElementById(

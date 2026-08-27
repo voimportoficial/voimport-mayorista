@@ -30,6 +30,29 @@ const REGLAS_CATEGORIAS = {
 const CATEGORIA_PREDETERMINADA = "perfumes-grandes";
 const numeroWhatsApp = "5491134293000";
 
+const DESCUENTO_EFECTIVO_TRANSFERENCIA = 0.20;
+const MEDIO_PAGO_CARRITO_KEY = "voimport-medio-pago-carrito";
+
+let medioPagoCarrito = "transferencia";
+let flujoCheckoutMinorista = false;
+let clienteCheckoutActual = null;
+
+try {
+    const medioGuardado = localStorage.getItem(
+        MEDIO_PAGO_CARRITO_KEY
+    );
+
+    if (
+        ["efectivo", "transferencia", "mercado_pago"].includes(
+            medioGuardado
+        )
+    ) {
+        medioPagoCarrito = medioGuardado;
+    }
+} catch (_) {
+    medioPagoCarrito = "transferencia";
+}
+
 let catalogoActualizado = [];
 let productosSupabasePorSlug = new Map();
 let carrito = cargarCarritoGuardado();
@@ -149,6 +172,71 @@ const resumenCarritoPago = document.querySelector(".carrito-resumen");
 
 if (
     resumenCarritoPago &&
+    !document.getElementById("carrito-medio-pago")
+) {
+    const mensajeMayoristaCarrito =
+        document.getElementById("mensaje-mayorista");
+
+    const htmlMedioPago = `
+        <div
+            class="carrito-medio-pago"
+            id="carrito-medio-pago"
+        >
+            <h3>¿Cómo querés pagar?</h3>
+
+            <label class="carrito-medio-pago-opcion">
+                <input
+                    type="radio"
+                    name="carrito-medio-pago"
+                    value="efectivo"
+                >
+                <span>
+                    <strong>Efectivo</strong>
+                    <small>20% OFF</small>
+                </span>
+            </label>
+
+            <label class="carrito-medio-pago-opcion">
+                <input
+                    type="radio"
+                    name="carrito-medio-pago"
+                    value="transferencia"
+                >
+                <span>
+                    <strong>Transferencia</strong>
+                    <small>20% OFF</small>
+                </span>
+            </label>
+
+            <label class="carrito-medio-pago-opcion">
+                <input
+                    type="radio"
+                    name="carrito-medio-pago"
+                    value="mercado_pago"
+                >
+                <span>
+                    <strong>Tarjeta / Mercado Pago</strong>
+                    <small>Precio de lista</small>
+                </span>
+            </label>
+        </div>
+    `;
+
+    if (mensajeMayoristaCarrito) {
+        mensajeMayoristaCarrito.insertAdjacentHTML(
+            "afterend",
+            htmlMedioPago
+        );
+    } else {
+        resumenCarritoPago.insertAdjacentHTML(
+            "afterbegin",
+            htmlMedioPago
+        );
+    }
+}
+
+if (
+    resumenCarritoPago &&
     !document.getElementById("carrito-pago-transferencia")
 ) {
     resumenCarritoPago.insertAdjacentHTML(
@@ -159,10 +247,10 @@ if (
             id="carrito-pago-transferencia"
         >
 
-            <h3>¿Querés confirmar tu pedido?</h3>
+            <h3>Datos para transferencia</h3>
 
             <p class="carrito-pago-texto">
-                Podés abonar por transferencia para confirmar tu pedido.
+                Finalizá el pedido por WhatsApp. Después realizá la transferencia y enviá el comprobante para confirmar el pago.
             </p>
 
             <div class="carrito-dato-pago">
@@ -191,21 +279,17 @@ if (
                 <strong>0000168300000017205739</strong>
             </div>
 
-            <div class="carrito-dato-pago">
-                <span>Lemontag</span>
-                <strong>$ericranzoni</strong>
-            </div>
-
             <p class="carrito-reserva-aviso">
-                El pedido queda confirmado una vez recibido y verificado el pago.
+                El pedido se registra como pendiente y queda confirmado una vez recibido y verificado el pago.
             </p>
 
             <button
                 type="button"
                 class="enviar-comprobante"
                 id="enviar-comprobante"
+                hidden
             >
-                Enviar comprobante por WhatsApp
+                Finalizar pedido por WhatsApp
             </button>
 
         </div>
@@ -250,6 +334,42 @@ if (
 }
 
 // =============================
+// MEDIO DE PAGO DEL CARRITO
+// =============================
+
+const bloqueMedioPagoCarrito =
+    document.getElementById("carrito-medio-pago");
+
+const opcionesMedioPagoCarrito =
+    document.querySelectorAll(
+        'input[name="carrito-medio-pago"]'
+    );
+
+function guardarMedioPagoCarrito() {
+    try {
+        localStorage.setItem(
+            MEDIO_PAGO_CARRITO_KEY,
+            medioPagoCarrito
+        );
+    } catch (_) {
+        // Si localStorage no está disponible, continuamos igual.
+    }
+}
+
+opcionesMedioPagoCarrito.forEach((opcion) => {
+    opcion.checked =
+        opcion.value === medioPagoCarrito;
+
+    opcion.addEventListener("change", () => {
+        if (!opcion.checked) return;
+
+        medioPagoCarrito = opcion.value;
+        guardarMedioPagoCarrito();
+        actualizarCarrito();
+    });
+});
+
+// =============================
 // COPIAR ALIAS
 // =============================
 
@@ -270,7 +390,7 @@ botonCopiarAlias?.addEventListener("click", async () => {
     }
 });
 // =============================
-// ENVIAR COMPROBANTE POR WHATSAPP
+// FINALIZAR PEDIDO POR TRANSFERENCIA EN WHATSAPP
 // =============================
 
 const botonEnviarComprobante =
@@ -281,10 +401,12 @@ botonEnviarComprobante?.addEventListener(
     () => {
 
         if (carrito.length === 0) {
-            alert("Agregá productos al carrito antes de enviar el comprobante.");
+            alert("Agregá productos al carrito antes de finalizar el pedido.");
             return;
         }
 
+        medioPagoCarrito = "transferencia";
+        guardarMedioPagoCarrito();
 
         abrirModalClienteWeb(
             procesarEnvioComprobanteWeb
@@ -308,12 +430,20 @@ async function procesarEnvioComprobanteWeb(
 
     ventanaWhatsApp.opener = null;
 
-    const textoOriginal =
-        botonEnviarComprobante.textContent;
+    const botonAccionTransferencia =
+        document.getElementById("checkout-finalizar-whatsapp") ||
+        botonFinalizarPedido ||
+        botonEnviarComprobante;
 
-    botonEnviarComprobante.disabled = true;
-    botonEnviarComprobante.textContent =
-        "Registrando pedido...";
+    const textoOriginal =
+        botonAccionTransferencia?.textContent ||
+        "Ya transferí · Enviar comprobante por WhatsApp";
+
+    if (botonAccionTransferencia) {
+        botonAccionTransferencia.disabled = true;
+        botonAccionTransferencia.textContent =
+            "Registrando pedido...";
+    }
 
     try {
 
@@ -323,22 +453,27 @@ async function procesarEnvioComprobanteWeb(
                 cliente
             );
 
-        const detallePedido =
+        const introduccionTransferencia =
+            carritoTieneMayorista()
+                ? "Hola, realicé la transferencia para confirmar el siguiente pedido mayorista:"
+                : "Hola, realicé la transferencia para confirmar el siguiente pedido:";
+
+        const mensajePedido =
             crearMensajePedido(
                 pedido.codigo,
                 cliente
             )
                 .replace(
-                    "Hola, quiero realizar el siguiente pedido:\n\n",
-                    ""
+                    "Hola, quiero realizar el siguiente pedido:",
+                    introduccionTransferencia
                 )
                 .replace(
-                    "\n\nQuedo a la espera para coordinar el pago y la entrega.",
-                    ""
+                    "Quedo a la espera para coordinar el pago y la entrega.",
+                    "Te envío el comprobante de la transferencia para que puedan verificar el pago."
                 );
 
         const mensaje = encodeURIComponent(
-            `Hola, realicé la transferencia para confirmar mi pedido.\n\nDetalle del pedido:\n\n${detallePedido}\n\nAdjunto el comprobante de pago.\n\nQuedo a la espera de la confirmación y para coordinar la entrega.`
+            mensajePedido
         );
 
         const enlaceWhatsApp =
@@ -346,6 +481,8 @@ async function procesarEnvioComprobanteWeb(
 
         ventanaWhatsApp.location.href =
             enlaceWhatsApp;
+
+        cerrarModalClienteWeb();
 
     } catch (error) {
 
@@ -363,9 +500,11 @@ async function procesarEnvioComprobanteWeb(
 
     } finally {
 
-        botonEnviarComprobante.disabled = false;
-        botonEnviarComprobante.textContent =
-            textoOriginal;
+        if (botonAccionTransferencia) {
+            botonAccionTransferencia.disabled = false;
+            botonAccionTransferencia.textContent =
+                textoOriginal;
+        }
 
     }
 
@@ -445,10 +584,7 @@ botonPagarMercadoPago?.addEventListener(
         }
 
         const esMayorista =
-            carrito.some(
-                (producto) =>
-                    aplicaMayorista(producto)
-            );
+            carritoTieneMayorista();
 
         if (esMayorista) {
             alert(
@@ -456,6 +592,12 @@ botonPagarMercadoPago?.addEventListener(
             );
             actualizarCarrito();
             return;
+        }
+
+        if (medioPagoCarrito !== "mercado_pago") {
+            medioPagoCarrito = "mercado_pago";
+            guardarMedioPagoCarrito();
+            actualizarCarrito();
         }
 
         abrirModalClienteWeb(
@@ -481,6 +623,9 @@ async function procesarPagoMercadoPagoWeb(
     }
 
     const boton =
+        document.getElementById(
+            "checkout-pagar-mercado-pago"
+        ) ||
         document.getElementById(
             "pagar-mercado-pago"
         );
@@ -956,6 +1101,12 @@ function cerrarModalClienteWeb() {
     clienteWebModoEdicion =
         false;
 
+    clienteCheckoutActual =
+        null;
+
+    flujoCheckoutMinorista =
+        false;
+
 }
 
 
@@ -1011,7 +1162,7 @@ function renderizarModalClienteWeb() {
         cuerpo.innerHTML = `
             <div class="modal-cliente-web-encabezado">
                 <span class="modal-cliente-web-paso">
-                    Antes de finalizar
+                    ${flujoCheckoutMinorista ? "Paso 1 de 2" : "Antes de finalizar"}
                 </span>
 
                 <h3 id="modal-cliente-web-titulo">
@@ -1046,7 +1197,7 @@ function renderizarModalClienteWeb() {
                     class="modal-cliente-web-principal"
                     id="modal-cliente-web-continuar-recordado"
                 >
-                    Continuar con el pedido
+                    ${flujoCheckoutMinorista ? "Continuar al pago" : "Continuar con el pedido"}
                 </button>
 
                 <button
@@ -1106,7 +1257,7 @@ function renderizarModalClienteWeb() {
     cuerpo.innerHTML = `
         <div class="modal-cliente-web-encabezado">
             <span class="modal-cliente-web-paso">
-                Antes de finalizar
+                ${flujoCheckoutMinorista ? "Paso 1 de 2" : "Antes de finalizar"}
             </span>
 
             <h3 id="modal-cliente-web-titulo">
@@ -1189,7 +1340,7 @@ function renderizarModalClienteWeb() {
                     type="submit"
                     class="modal-cliente-web-principal"
                 >
-                    Continuar con el pedido
+                    ${flujoCheckoutMinorista ? "Continuar al pago" : "Continuar con el pedido"}
                 </button>
 
                 ${
@@ -1592,20 +1743,88 @@ function aplicaMayorista(producto) {
     );
 }
 
+function obtenerPrecioListaDesdeEfectivo(precioEfectivo) {
+    const precio = Number(precioEfectivo);
+
+    if (!Number.isFinite(precio) || precio <= 0) {
+        return 0;
+    }
+
+    return Math.round(
+        precio /
+        (1 - DESCUENTO_EFECTIVO_TRANSFERENCIA)
+    );
+}
+
+function carritoTieneMayorista() {
+    return carrito.some(
+        (producto) => aplicaMayorista(producto)
+    );
+}
+
+function usarPrecioListaMinorista() {
+    return (
+        carrito.length > 0 &&
+        !carritoTieneMayorista() &&
+        medioPagoCarrito === "mercado_pago"
+    );
+}
+
 function obtenerPrecioUnitario(producto) {
-    return aplicaMayorista(producto)
-        ? producto.precioMayorista
-        : producto.precioMinorista;
+    if (aplicaMayorista(producto)) {
+        return producto.precioMayorista;
+    }
+
+    if (usarPrecioListaMinorista()) {
+        return obtenerPrecioListaDesdeEfectivo(
+            producto.precioMinorista
+        );
+    }
+
+    return producto.precioMinorista;
 }
 
 function obtenerTipoPrecio(producto) {
-    const regla = obtenerReglaCategoria(producto.categoria);
+    if (aplicaMayorista(producto)) {
+        return "Mayorista";
+    }
 
-    if (!regla.tieneMayorista) return "Precio único";
+    if (usarPrecioListaMinorista()) {
+        return "Precio de lista";
+    }
 
-    return aplicaMayorista(producto)
-        ? "Mayorista"
-        : "Minorista";
+    return "20% OFF efectivo/transferencia";
+}
+
+
+function obtenerPrecioCarritoBase(producto) {
+    if (aplicaMayorista(producto)) {
+        return producto.precioMayorista;
+    }
+
+    return producto.precioMinorista;
+}
+
+function calcularSubtotalCarritoBase() {
+    return carrito.reduce(
+        (acumulado, producto) =>
+            acumulado +
+            obtenerPrecioCarritoBase(producto) *
+            producto.cantidad,
+        0
+    );
+}
+
+function calcularTotalMercadoPagoMinorista() {
+    return carrito.reduce(
+        (acumulado, producto) =>
+            acumulado +
+            obtenerPrecioListaDesdeEfectivo(
+                producto.precioMinorista
+            ) *
+            producto.cantidad,
+        0
+    );
 }
 
 function guardarCarrito() {
@@ -1892,23 +2111,57 @@ function crearTextoStock(producto) {
 function crearPrecioCatalogo(producto) {
     const regla = obtenerReglaCategoria(producto.categoria);
 
+    const precioLista =
+        obtenerPrecioListaDesdeEfectivo(
+            producto.precioMinorista
+        );
+
+    const bloqueMinorista = `
+        <div class="producto-precios-ordenados">
+            <div class="precio-efectivo-destacado">
+                <span class="precio-efectivo-etiqueta">
+                    20% OFF efectivo / transferencia
+                </span>
+                <strong>
+                    ${formatearPrecio(producto.precioMinorista)}
+                </strong>
+            </div>
+
+            <div class="precio-secundario precio-tarjeta">
+                <span class="precio-secundario-etiqueta">
+                    <svg
+                        class="icono-tarjeta-precio"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <rect x="2.5" y="5" width="19" height="14" rx="2.5"></rect>
+                        <path d="M2.5 9h19"></path>
+                        <path d="M6 15h4"></path>
+                    </svg>
+                    Mercado Pago 3 cuotas sin interés
+                </span>
+                <strong>
+                    ${formatearPrecio(precioLista)}
+                </strong>
+            </div>
+        </div>
+    `;
+
     if (!regla.tieneMayorista) {
-        return `
-            <p class="producto-precio minorista">
-                Precio: ${formatearPrecio(producto.precioMinorista)}
-            </p>
-        `;
+        return bloqueMinorista;
     }
 
     return `
-        <p class="producto-precio minorista">
-            Minorista: ${formatearPrecio(producto.precioMinorista)}
-        </p>
+        ${bloqueMinorista}
 
-        <p class="producto-precio mayorista">
-            Mayorista: ${formatearPrecio(producto.precioMayorista)}
-            <span>desde 3 perfumes surtidos</span>
-        </p>
+        <div class="precio-secundario precio-mayorista-nuevo">
+            <span class="precio-secundario-etiqueta">
+                Mayorista desde 3 surtidos
+            </span>
+            <strong>
+                ${formatearPrecio(producto.precioMayorista)}
+            </strong>
+        </div>
     `;
 }
 
@@ -2444,41 +2697,42 @@ function actualizarFichaIndividual() {
     botonDetalle.dataset.imagen = imagenProducto;
     botonDetalle.dataset.stock = producto.stock ?? "";
 
-    const precioMinorista = document.querySelector(
-        ".detalle-precio.minorista"
-    );
-
-    const precioMayorista = document.querySelector(
-        ".detalle-precio.mayorista"
-    );
-
-    const condicionMayorista = document.querySelector(
-        ".condicion-mayorista"
+    const bloquePreciosDetalle = document.getElementById(
+        "producto-precios-detalle"
     );
 
     const regla = obtenerReglaCategoria(producto.categoria);
 
-    if (precioMinorista) {
-        precioMinorista.textContent = regla.tieneMayorista
-            ? `Minorista: ${formatearPrecio(producto.precioMinorista)}`
-            : `Precio: ${formatearPrecio(producto.precioMinorista)}`;
-    }
+    const precioLista =
+        obtenerPrecioListaDesdeEfectivo(
+            producto.precioMinorista
+        );
 
-    if (precioMayorista) {
-        if (regla.tieneMayorista) {
-            precioMayorista.textContent =
-                `Mayorista: ${formatearPrecio(producto.precioMayorista)}`;
-            precioMayorista.hidden = false;
-            precioMayorista.style.display = "";
-        } else {
-            precioMayorista.hidden = true;
-            precioMayorista.style.display = "none";
-        }
-    }
+    if (bloquePreciosDetalle) {
+        bloquePreciosDetalle.innerHTML = `
+            <div class="detalle-precio-efectivo">
+                <span>20% OFF efectivo / transferencia</span>
+                <strong>${formatearPrecio(producto.precioMinorista)}</strong>
+            </div>
 
-    if (condicionMayorista) {
-        condicionMayorista.style.display =
-            regla.tieneMayorista ? "" : "none";
+            <div class="detalle-precio-secundario detalle-precio-tarjeta">
+                <span class="detalle-precio-etiqueta">
+                    <svg class="icono-tarjeta-precio" viewBox="0 0 24 24" aria-hidden="true">
+                        <rect x="3" y="6" width="18" height="12" rx="2"></rect>
+                        <path d="M3 10h18"></path>
+                    </svg>
+                    Mercado Pago 3 cuotas sin interés
+                </span>
+                <strong>${formatearPrecio(precioLista)}</strong>
+            </div>
+
+            ${regla.tieneMayorista ? `
+                <div class="detalle-precio-secundario detalle-precio-mayorista">
+                    <span class="detalle-precio-etiqueta">Mayorista desde ${regla.minimoMayorista} surtidos</span>
+                    <strong>${formatearPrecio(producto.precioMayorista)}</strong>
+                </div>
+            ` : ""}
+        `;
     }
 
     let stockDetalle = document.querySelector(
@@ -2489,8 +2743,8 @@ function actualizarFichaIndividual() {
         stockDetalle = document.createElement("p");
         stockDetalle.className = "stock-producto-detalle";
 
-        const referencia = document.querySelector(
-            ".condicion-mayorista"
+        const referencia = document.getElementById(
+            "producto-precios-detalle"
         );
 
         referencia?.insertAdjacentElement(
@@ -2591,51 +2845,30 @@ function crearMensajeMayorista() {
 function actualizarCarrito() {
     const cantidadTotal = obtenerCantidadTotal();
 
-    const bloquePagoTransferencia =
-        document.getElementById("carrito-pago-transferencia");
-
-    /*
-        Si el bloque de pago estaba dentro de la zona de productos,
-        lo sacamos momentáneamente antes de volver a dibujar el carrito.
-    */
-    if (
-        bloquePagoTransferencia &&
-        bloquePagoTransferencia.parentElement === carritoProductos
-    ) {
-        bloquePagoTransferencia.remove();
-    }
-
-
     if (contadorCarrito) {
         contadorCarrito.textContent = cantidadTotal;
     }
 
-
     if (carritoProductos) {
-
         if (carrito.length === 0) {
-
             carritoProductos.innerHTML = `
                 <p class="carrito-vacio">
                     Tu carrito está vacío.
                 </p>
             `;
-
         } else {
-
             carritoProductos.innerHTML = carrito
                 .map((producto, indice) => {
-
                     const precioUnitario =
-                        obtenerPrecioUnitario(producto);
-
-                    const tipoPrecio =
-                        obtenerTipoPrecio(producto);
+                        obtenerPrecioCarritoBase(producto);
 
                     const regla =
                         obtenerReglaCategoria(
                             producto.categoria
                         );
+
+                    const esMayoristaProducto =
+                        aplicaMayorista(producto);
 
                     const puedeSumar =
                         producto.stock === null ||
@@ -2646,187 +2879,150 @@ function actualizarCarrito() {
                             ? "Stock a confirmar"
                             : `Stock: ${producto.stock}`;
 
-
                     return `
                         <div class="carrito-item">
-
                             <img
                                 src="${escaparHTML(producto.imagen)}"
                                 alt="${escaparHTML(producto.nombre)}"
                             >
 
                             <div class="carrito-item-info">
-
                                 <h3>
                                     ${escaparHTML(producto.nombre)}
                                 </h3>
 
-                                <small>
+                                <small class="carrito-item-categoria">
                                     ${escaparHTML(regla.nombre)}
                                 </small>
 
-                                <p>
-                                    ${formatearPrecio(precioUnitario)}
-                                    c/u · ${tipoPrecio}
+                                <p class="carrito-item-precio">
+                                    ${formatearPrecio(precioUnitario)} c/u
+                                    ${
+                                        esMayoristaProducto
+                                            ? '<span class="carrito-item-mayorista">Mayorista</span>'
+                                            : ""
+                                    }
                                 </p>
 
                                 <small class="carrito-stock">
                                     ${textoStock}
                                 </small>
 
-                                <div class="carrito-cantidad">
+                                <div class="carrito-item-acciones">
+                                    <div class="carrito-cantidad">
+                                        <button
+                                            type="button"
+                                            data-accion="restar"
+                                            data-indice="${indice}"
+                                            aria-label="Restar una unidad"
+                                        >
+                                            −
+                                        </button>
+
+                                        <span>
+                                            ${producto.cantidad}
+                                        </span>
+
+                                        <button
+                                            type="button"
+                                            data-accion="sumar"
+                                            data-indice="${indice}"
+                                            aria-label="Sumar una unidad"
+                                            ${puedeSumar ? "" : "disabled"}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
 
                                     <button
                                         type="button"
-                                        data-accion="restar"
+                                        class="eliminar-producto"
+                                        data-accion="eliminar"
                                         data-indice="${indice}"
-                                        aria-label="Restar una unidad"
                                     >
-                                        −
+                                        Eliminar
                                     </button>
-
-                                    <span>
-                                        ${producto.cantidad}
-                                    </span>
-
-                                    <button
-                                        type="button"
-                                        data-accion="sumar"
-                                        data-indice="${indice}"
-                                        aria-label="Sumar una unidad"
-                                        ${puedeSumar ? "" : "disabled"}
-                                    >
-                                        +
-                                    </button>
-
                                 </div>
-
-                                <button
-                                    type="button"
-                                    class="eliminar-producto"
-                                    data-accion="eliminar"
-                                    data-indice="${indice}"
-                                >
-                                    Eliminar
-                                </button>
-
                             </div>
-
                         </div>
                     `;
                 })
                 .join("");
         }
-
-
-        /*
-            Con productos:
-            el pago queda debajo de los productos y hace scroll con ellos.
-
-            Sin productos:
-            vuelve al resumen pero queda oculto.
-        */
-        if (bloquePagoTransferencia) {
-
-            if (carrito.length > 0) {
-
-                bloquePagoTransferencia.hidden = false;
-
-                carritoProductos.appendChild(
-                    bloquePagoTransferencia
-                );
-
-            } else {
-
-                bloquePagoTransferencia.hidden = true;
-
-                resumenCarritoPago?.prepend(
-                    bloquePagoTransferencia
-                );
-            }
-        }
     }
-
 
     if (mensajeMayorista) {
         mensajeMayorista.textContent =
             crearMensajeMayorista();
     }
 
+    const carritoEsMayorista =
+        carritoTieneMayorista();
 
-    const total = carrito.reduce(
-        (acumulado, producto) =>
-            acumulado +
-            obtenerPrecioUnitario(producto) *
-            producto.cantidad,
-        0
-    );
-
+    const subtotal =
+        calcularSubtotalCarritoBase();
 
     if (carritoTotal) {
-
-    carritoTotal.textContent =
-
-        formatearPrecio(total);
-
-}
-
-
-// =============================
-// MERCADO PAGO SOLO MINORISTA
-// =============================
-
-const botonMercadoPago =
-    document.getElementById(
-        "pagar-mercado-pago"
-    );
-
-const mensajeMercadoPago =
-    document.getElementById(
-        "mensaje-mercado-pago"
-    );
-
-const carritoEsMayorista =
-    carrito.some(
-        (producto) =>
-            aplicaMayorista(producto)
-    );
-
-
-if (botonMercadoPago) {
-
-    botonMercadoPago.hidden =
-        carrito.length === 0 ||
-        carritoEsMayorista;
-
-}
-
-
-if (mensajeMercadoPago) {
-
-    if (
-        carrito.length > 0 &&
-        carritoEsMayorista
-    ) {
-
-        mensajeMercadoPago.textContent =
-            "Mercado Pago está disponible únicamente para compras minoristas.";
-
-        mensajeMercadoPago.hidden =
-            false;
-
-    } else {
-
-        mensajeMercadoPago.textContent =
-            "";
-
-        mensajeMercadoPago.hidden =
-            true;
-
+        carritoTotal.textContent =
+            formatearPrecio(subtotal);
     }
 
-}
+    const etiquetaTotal =
+        document.querySelector(
+            ".carrito-total span"
+        );
 
+    if (etiquetaTotal) {
+        etiquetaTotal.textContent =
+            carritoEsMayorista
+                ? "Total"
+                : "Subtotal";
+    }
+
+    /*
+        El carrito queda intencionalmente limpio.
+        Forma de pago, alias y Mercado Pago aparecen
+        recién después de continuar con la compra.
+    */
+    if (bloqueMedioPagoCarrito) {
+        bloqueMedioPagoCarrito.hidden = true;
+    }
+
+    const bloquePagoTransferencia =
+        document.getElementById(
+            "carrito-pago-transferencia"
+        );
+
+    if (bloquePagoTransferencia) {
+        bloquePagoTransferencia.hidden = true;
+    }
+
+    const botonMercadoPago =
+        document.getElementById(
+            "pagar-mercado-pago"
+        );
+
+    if (botonMercadoPago) {
+        botonMercadoPago.hidden = true;
+    }
+
+    const mensajeMercadoPago =
+        document.getElementById(
+            "mensaje-mercado-pago"
+        );
+
+    if (mensajeMercadoPago) {
+        mensajeMercadoPago.hidden = true;
+        mensajeMercadoPago.textContent = "";
+    }
+
+    if (botonFinalizarPedido) {
+        botonFinalizarPedido.hidden =
+            carrito.length === 0;
+
+        botonFinalizarPedido.textContent =
+            "Continuar compra";
+    }
 }
 
 
@@ -3615,20 +3811,694 @@ function crearMensajePedido(
 }
 
 
+// =============================
+// CHECKOUT MAYORISTA POR PASOS
+// Paso 1: datos del cliente
+// Paso 2: efectivo o transferencia
+// =============================
+
+function abrirPasoPagoCheckoutMayorista(cliente) {
+    if (!cliente) return;
+
+    clienteCheckoutActual = cliente;
+
+    /*
+        Reutilizamos el indicador de checkout por pasos para que
+        el formulario de datos muestre "Paso 1 de 2" también en
+        compras mayoristas.
+    */
+    flujoCheckoutMinorista = true;
+
+    accionClienteWebPendiente =
+        abrirPasoPagoCheckoutMayorista;
+
+    crearModalClienteWeb();
+
+    const modal =
+        document.getElementById(
+            "modal-cliente-web"
+        );
+
+    const cuerpo =
+        document.getElementById(
+            "modal-cliente-web-cuerpo"
+        );
+
+    if (!modal || !cuerpo) return;
+
+    const totalMayorista =
+        calcularSubtotalCarritoBase();
+
+    cuerpo.innerHTML = `
+        <div class="modal-cliente-web-encabezado checkout-pago-encabezado">
+            <span class="modal-cliente-web-paso">
+                Paso 2 de 2
+            </span>
+
+            <h3 id="modal-cliente-web-titulo">
+                ¿Cómo querés pagar?
+            </h3>
+
+            <p>
+                Elegí cómo vas a abonar tu pedido mayorista.
+            </p>
+        </div>
+
+        <div class="checkout-metodos-pago checkout-metodos-mayorista">
+            <button
+                type="button"
+                class="checkout-metodo-pago"
+                data-checkout-medio-mayorista="efectivo"
+            >
+                <span class="checkout-metodo-info">
+                    <strong>Efectivo</strong>
+                    <small>Precio mayorista</small>
+                </span>
+                <span class="checkout-metodo-precio">
+                    ${formatearPrecio(totalMayorista)}
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="checkout-metodo-pago"
+                data-checkout-medio-mayorista="transferencia"
+            >
+                <span class="checkout-metodo-info">
+                    <strong>Transferencia</strong>
+                    <small>Precio mayorista</small>
+                </span>
+                <span class="checkout-metodo-precio">
+                    ${formatearPrecio(totalMayorista)}
+                </span>
+            </button>
+        </div>
+
+        <div
+            class="checkout-pago-detalle"
+            id="checkout-pago-detalle"
+        >
+            <p class="checkout-pago-ayuda">
+                Seleccioná un medio de pago para continuar.
+            </p>
+        </div>
+
+        <button
+            type="button"
+            class="modal-cliente-web-secundario checkout-volver-datos"
+            id="checkout-volver-datos"
+        >
+            Volver a mis datos
+        </button>
+    `;
+
+    modal.hidden = false;
+
+    cuerpo
+        .querySelectorAll(
+            "[data-checkout-medio-mayorista]"
+        )
+        .forEach((boton) => {
+            boton.addEventListener(
+                "click",
+                () => {
+                    renderizarDetallePagoCheckoutMayorista(
+                        boton.dataset.checkoutMedioMayorista,
+                        cliente
+                    );
+                }
+            );
+        });
+
+    document
+        .getElementById(
+            "checkout-volver-datos"
+        )
+        ?.addEventListener(
+            "click",
+            () => {
+                clienteWebModoEdicion = false;
+                accionClienteWebPendiente =
+                    abrirPasoPagoCheckoutMayorista;
+                renderizarModalClienteWeb();
+            }
+        );
+}
+
+
+function renderizarDetallePagoCheckoutMayorista(
+    medio,
+    cliente = clienteCheckoutActual
+) {
+    if (
+        ![
+            "efectivo",
+            "transferencia"
+        ].includes(medio)
+    ) {
+        return;
+    }
+
+    medioPagoCarrito = medio;
+    guardarMedioPagoCarrito();
+
+    document
+        .querySelectorAll(
+            "[data-checkout-medio-mayorista]"
+        )
+        .forEach((boton) => {
+            boton.classList.toggle(
+                "seleccionado",
+                boton.dataset.checkoutMedioMayorista === medio
+            );
+        });
+
+    const detalle =
+        document.getElementById(
+            "checkout-pago-detalle"
+        );
+
+    if (!detalle || !cliente) return;
+
+    const totalMayorista =
+        calcularSubtotalCarritoBase();
+
+    if (medio === "efectivo") {
+        detalle.innerHTML = `
+            <div class="checkout-total-final">
+                <span>Total mayorista en efectivo</span>
+                <strong>${formatearPrecio(totalMayorista)}</strong>
+            </div>
+
+            <p class="checkout-pago-nota">
+                Finalizá el pedido por WhatsApp y coordinamos el pago y la entrega.
+            </p>
+
+            <button
+                type="button"
+                class="modal-cliente-web-principal checkout-finalizar"
+                id="checkout-finalizar-whatsapp"
+            >
+                Finalizar pedido por WhatsApp
+            </button>
+        `;
+
+        document
+            .getElementById(
+                "checkout-finalizar-whatsapp"
+            )
+            ?.addEventListener(
+                "click",
+                () => {
+                    procesarFinalizacionPedidoWeb(
+                        cliente
+                    );
+                }
+            );
+
+        return;
+    }
+
+    detalle.innerHTML = `
+        <div class="checkout-total-final">
+            <span>Total mayorista por transferencia</span>
+            <strong>${formatearPrecio(totalMayorista)}</strong>
+        </div>
+
+        <div class="checkout-transferencia-datos">
+            <div>
+                <span>Titular</span>
+                <strong>Eric Damian Ranzoni</strong>
+            </div>
+
+            <div>
+                <span>Alias</span>
+                <span class="checkout-alias-linea">
+                    <strong>voimport.lemon</strong>
+                    <button
+                        type="button"
+                        id="checkout-copiar-alias"
+                    >
+                        Copiar
+                    </button>
+                </span>
+            </div>
+
+            <div>
+                <span>CVU</span>
+                <strong>0000168300000017205739</strong>
+            </div>
+        </div>
+
+        <p class="checkout-pago-nota">
+            Realizá la transferencia con estos datos. Cuando esté hecha, tocá el botón para finalizar el pedido y enviarnos el comprobante por WhatsApp.
+        </p>
+
+        <button
+            type="button"
+            class="modal-cliente-web-principal checkout-finalizar"
+            id="checkout-finalizar-whatsapp"
+        >
+            Ya transferí · Finalizar pedido y enviar comprobante
+        </button>
+    `;
+
+    document
+        .getElementById(
+            "checkout-copiar-alias"
+        )
+        ?.addEventListener(
+            "click",
+            async (evento) => {
+                const boton = evento.currentTarget;
+
+                try {
+                    await navigator.clipboard.writeText(
+                        "voimport.lemon"
+                    );
+                    boton.textContent = "Copiado ✓";
+                    setTimeout(
+                        () => {
+                            boton.textContent = "Copiar";
+                        },
+                        1500
+                    );
+                } catch (_) {
+                    alert("Alias: voimport.lemon");
+                }
+            }
+        );
+
+    document
+        .getElementById(
+            "checkout-finalizar-whatsapp"
+        )
+        ?.addEventListener(
+            "click",
+            () => {
+                procesarEnvioComprobanteWeb(
+                    cliente
+                );
+            }
+        );
+}
+
+
+// =============================
+// CHECKOUT MINORISTA POR PASOS
+// Paso 1: datos del cliente
+// Paso 2: medio de pago
+// =============================
+
+function abrirPasoPagoCheckout(cliente) {
+    if (!cliente) return;
+
+    clienteCheckoutActual = cliente;
+    flujoCheckoutMinorista = true;
+
+    /*
+        Dejamos preparada la misma acción por si el cliente
+        vuelve a sus datos y continúa otra vez.
+    */
+    accionClienteWebPendiente =
+        abrirPasoPagoCheckout;
+
+    crearModalClienteWeb();
+
+    const modal =
+        document.getElementById(
+            "modal-cliente-web"
+        );
+
+    const cuerpo =
+        document.getElementById(
+            "modal-cliente-web-cuerpo"
+        );
+
+    if (!modal || !cuerpo) return;
+
+    const subtotalEfectivo =
+        calcularSubtotalCarritoBase();
+
+    const totalMercadoPago =
+        calcularTotalMercadoPagoMinorista();
+
+    cuerpo.innerHTML = `
+        <div class="modal-cliente-web-encabezado checkout-pago-encabezado">
+            <span class="modal-cliente-web-paso">
+                Paso 2 de 2
+            </span>
+
+            <h3 id="modal-cliente-web-titulo">
+                ¿Cómo querés pagar?
+            </h3>
+
+            <p>
+                Elegí una opción para ver el total y finalizar tu pedido.
+            </p>
+        </div>
+
+        <div class="checkout-metodos-pago">
+            <button
+                type="button"
+                class="checkout-metodo-pago"
+                data-checkout-medio="efectivo"
+            >
+                <span class="checkout-metodo-info">
+                    <strong>Efectivo</strong>
+                    <small>20% OFF</small>
+                </span>
+                <span class="checkout-metodo-precio">
+                    ${formatearPrecio(subtotalEfectivo)}
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="checkout-metodo-pago"
+                data-checkout-medio="transferencia"
+            >
+                <span class="checkout-metodo-info">
+                    <strong>Transferencia</strong>
+                    <small>20% OFF</small>
+                </span>
+                <span class="checkout-metodo-precio">
+                    ${formatearPrecio(subtotalEfectivo)}
+                </span>
+            </button>
+
+            <button
+                type="button"
+                class="checkout-metodo-pago checkout-metodo-mp"
+                data-checkout-medio="mercado_pago"
+            >
+                <span class="checkout-metodo-info">
+                    <strong class="checkout-metodo-tarjeta">
+                        <svg class="checkout-icono-tarjeta" viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="6" width="18" height="12" rx="2"></rect>
+                            <path d="M3 10h18"></path>
+                        </svg>
+                        Mercado Pago
+                    </strong>
+                    <small>3 cuotas sin interés</small>
+                </span>
+                <span class="checkout-metodo-precio">
+                    ${formatearPrecio(totalMercadoPago)}
+                </span>
+            </button>
+        </div>
+
+        <div
+            class="checkout-pago-detalle"
+            id="checkout-pago-detalle"
+        >
+            <p class="checkout-pago-ayuda">
+                Seleccioná un medio de pago para continuar.
+            </p>
+        </div>
+
+        <button
+            type="button"
+            class="modal-cliente-web-secundario checkout-volver-datos"
+            id="checkout-volver-datos"
+        >
+            Volver a mis datos
+        </button>
+    `;
+
+    modal.hidden = false;
+
+    cuerpo
+        .querySelectorAll(
+            "[data-checkout-medio]"
+        )
+        .forEach((boton) => {
+            boton.addEventListener(
+                "click",
+                () => {
+                    renderizarDetallePagoCheckout(
+                        boton.dataset.checkoutMedio,
+                        cliente
+                    );
+                }
+            );
+        });
+
+    document
+        .getElementById(
+            "checkout-volver-datos"
+        )
+        ?.addEventListener(
+            "click",
+            () => {
+                clienteWebModoEdicion = false;
+                accionClienteWebPendiente =
+                    abrirPasoPagoCheckout;
+                renderizarModalClienteWeb();
+            }
+        );
+}
+
+
+function renderizarDetallePagoCheckout(
+    medio,
+    cliente = clienteCheckoutActual
+) {
+    if (
+        ![
+            "efectivo",
+            "transferencia",
+            "mercado_pago"
+        ].includes(medio)
+    ) {
+        return;
+    }
+
+    medioPagoCarrito = medio;
+    guardarMedioPagoCarrito();
+
+    document
+        .querySelectorAll(
+            "[data-checkout-medio]"
+        )
+        .forEach((boton) => {
+            boton.classList.toggle(
+                "seleccionado",
+                boton.dataset.checkoutMedio === medio
+            );
+        });
+
+    const detalle =
+        document.getElementById(
+            "checkout-pago-detalle"
+        );
+
+    if (!detalle || !cliente) return;
+
+    const subtotalEfectivo =
+        calcularSubtotalCarritoBase();
+
+    const totalMercadoPago =
+        calcularTotalMercadoPagoMinorista();
+
+    if (medio === "efectivo") {
+        detalle.innerHTML = `
+            <div class="checkout-total-final">
+                <span>Total en efectivo</span>
+                <strong>${formatearPrecio(subtotalEfectivo)}</strong>
+            </div>
+
+            <p class="checkout-pago-nota">
+                Finalizá el pedido por WhatsApp y coordinamos el pago y la entrega.
+            </p>
+
+            <button
+                type="button"
+                class="modal-cliente-web-principal checkout-finalizar"
+                id="checkout-finalizar-whatsapp"
+            >
+                Finalizar pedido por WhatsApp
+            </button>
+        `;
+
+        document
+            .getElementById(
+                "checkout-finalizar-whatsapp"
+            )
+            ?.addEventListener(
+                "click",
+                () => {
+                    procesarFinalizacionPedidoWeb(
+                        cliente
+                    );
+                }
+            );
+
+        return;
+    }
+
+    if (medio === "transferencia") {
+        detalle.innerHTML = `
+            <div class="checkout-total-final">
+                <span>Total por transferencia</span>
+                <strong>${formatearPrecio(subtotalEfectivo)}</strong>
+            </div>
+
+            <div class="checkout-transferencia-datos">
+                <div>
+                    <span>Titular</span>
+                    <strong>Eric Damian Ranzoni</strong>
+                </div>
+
+                <div>
+                    <span>Alias</span>
+                    <span class="checkout-alias-linea">
+                        <strong>voimport.lemon</strong>
+                        <button
+                            type="button"
+                            id="checkout-copiar-alias"
+                        >
+                            Copiar
+                        </button>
+                    </span>
+                </div>
+
+                <div>
+                    <span>CVU</span>
+                    <strong>0000168300000017205739</strong>
+                </div>
+
+            </div>
+
+            <p class="checkout-pago-nota">
+                Realizá la transferencia con estos datos. Cuando esté hecha, tocá el botón para enviarnos el comprobante por WhatsApp.
+            </p>
+
+            <button
+                type="button"
+                class="modal-cliente-web-principal checkout-finalizar"
+                id="checkout-finalizar-whatsapp"
+            >
+                Ya transferí · Finalizar pedido y enviar comprobante
+            </button>
+        `;
+
+        document
+            .getElementById(
+                "checkout-copiar-alias"
+            )
+            ?.addEventListener(
+                "click",
+                async (evento) => {
+                    const boton = evento.currentTarget;
+
+                    try {
+                        await navigator.clipboard.writeText(
+                            "voimport.lemon"
+                        );
+                        boton.textContent = "Copiado ✓";
+                        setTimeout(
+                            () => {
+                                boton.textContent = "Copiar";
+                            },
+                            1500
+                        );
+                    } catch (_) {
+                        alert("Alias: voimport.lemon");
+                    }
+                }
+            );
+
+        document
+            .getElementById(
+                "checkout-finalizar-whatsapp"
+            )
+            ?.addEventListener(
+                "click",
+                () => {
+                    procesarEnvioComprobanteWeb(
+                        cliente
+                    );
+                }
+            );
+
+        return;
+    }
+
+    detalle.innerHTML = `
+        <div class="checkout-total-final checkout-total-mp">
+            <span>Total con Mercado Pago</span>
+            <strong>${formatearPrecio(totalMercadoPago)}</strong>
+        </div>
+
+        <p class="checkout-pago-nota checkout-pago-nota-mp">
+            Pagá con Mercado Pago en 3 cuotas sin interés.
+        </p>
+
+        <button
+            type="button"
+            class="checkout-pagar-mp"
+            id="checkout-pagar-mercado-pago"
+        >
+            <svg class="checkout-mp-icono" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="6" width="18" height="12" rx="2"></rect>
+                <path d="M3 10h18"></path>
+            </svg>
+            Pagar con Mercado Pago
+        </button>
+
+    `;
+
+    document
+        .getElementById(
+            "checkout-pagar-mercado-pago"
+        )
+        ?.addEventListener(
+            "click",
+            () => {
+                procesarPagoMercadoPagoWeb(
+                    cliente
+                );
+            }
+        );
+}
+
+
 botonFinalizarPedido?.addEventListener(
     "click",
     () => {
-
         if (carrito.length === 0) {
             alert("Tu carrito está vacío.");
             return;
         }
 
+        cerrarCarrito();
+
+        if (carritoTieneMayorista()) {
+            /*
+                Mayorista también usa checkout por pasos:
+                datos del cliente -> efectivo o transferencia.
+            */
+            flujoCheckoutMinorista = true;
+            clienteCheckoutActual = null;
+
+            abrirModalClienteWeb(
+                abrirPasoPagoCheckoutMayorista
+            );
+            return;
+        }
+
+        /*
+            Minorista: el carrito solo revisa productos.
+            Primero pedimos los datos y recién después
+            mostramos la forma de pago.
+        */
+        flujoCheckoutMinorista = true;
+        clienteCheckoutActual = null;
 
         abrirModalClienteWeb(
-            procesarFinalizacionPedidoWeb
+            abrirPasoPagoCheckout
         );
-
     }
 );
 
@@ -3647,12 +4517,21 @@ async function procesarFinalizacionPedidoWeb(
 
     ventanaWhatsApp.opener = null;
 
-    const textoOriginal =
-        botonFinalizarPedido.textContent;
+    const botonAccion =
+        document.getElementById(
+            "checkout-finalizar-whatsapp"
+        ) ||
+        botonFinalizarPedido;
 
-    botonFinalizarPedido.disabled = true;
-    botonFinalizarPedido.textContent =
-        "Registrando pedido...";
+    const textoOriginal =
+        botonAccion?.textContent ||
+        "Finalizar pedido por WhatsApp";
+
+    if (botonAccion) {
+        botonAccion.disabled = true;
+        botonAccion.textContent =
+            "Registrando pedido...";
+    }
 
     try {
 
@@ -3662,11 +4541,27 @@ async function procesarFinalizacionPedidoWeb(
                 cliente
             );
 
-        const mensaje = encodeURIComponent(
+        let mensajePedido =
             crearMensajePedido(
                 pedido.codigo,
                 cliente
-            )
+            );
+
+        if (medioPagoCarrito === "efectivo") {
+            const introduccionEfectivo =
+                carritoTieneMayorista()
+                    ? "Hola, quiero realizar el siguiente pedido mayorista y abonar en efectivo:"
+                    : "Hola, quiero realizar el siguiente pedido y abonar en efectivo:";
+
+            mensajePedido =
+                mensajePedido.replace(
+                    "Hola, quiero realizar el siguiente pedido:",
+                    introduccionEfectivo
+                );
+        }
+
+        const mensaje = encodeURIComponent(
+            mensajePedido
         );
 
         const enlaceWhatsApp =
@@ -3674,6 +4569,8 @@ async function procesarFinalizacionPedidoWeb(
 
         ventanaWhatsApp.location.href =
             enlaceWhatsApp;
+
+        cerrarModalClienteWeb();
 
     } catch (error) {
 
@@ -3691,9 +4588,11 @@ async function procesarFinalizacionPedidoWeb(
 
     } finally {
 
-        botonFinalizarPedido.disabled = false;
-        botonFinalizarPedido.textContent =
-            textoOriginal;
+        if (botonAccion) {
+            botonAccion.disabled = false;
+            botonAccion.textContent =
+                textoOriginal;
+        }
 
     }
 
@@ -4180,6 +5079,8 @@ function crearBarraInformativaGlobal() {
     const mensajes = `
         <span>◆ MAYORISTA DESDE 3 PERFUMES SURTIDOS ◆</span>
         <span>◆ PERFUMES 100% ORIGINALES ◆</span>
+        <span>◆ 20% OFF EN TODA LA TIENDA ◆</span>
+        <span>◆ 3 CUOTAS SIN INTERÉS CON MERCADO PAGO ◆</span>
         <span>◆ TIENDA FÍSICA EN VILLA LUZURIAGA ◆</span>
         <span>◆ ENVÍOS A TODO EL PAÍS ◆</span>
         <span>◆ COMPRA MINORISTA Y MAYORISTA ◆</span>

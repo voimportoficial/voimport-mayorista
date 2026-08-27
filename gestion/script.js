@@ -18557,7 +18557,7 @@ if (!modalEditarProductoGestion) {
 
                         <div class="campo editar-producto-calculado">
                             <label for="editar-producto-minorista">
-                                Precio minorista
+                                Efectivo / transferencia
                             </label>
 
                             <input
@@ -18568,7 +18568,25 @@ if (!modalEditarProductoGestion) {
                             >
 
                             <small>
-                                Podés editar el precio. El margen se ajusta automáticamente.
+                                Este es el precio real sobre el que se calcula tu margen minorista.
+                            </small>
+                        </div>
+
+                        <div class="campo editar-producto-calculado">
+                            <label for="editar-producto-lista">
+                                Precio de lista / tarjeta / Mercado Pago
+                            </label>
+
+                            <input
+                                type="number"
+                                id="editar-producto-lista"
+                                min="0"
+                                step="1"
+                                readonly
+                            >
+
+                            <small>
+                                Se calcula automáticamente para que con 20% OFF quede en el precio de efectivo / transferencia.
                             </small>
                         </div>
 
@@ -18772,6 +18790,11 @@ const editarProductoMarkupMinoristaGestion =
 const editarProductoMinoristaGestion =
     document.getElementById(
         "editar-producto-minorista"
+    );
+
+const editarProductoListaGestion =
+    document.getElementById(
+        "editar-producto-lista"
     );
 
 const editarProductoMayoristaGestion =
@@ -19318,6 +19341,9 @@ function abrirEditarProductoGestion(
         Number(producto.precio_minorista) || 0;
 
 
+    actualizarPrecioListaProductoGestion();
+
+
     editarProductoMayoristaGestion.value =
         Number(producto.precio_mayorista) || 0;
 
@@ -19456,6 +19482,70 @@ function calcularCostoUsdtProductoGestion() {
 
 
     calcularPreciosProductoGestion();
+
+}
+
+
+// =========================================================
+// PRECIO DE LISTA MINORISTA
+// =========================================================
+
+const DESCUENTO_EFECTIVO_TRANSFERENCIA_GESTION = 20;
+
+function calcularPrecioListaDesdeEfectivoGestion(
+    precioEfectivo
+) {
+
+    const precio =
+        Number(precioEfectivo);
+
+    const factor =
+        1 -
+        DESCUENTO_EFECTIVO_TRANSFERENCIA_GESTION / 100;
+
+    if (
+        !Number.isFinite(precio) ||
+        precio < 0 ||
+        !(factor > 0)
+    ) {
+        return 0;
+    }
+
+    return Math.round(
+        precio / factor
+    );
+
+}
+
+function actualizarPrecioListaProductoGestion() {
+
+    if (!editarProductoListaGestion) {
+        return;
+    }
+
+    const precioEfectivoTexto =
+        editarProductoMinoristaGestion?.value.trim() || "";
+
+    if (precioEfectivoTexto === "") {
+        editarProductoListaGestion.value = "";
+        return;
+    }
+
+    const precioEfectivo =
+        Number(precioEfectivoTexto);
+
+    if (
+        !Number.isFinite(precioEfectivo) ||
+        precioEfectivo < 0
+    ) {
+        editarProductoListaGestion.value = "";
+        return;
+    }
+
+    editarProductoListaGestion.value =
+        calcularPrecioListaDesdeEfectivoGestion(
+            precioEfectivo
+        );
 
 }
 
@@ -19640,6 +19730,8 @@ function calcularPreciosProductoGestion() {
                 markupMinorista
             );
 
+        actualizarPrecioListaProductoGestion();
+
     } else if (
         costoTexto !== "" ||
         markupMinoristaTexto !== ""
@@ -19647,6 +19739,8 @@ function calcularPreciosProductoGestion() {
 
         editarProductoMinoristaGestion.value =
             "";
+
+        actualizarPrecioListaProductoGestion();
 
     }
 
@@ -19687,6 +19781,8 @@ editarProductoMinoristaGestion?.addEventListener(
         calcularMarkupDesdePrecioProductoGestion(
             "minorista"
         );
+
+        actualizarPrecioListaProductoGestion();
     }
 );
 
@@ -34063,6 +34159,14 @@ function renderizarPedidosWebGestion() {
                             <div class="pedido-web-acciones">
                                 <button
                                     type="button"
+                                    class="editar-pedido-web"
+                                    data-pedido-id="${pedido.pedido_id}"
+                                >
+                                    Editar pedido
+                                </button>
+
+                                <button
+                                    type="button"
                                     class="confirmar-pedido-web"
                                     data-pedido-id="${pedido.pedido_id}"
                                 >
@@ -34567,6 +34671,1675 @@ modalConfirmarPedidoWebGestion
             }
         }
     );
+
+
+
+// =========================================================
+// EDITAR PEDIDO WEB PENDIENTE - COMPLETO
+// Productos, cantidades, precio personalizado y descuentos
+// =========================================================
+
+let modalEditarPedidoWebGestion =
+    document.getElementById("modal-editar-pedido-web");
+
+let pedidoWebEditandoGestion = null;
+let pedidoWebEdicionItemsGestion = [];
+let pedidoWebEdicionBusquedaGestion = "";
+let pedidoWebDescuentoGeneralTipoGestion = null;
+let pedidoWebDescuentoGeneralValorGestion = 0;
+
+
+function obtenerProductoGestionPorIdPedidoWeb(productoId) {
+    return productosGestion.find(
+        (producto) =>
+            Number(producto.id) ===
+            Number(productoId)
+    ) || null;
+}
+
+
+function obtenerCategoriaClavePedidoWeb(producto) {
+    if (!producto) return "";
+
+    const categoria =
+        typeof obtenerCategoriaProducto === "function"
+            ? obtenerCategoriaProducto(producto)
+            : null;
+
+    return (
+        categoria?.clave ||
+        producto.categoria ||
+        producto.categoria_mostrar ||
+        ""
+    );
+}
+
+
+function categoriaTieneMayoristaPedidoWeb(categoria) {
+    return [
+        "perfumes-grandes",
+        "maison-30ml",
+        "inspiraciones-disenador"
+    ].includes(categoria);
+}
+
+
+function obtenerCantidadCategoriaEdicionPedidoWeb(categoria) {
+    return pedidoWebEdicionItemsGestion.reduce(
+        (total, item) => {
+            const producto =
+                obtenerProductoGestionPorIdPedidoWeb(
+                    item.producto_id
+                );
+
+            return (
+                obtenerCategoriaClavePedidoWeb(producto) ===
+                categoria
+            )
+                ? total + (Number(item.cantidad) || 0)
+                : total;
+        },
+        0
+    );
+}
+
+
+function obtenerTipoPrecioAutomaticoEdicionPedidoWeb(producto) {
+    const categoria =
+        obtenerCategoriaClavePedidoWeb(producto);
+
+    if (categoria === "decants") {
+        return "Precio único";
+    }
+
+    if (categoriaTieneMayoristaPedidoWeb(categoria)) {
+        return obtenerCantidadCategoriaEdicionPedidoWeb(categoria) >= 3
+            ? "Mayorista"
+            : "Minorista";
+    }
+
+    return "Minorista";
+}
+
+
+function obtenerPrecioAutomaticoActualEdicionPedidoWeb(producto) {
+    if (!producto) return 0;
+
+    const tipo =
+        obtenerTipoPrecioAutomaticoEdicionPedidoWeb(producto);
+
+    if (tipo === "Mayorista") {
+        const precioMayorista =
+            Number(producto.precio_mayorista) || 0;
+
+        if (precioMayorista > 0) {
+            return precioMayorista;
+        }
+    }
+
+    return Number(producto.precio_minorista) || 0;
+}
+
+
+function obtenerPrecioBaseEdicionPedidoWeb(item, producto) {
+    if (item.modo_precio === "personalizado") {
+        return Math.max(
+            0,
+            Number(item.precio_personalizado) || 0
+        );
+    }
+
+    const tipoActual =
+        obtenerTipoPrecioAutomaticoEdicionPedidoWeb(producto);
+
+    const tipoGuardado =
+        String(item.tipo_precio_guardado || "")
+            .trim()
+            .toLowerCase();
+
+    const precioGuardado =
+        Number(item.precio_base_guardado) || 0;
+
+    // Si el producto ya estaba en el pedido y no cambió el tramo
+    // minorista/mayorista, conservamos el precio con el que entró.
+    if (
+        item.existia_en_pedido === true &&
+        item.modo_precio !== "personalizado" &&
+        tipoGuardado === tipoActual.toLowerCase() &&
+        precioGuardado > 0
+    ) {
+        return precioGuardado;
+    }
+
+    return obtenerPrecioAutomaticoActualEdicionPedidoWeb(producto);
+}
+
+
+function normalizarDescuentoItemPedidoWeb(item) {
+    let tipo =
+        String(item.descuento_tipo || "")
+            .trim()
+            .toLowerCase();
+
+    if (!["porcentaje", "monto"].includes(tipo)) {
+        tipo = "";
+    }
+
+    let valor =
+        Math.max(
+            0,
+            Number(item.descuento_valor) || 0
+        );
+
+    const producto =
+        obtenerProductoGestionPorIdPedidoWeb(
+            item.producto_id
+        );
+
+    const precioBase =
+        obtenerPrecioBaseEdicionPedidoWeb(
+            item,
+            producto
+        );
+
+    if (tipo === "porcentaje") {
+        valor = Math.min(100, valor);
+    }
+
+    if (tipo === "monto") {
+        valor = Math.min(precioBase, valor);
+    }
+
+    item.descuento_tipo = tipo || null;
+    item.descuento_valor = valor;
+
+    return { tipo, valor, precioBase };
+}
+
+
+function obtenerPrecioFinalEdicionPedidoWeb(item, producto) {
+    const { tipo, valor, precioBase } =
+        normalizarDescuentoItemPedidoWeb(item);
+
+    if (tipo === "porcentaje") {
+        return Math.max(
+            0,
+            precioBase * (1 - valor / 100)
+        );
+    }
+
+    if (tipo === "monto") {
+        return Math.max(
+            0,
+            precioBase - valor
+        );
+    }
+
+    return Math.max(0, precioBase);
+}
+
+
+function obtenerSubtotalEdicionPedidoWeb() {
+    return pedidoWebEdicionItemsGestion.reduce(
+        (total, item) => {
+            const producto =
+                obtenerProductoGestionPorIdPedidoWeb(
+                    item.producto_id
+                );
+
+            const precioFinal =
+                obtenerPrecioFinalEdicionPedidoWeb(
+                    item,
+                    producto
+                );
+
+            return total +
+                precioFinal * (Number(item.cantidad) || 0);
+        },
+        0
+    );
+}
+
+
+function normalizarDescuentoGeneralPedidoWeb() {
+    let tipo =
+        String(pedidoWebDescuentoGeneralTipoGestion || "")
+            .trim()
+            .toLowerCase();
+
+    if (!["porcentaje", "monto"].includes(tipo)) {
+        tipo = "";
+    }
+
+    const subtotal =
+        obtenerSubtotalEdicionPedidoWeb();
+
+    let valor =
+        Math.max(
+            0,
+            Number(pedidoWebDescuentoGeneralValorGestion) || 0
+        );
+
+    if (tipo === "porcentaje") {
+        valor = Math.min(100, valor);
+    }
+
+    if (tipo === "monto") {
+        valor = Math.min(subtotal, valor);
+    }
+
+    pedidoWebDescuentoGeneralTipoGestion = tipo || null;
+    pedidoWebDescuentoGeneralValorGestion = valor;
+
+    return { tipo, valor, subtotal };
+}
+
+
+function obtenerDescuentoGeneralMontoPedidoWeb() {
+    const { tipo, valor, subtotal } =
+        normalizarDescuentoGeneralPedidoWeb();
+
+    if (tipo === "porcentaje") {
+        return subtotal * valor / 100;
+    }
+
+    if (tipo === "monto") {
+        return valor;
+    }
+
+    return 0;
+}
+
+
+function calcularTotalEdicionPedidoWeb() {
+    const subtotal =
+        obtenerSubtotalEdicionPedidoWeb();
+
+    return Math.max(
+        0,
+        subtotal - obtenerDescuentoGeneralMontoPedidoWeb()
+    );
+}
+
+
+function obtenerDisponibleEdicionPedidoWeb(productoId) {
+    const producto =
+        obtenerProductoGestionPorIdPedidoWeb(productoId);
+
+    const stockActual =
+        Math.max(0, Number(producto?.stock) || 0);
+
+    const itemOriginal =
+        Array.isArray(pedidoWebEditandoGestion?.items)
+            ? pedidoWebEditandoGestion.items.find(
+                (item) =>
+                    Number(item.producto_id) ===
+                    Number(productoId)
+            )
+            : null;
+
+    const reservadoEnEstePedido =
+        Number(itemOriginal?.cantidad) || 0;
+
+    return stockActual + reservadoEnEstePedido;
+}
+
+
+function asegurarModalEditarPedidoWebGestion() {
+    if (modalEditarPedidoWebGestion) {
+        return modalEditarPedidoWebGestion;
+    }
+
+    modalEditarPedidoWebGestion =
+        document.createElement("div");
+
+    modalEditarPedidoWebGestion.id =
+        "modal-editar-pedido-web";
+
+    modalEditarPedidoWebGestion.className =
+        "modal-editar-pedido-web oculto";
+
+    modalEditarPedidoWebGestion.innerHTML = `
+        <div class="modal-editar-pedido-web-contenido">
+            <div class="modal-editar-pedido-web-encabezado">
+                <div>
+                    <h3>Editar pedido web</h3>
+                    <p id="editar-pedido-web-info"></p>
+                </div>
+
+                <button
+                    type="button"
+                    id="cerrar-editar-pedido-web"
+                    aria-label="Cerrar"
+                >
+                    ×
+                </button>
+            </div>
+
+            <div class="editar-pedido-web-buscador-bloque">
+                <label for="editar-pedido-web-buscador">
+                    Agregar producto
+                </label>
+
+                <input
+                    type="search"
+                    id="editar-pedido-web-buscador"
+                    placeholder="Buscar perfume o marca..."
+                    autocomplete="off"
+                >
+
+                <div
+                    id="editar-pedido-web-resultados"
+                    class="editar-pedido-web-resultados oculto"
+                ></div>
+            </div>
+
+            <div
+                id="editar-pedido-web-items"
+                class="editar-pedido-web-items"
+            ></div>
+
+            <div class="editar-pedido-web-descuento-general">
+                <div>
+                    <strong>Descuento general</strong>
+                    <small>Opcional, aplicado sobre todo el pedido.</small>
+                </div>
+
+                <select id="editar-pedido-web-descuento-general-tipo">
+                    <option value="">Sin descuento</option>
+                    <option value="porcentaje">%</option>
+                    <option value="monto">$</option>
+                </select>
+
+                <input
+                    type="number"
+                    id="editar-pedido-web-descuento-general-valor"
+                    min="0"
+                    step="1"
+                    value="0"
+                    disabled
+                >
+            </div>
+
+            <div class="editar-pedido-web-resumen">
+                <div>
+                    <span>Subtotal</span>
+                    <strong id="editar-pedido-web-subtotal">$0</strong>
+                </div>
+
+                <div>
+                    <span>Descuento general</span>
+                    <strong id="editar-pedido-web-descuento-general-monto">$0</strong>
+                </div>
+
+                <div class="editar-pedido-web-total">
+                    <span>Nuevo total</span>
+                    <strong id="editar-pedido-web-total">$0</strong>
+                </div>
+            </div>
+
+            <p class="editar-pedido-web-ayuda">
+                Podés cambiar cantidades, precio automático/personalizado y descuentos. Al guardar, el stock reservado se ajusta automáticamente.
+            </p>
+
+            <p
+                id="mensaje-editar-pedido-web"
+                class="venta-mensaje"
+            ></p>
+
+            <div class="modal-editar-pedido-web-acciones">
+                <button
+                    type="button"
+                    id="cancelar-editar-pedido-web"
+                    class="pedido-web-boton-secundario"
+                >
+                    Volver
+                </button>
+
+                <button
+                    type="button"
+                    id="guardar-editar-pedido-web"
+                    class="pedido-web-boton-confirmar"
+                >
+                    Guardar cambios
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(
+        modalEditarPedidoWebGestion
+    );
+
+    modalEditarPedidoWebGestion
+        .querySelector("#cerrar-editar-pedido-web")
+        ?.addEventListener(
+            "click",
+            cerrarEditarPedidoWebGestion
+        );
+
+    modalEditarPedidoWebGestion
+        .querySelector("#cancelar-editar-pedido-web")
+        ?.addEventListener(
+            "click",
+            cerrarEditarPedidoWebGestion
+        );
+
+    modalEditarPedidoWebGestion
+        .querySelector("#guardar-editar-pedido-web")
+        ?.addEventListener(
+            "click",
+            guardarEdicionPedidoWebGestion
+        );
+
+    modalEditarPedidoWebGestion
+        .querySelector("#editar-pedido-web-buscador")
+        ?.addEventListener(
+            "input",
+            (evento) => {
+                pedidoWebEdicionBusquedaGestion =
+                    evento.target.value || "";
+
+                renderizarResultadosBusquedaEdicionPedidoWeb();
+            }
+        );
+
+    modalEditarPedidoWebGestion
+        .querySelector("#editar-pedido-web-resultados")
+        ?.addEventListener(
+            "click",
+            (evento) => {
+                const boton =
+                    evento.target.closest(
+                        "button[data-producto-id]"
+                    );
+
+                if (!boton) return;
+
+                agregarProductoEdicionPedidoWeb(
+                    Number(boton.dataset.productoId)
+                );
+            }
+        );
+
+    modalEditarPedidoWebGestion
+        .querySelector("#editar-pedido-web-items")
+        ?.addEventListener(
+            "click",
+            (evento) => {
+                const boton =
+                    evento.target.closest(
+                        "button[data-accion][data-producto-id]"
+                    );
+
+                if (!boton) return;
+
+                modificarCantidadEdicionPedidoWeb(
+                    Number(boton.dataset.productoId),
+                    boton.dataset.accion
+                );
+            }
+        );
+
+    modalEditarPedidoWebGestion
+        .querySelector("#editar-pedido-web-items")
+        ?.addEventListener(
+            "change",
+            (evento) => {
+                const control =
+                    evento.target.closest(
+                        "[data-campo][data-producto-id]"
+                    );
+
+                if (!control) return;
+
+                cambiarCampoItemEdicionPedidoWeb(
+                    Number(control.dataset.productoId),
+                    control.dataset.campo,
+                    control.value
+                );
+            }
+        );
+
+    modalEditarPedidoWebGestion
+        .querySelector("#editar-pedido-web-items")
+        ?.addEventListener(
+            "input",
+            (evento) => {
+                const control =
+                    evento.target.closest(
+                        'input[data-campo][data-producto-id]'
+                    );
+
+                if (!control) return;
+
+                cambiarCampoItemEdicionPedidoWeb(
+                    Number(control.dataset.productoId),
+                    control.dataset.campo,
+                    control.value,
+                    false
+                );
+            }
+        );
+
+    modalEditarPedidoWebGestion
+        .querySelector("#editar-pedido-web-descuento-general-tipo")
+        ?.addEventListener(
+            "change",
+            (evento) => {
+                pedidoWebDescuentoGeneralTipoGestion =
+                    evento.target.value || null;
+
+                if (!pedidoWebDescuentoGeneralTipoGestion) {
+                    pedidoWebDescuentoGeneralValorGestion = 0;
+                }
+
+                renderizarControlesDescuentoGeneralPedidoWeb();
+                actualizarResumenEdicionPedidoWeb();
+            }
+        );
+
+    modalEditarPedidoWebGestion
+        .querySelector("#editar-pedido-web-descuento-general-valor")
+        ?.addEventListener(
+            "input",
+            (evento) => {
+                pedidoWebDescuentoGeneralValorGestion =
+                    Math.max(
+                        0,
+                        Number(evento.target.value) || 0
+                    );
+
+                actualizarResumenEdicionPedidoWeb();
+            }
+        );
+
+    modalEditarPedidoWebGestion
+        .addEventListener(
+            "click",
+            (evento) => {
+                if (
+                    evento.target ===
+                    modalEditarPedidoWebGestion
+                ) {
+                    cerrarEditarPedidoWebGestion();
+                }
+            }
+        );
+
+    return modalEditarPedidoWebGestion;
+}
+
+
+function cerrarEditarPedidoWebGestion() {
+    pedidoWebEditandoGestion = null;
+    pedidoWebEdicionItemsGestion = [];
+    pedidoWebEdicionBusquedaGestion = "";
+    pedidoWebDescuentoGeneralTipoGestion = null;
+    pedidoWebDescuentoGeneralValorGestion = 0;
+
+    modalEditarPedidoWebGestion
+        ?.classList.add("oculto");
+}
+
+
+function obtenerTextoDescuentoItemPedidoWeb(item, producto) {
+    const { tipo, valor, precioBase } =
+        normalizarDescuentoItemPedidoWeb(item);
+
+    const precioFinal =
+        obtenerPrecioFinalEdicionPedidoWeb(
+            item,
+            producto
+        );
+
+    if (!tipo || valor <= 0) {
+        return `Precio final ${formatearPrecio(precioFinal)} c/u`;
+    }
+
+    const descuentoTexto =
+        tipo === "porcentaje"
+            ? `${valor}%`
+            : `${formatearPrecio(valor)}`;
+
+    return `${formatearPrecio(precioBase)} − ${descuentoTexto} = ${formatearPrecio(precioFinal)} c/u`;
+}
+
+
+function renderizarItemsEdicionPedidoWeb() {
+    const contenedor =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-items");
+
+    if (!contenedor) return;
+
+    if (pedidoWebEdicionItemsGestion.length === 0) {
+        contenedor.innerHTML = `
+            <div class="editar-pedido-web-vacio">
+                El pedido debe tener al menos un producto.
+            </div>
+        `;
+
+        actualizarResumenEdicionPedidoWeb();
+        return;
+    }
+
+    contenedor.innerHTML =
+        pedidoWebEdicionItemsGestion
+            .map(
+                (item) => {
+                    const producto =
+                        obtenerProductoGestionPorIdPedidoWeb(
+                            item.producto_id
+                        );
+
+                    const cantidad =
+                        Number(item.cantidad) || 0;
+
+                    const tipoAutomatico =
+                        obtenerTipoPrecioAutomaticoEdicionPedidoWeb(
+                            producto
+                        );
+
+                    const precioBase =
+                        obtenerPrecioBaseEdicionPedidoWeb(
+                            item,
+                            producto
+                        );
+
+                    const precioFinal =
+                        obtenerPrecioFinalEdicionPedidoWeb(
+                            item,
+                            producto
+                        );
+
+                    const disponible =
+                        obtenerDisponibleEdicionPedidoWeb(
+                            item.producto_id
+                        );
+
+                    const nombre =
+                        producto?.nombre_mostrar ||
+                        item.nombre ||
+                        producto?.nombre ||
+                        producto?.slug ||
+                        "Producto";
+
+                    const descuentoTipo =
+                        item.descuento_tipo || "";
+
+                    const descuentoValor =
+                        Number(item.descuento_valor) || 0;
+
+                    const precioPersonalizado =
+                        item.modo_precio === "personalizado"
+                            ? Math.max(
+                                0,
+                                Number(item.precio_personalizado) || 0
+                            )
+                            : precioBase;
+
+                    return `
+                        <div
+                            class="editar-pedido-web-item"
+                            data-item-producto-id="${item.producto_id}"
+                        >
+                            <div class="editar-pedido-web-item-cabecera">
+                                <div class="editar-pedido-web-item-info">
+                                    <strong>
+                                        ${escaparHTML(nombre)}
+                                    </strong>
+
+                                    <span>
+                                        Automático actual: ${escaparHTML(tipoAutomatico)} · ${formatearPrecio(obtenerPrecioAutomaticoActualEdicionPedidoWeb(producto))}
+                                    </span>
+
+                                    <small>
+                                        Disponible para este pedido: ${disponible}
+                                    </small>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    class="editar-pedido-web-eliminar"
+                                    data-accion="eliminar"
+                                    data-producto-id="${item.producto_id}"
+                                >
+                                    Eliminar
+                                </button>
+                            </div>
+
+                            <div class="editar-pedido-web-item-controles">
+                                <label>
+                                    <span>Precio</span>
+                                    <select
+                                        data-campo="modo_precio"
+                                        data-producto-id="${item.producto_id}"
+                                    >
+                                        <option
+                                            value="automatico"
+                                            ${item.modo_precio !== "personalizado" ? "selected" : ""}
+                                        >
+                                            Automático
+                                        </option>
+                                        <option
+                                            value="personalizado"
+                                            ${item.modo_precio === "personalizado" ? "selected" : ""}
+                                        >
+                                            Personalizado
+                                        </option>
+                                    </select>
+                                </label>
+
+                                <label class="editar-pedido-web-precio-personalizado ${item.modo_precio === "personalizado" ? "" : "oculto"}">
+                                    <span>Precio c/u</span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        data-campo="precio_personalizado"
+                                        data-producto-id="${item.producto_id}"
+                                        value="${precioPersonalizado}"
+                                    >
+                                </label>
+
+                                <label>
+                                    <span>Descuento</span>
+                                    <select
+                                        data-campo="descuento_tipo"
+                                        data-producto-id="${item.producto_id}"
+                                    >
+                                        <option value="" ${!descuentoTipo ? "selected" : ""}>
+                                            Sin descuento
+                                        </option>
+                                        <option value="porcentaje" ${descuentoTipo === "porcentaje" ? "selected" : ""}>
+                                            % por unidad
+                                        </option>
+                                        <option value="monto" ${descuentoTipo === "monto" ? "selected" : ""}>
+                                            $ por unidad
+                                        </option>
+                                    </select>
+                                </label>
+
+                                <label class="editar-pedido-web-descuento-valor ${descuentoTipo ? "" : "oculto"}">
+                                    <span>Valor</span>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        ${descuentoTipo === "porcentaje" ? 'max="100"' : ""}
+                                        data-campo="descuento_valor"
+                                        data-producto-id="${item.producto_id}"
+                                        value="${descuentoValor}"
+                                    >
+                                </label>
+
+                                <div class="editar-pedido-web-cantidad-bloque">
+                                    <span>Cantidad</span>
+
+                                    <div class="editar-pedido-web-item-cantidad">
+                                        <button
+                                            type="button"
+                                            data-accion="restar"
+                                            data-producto-id="${item.producto_id}"
+                                        >
+                                            −
+                                        </button>
+
+                                        <strong>${cantidad}</strong>
+
+                                        <button
+                                            type="button"
+                                            data-accion="sumar"
+                                            data-producto-id="${item.producto_id}"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="editar-pedido-web-item-pie">
+                                <small>
+                                    ${escaparHTML(
+                                        obtenerTextoDescuentoItemPedidoWeb(
+                                            item,
+                                            producto
+                                        )
+                                    )}
+                                </small>
+
+                                <strong
+                                    class="editar-pedido-web-item-subtotal"
+                                    data-producto-id="${item.producto_id}"
+                                >
+                                    ${formatearPrecio(precioFinal * cantidad)}
+                                </strong>
+                            </div>
+                        </div>
+                    `;
+                }
+            )
+            .join("");
+
+    actualizarResumenEdicionPedidoWeb();
+}
+
+
+function actualizarResumenEdicionPedidoWeb() {
+    const subtotal =
+        obtenerSubtotalEdicionPedidoWeb();
+
+    const descuentoGeneral =
+        obtenerDescuentoGeneralMontoPedidoWeb();
+
+    const total =
+        Math.max(0, subtotal - descuentoGeneral);
+
+    const subtotalElemento =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-subtotal");
+
+    const descuentoElemento =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-descuento-general-monto");
+
+    const totalElemento =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-total");
+
+    if (subtotalElemento) {
+        subtotalElemento.textContent =
+            formatearPrecio(subtotal);
+    }
+
+    if (descuentoElemento) {
+        descuentoElemento.textContent =
+            descuentoGeneral > 0
+                ? `- ${formatearPrecio(descuentoGeneral)}`
+                : formatearPrecio(0);
+    }
+
+    if (totalElemento) {
+        totalElemento.textContent =
+            formatearPrecio(total);
+    }
+
+    pedidoWebEdicionItemsGestion.forEach(
+        (item) => {
+            const producto =
+                obtenerProductoGestionPorIdPedidoWeb(
+                    item.producto_id
+                );
+
+            const precioFinal =
+                obtenerPrecioFinalEdicionPedidoWeb(
+                    item,
+                    producto
+                );
+
+            const subtotalItem =
+                precioFinal * (Number(item.cantidad) || 0);
+
+            const elemento =
+                modalEditarPedidoWebGestion
+                    ?.querySelector(
+                        `.editar-pedido-web-item-subtotal[data-producto-id="${item.producto_id}"]`
+                    );
+
+            if (elemento) {
+                elemento.textContent =
+                    formatearPrecio(subtotalItem);
+            }
+        }
+    );
+
+    const generalValor =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-descuento-general-valor");
+
+    if (generalValor) {
+        const normalizado =
+            normalizarDescuentoGeneralPedidoWeb();
+
+        if (
+            Number(generalValor.value || 0) !==
+            Number(normalizado.valor || 0)
+        ) {
+            generalValor.value =
+                String(normalizado.valor || 0);
+        }
+    }
+}
+
+
+function renderizarControlesDescuentoGeneralPedidoWeb() {
+    const select =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-descuento-general-tipo");
+
+    const input =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-descuento-general-valor");
+
+    const tipo =
+        pedidoWebDescuentoGeneralTipoGestion || "";
+
+    if (select) {
+        select.value = tipo;
+    }
+
+    if (input) {
+        input.disabled = !tipo;
+        input.value = String(
+            Number(pedidoWebDescuentoGeneralValorGestion) || 0
+        );
+
+        if (tipo === "porcentaje") {
+            input.max = "100";
+        } else {
+            input.removeAttribute("max");
+        }
+    }
+}
+
+
+function cambiarCampoItemEdicionPedidoWeb(
+    productoId,
+    campo,
+    valor,
+    volverARenderizar = true
+) {
+    const item =
+        pedidoWebEdicionItemsGestion.find(
+            (item) =>
+                Number(item.producto_id) ===
+                Number(productoId)
+        );
+
+    if (!item) return;
+
+    if (campo === "modo_precio") {
+        const nuevoModo =
+            valor === "personalizado"
+                ? "personalizado"
+                : "automatico";
+
+        if (
+            nuevoModo === "personalizado" &&
+            item.modo_precio !== "personalizado"
+        ) {
+            const producto =
+                obtenerProductoGestionPorIdPedidoWeb(
+                    item.producto_id
+                );
+
+            item.precio_personalizado =
+                obtenerPrecioBaseEdicionPedidoWeb(
+                    item,
+                    producto
+                );
+        }
+
+        item.modo_precio = nuevoModo;
+    }
+
+    if (campo === "precio_personalizado") {
+        item.precio_personalizado =
+            Math.max(0, Number(valor) || 0);
+    }
+
+    if (campo === "descuento_tipo") {
+        item.descuento_tipo =
+            ["porcentaje", "monto"].includes(valor)
+                ? valor
+                : null;
+
+        if (!item.descuento_tipo) {
+            item.descuento_valor = 0;
+        }
+    }
+
+    if (campo === "descuento_valor") {
+        item.descuento_valor =
+            Math.max(0, Number(valor) || 0);
+    }
+
+    limpiarMensaje(
+        modalEditarPedidoWebGestion
+            ?.querySelector("#mensaje-editar-pedido-web")
+    );
+
+    if (volverARenderizar) {
+        renderizarItemsEdicionPedidoWeb();
+    } else {
+        actualizarResumenEdicionPedidoWeb();
+    }
+}
+
+
+function renderizarResultadosBusquedaEdicionPedidoWeb() {
+    const contenedor =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-resultados");
+
+    if (!contenedor) return;
+
+    const termino =
+        String(pedidoWebEdicionBusquedaGestion || "")
+            .trim();
+
+    const normalizado =
+        typeof normalizarBusquedaProducto === "function"
+            ? normalizarBusquedaProducto(termino)
+            : termino.toLowerCase();
+
+    if (normalizado.length < 2) {
+        contenedor.classList.add("oculto");
+        contenedor.innerHTML = "";
+        return;
+    }
+
+    const resultados =
+        productosGestion
+            .filter((producto) => {
+                if (producto?.retirado === true) {
+                    return false;
+                }
+
+                if (producto?.activo === false) {
+                    return false;
+                }
+
+                const texto = [
+                    producto.nombre_mostrar,
+                    producto.marca_mostrar,
+                    producto.nombre,
+                    producto.slug
+                ]
+                    .filter(Boolean)
+                    .join(" ");
+
+                const textoNormalizado =
+                    typeof normalizarBusquedaProducto === "function"
+                        ? normalizarBusquedaProducto(texto)
+                        : texto.toLowerCase();
+
+                return textoNormalizado.includes(normalizado);
+            })
+            .slice(0, 8);
+
+    contenedor.classList.remove("oculto");
+
+    if (resultados.length === 0) {
+        contenedor.innerHTML = `
+            <div class="editar-pedido-web-resultado-vacio">
+                No encontramos productos.
+            </div>
+        `;
+        return;
+    }
+
+    contenedor.innerHTML =
+        resultados
+            .map(
+                (producto) => {
+                    const disponible =
+                        obtenerDisponibleEdicionPedidoWeb(
+                            producto.id
+                        );
+
+                    const sinStock =
+                        disponible <= 0;
+
+                    return `
+                        <button
+                            type="button"
+                            class="editar-pedido-web-resultado"
+                            data-producto-id="${producto.id}"
+                            ${sinStock ? "disabled" : ""}
+                        >
+                            <span>
+                                <strong>
+                                    ${escaparHTML(
+                                        producto.nombre_mostrar ||
+                                        producto.nombre ||
+                                        producto.slug ||
+                                        "Producto"
+                                    )}
+                                </strong>
+
+                                <small>
+                                    ${escaparHTML(
+                                        producto.marca_mostrar || ""
+                                    )}
+                                </small>
+                            </span>
+
+                            <b>
+                                ${
+                                    sinStock
+                                        ? "Sin stock"
+                                        : `Stock: ${disponible}`
+                                }
+                            </b>
+                        </button>
+                    `;
+                }
+            )
+            .join("");
+}
+
+
+function agregarProductoEdicionPedidoWeb(productoId) {
+    const producto =
+        obtenerProductoGestionPorIdPedidoWeb(
+            productoId
+        );
+
+    if (!producto) return;
+
+    const disponible =
+        obtenerDisponibleEdicionPedidoWeb(
+            productoId
+        );
+
+    const existente =
+        pedidoWebEdicionItemsGestion.find(
+            (item) =>
+                Number(item.producto_id) ===
+                Number(productoId)
+        );
+
+    const cantidadActual =
+        Number(existente?.cantidad) || 0;
+
+    if (cantidadActual >= disponible) {
+        mostrarMensaje(
+            modalEditarPedidoWebGestion
+                ?.querySelector("#mensaje-editar-pedido-web"),
+            "No hay más stock disponible para ese producto."
+        );
+        return;
+    }
+
+    if (existente) {
+        existente.cantidad += 1;
+    } else {
+        pedidoWebEdicionItemsGestion.push({
+            producto_id: Number(productoId),
+            nombre:
+                producto.nombre_mostrar ||
+                producto.nombre ||
+                producto.slug ||
+                "Producto",
+            cantidad: 1,
+            modo_precio: "automatico",
+            precio_personalizado: 0,
+            precio_base_guardado: 0,
+            tipo_precio_guardado: "",
+            descuento_tipo: null,
+            descuento_valor: 0,
+            existia_en_pedido: false
+        });
+    }
+
+    const buscador =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-buscador");
+
+    if (buscador) {
+        buscador.value = "";
+    }
+
+    pedidoWebEdicionBusquedaGestion = "";
+
+    modalEditarPedidoWebGestion
+        ?.querySelector("#editar-pedido-web-resultados")
+        ?.classList.add("oculto");
+
+    limpiarMensaje(
+        modalEditarPedidoWebGestion
+            ?.querySelector("#mensaje-editar-pedido-web")
+    );
+
+    renderizarItemsEdicionPedidoWeb();
+}
+
+
+function modificarCantidadEdicionPedidoWeb(
+    productoId,
+    accion
+) {
+    const indice =
+        pedidoWebEdicionItemsGestion.findIndex(
+            (item) =>
+                Number(item.producto_id) ===
+                Number(productoId)
+        );
+
+    if (indice < 0) return;
+
+    const item =
+        pedidoWebEdicionItemsGestion[indice];
+
+    if (accion === "sumar") {
+        const disponible =
+            obtenerDisponibleEdicionPedidoWeb(
+                productoId
+            );
+
+        if ((Number(item.cantidad) || 0) >= disponible) {
+            mostrarMensaje(
+                modalEditarPedidoWebGestion
+                    ?.querySelector("#mensaje-editar-pedido-web"),
+                "No hay más stock disponible para ese producto."
+            );
+            return;
+        }
+
+        item.cantidad += 1;
+    }
+
+    if (accion === "restar") {
+        item.cantidad -= 1;
+
+        if (item.cantidad <= 0) {
+            pedidoWebEdicionItemsGestion.splice(
+                indice,
+                1
+            );
+        }
+    }
+
+    if (accion === "eliminar") {
+        pedidoWebEdicionItemsGestion.splice(
+            indice,
+            1
+        );
+    }
+
+    limpiarMensaje(
+        modalEditarPedidoWebGestion
+            ?.querySelector("#mensaje-editar-pedido-web")
+    );
+
+    renderizarItemsEdicionPedidoWeb();
+}
+
+
+async function abrirEditarPedidoWebGestion(pedidoId) {
+    const pedidoLista =
+        pedidosWebGestion.find(
+            (item) =>
+                Number(item.pedido_id) ===
+                Number(pedidoId)
+        );
+
+    if (!pedidoLista) {
+        mostrarMensaje(
+            mensajePedidosWebGestion,
+            "No se pudo abrir el pedido."
+        );
+        return;
+    }
+
+    await cargarProductosGestion();
+
+    asegurarModalEditarPedidoWebGestion();
+
+    const mensaje =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#mensaje-editar-pedido-web");
+
+    limpiarMensaje(mensaje);
+
+    let pedido = pedidoLista;
+
+    try {
+        const { data, error } =
+            await supabaseClient.rpc(
+                "obtener_pedido_web_edicion",
+                {
+                    p_pedido_id: Number(pedidoId)
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        if (data && typeof data === "object") {
+            pedido = {
+                ...pedidoLista,
+                ...data,
+                pedido_id:
+                    Number(data.pedido_id) ||
+                    Number(pedidoId)
+            };
+        }
+    } catch (error) {
+        console.error(
+            "No se pudo cargar el detalle de edición del pedido:",
+            error
+        );
+
+        mostrarMensaje(
+            mensajePedidosWebGestion,
+            error?.message ||
+                "No se pudo cargar el pedido para editar."
+        );
+        return;
+    }
+
+    if (
+        String(pedido.medio_pago || "").toLowerCase() ===
+            "mercado_pago" ||
+        pedido.mp_preference_id
+    ) {
+        mostrarMensaje(
+            mensajePedidosWebGestion,
+            "Ese pedido ya está vinculado a Mercado Pago. Para cambiar productos o importes, cancelalo y generá uno nuevo."
+        );
+        return;
+    }
+
+    pedidoWebEditandoGestion = pedido;
+
+    pedidoWebEdicionItemsGestion =
+        (Array.isArray(pedido.items) ? pedido.items : [])
+            .map(
+                (item) => {
+                    const tipoGuardado =
+                        String(item.tipo_precio || "")
+                            .trim();
+
+                    const esPersonalizado =
+                        tipoGuardado.toLowerCase() ===
+                        "personalizado";
+
+                    const precioBase =
+                        Number(
+                            item.precio_unitario_original ??
+                            item.precio_unitario
+                        ) || 0;
+
+                    return {
+                        producto_id:
+                            Number(item.producto_id),
+                        nombre:
+                            item.nombre ||
+                            item.slug ||
+                            "Producto",
+                        cantidad:
+                            Number(item.cantidad) || 1,
+                        modo_precio:
+                            esPersonalizado
+                                ? "personalizado"
+                                : "automatico",
+                        precio_personalizado:
+                            esPersonalizado
+                                ? precioBase
+                                : 0,
+                        precio_base_guardado:
+                            precioBase,
+                        tipo_precio_guardado:
+                            tipoGuardado,
+                        descuento_tipo:
+                            item.descuento_tipo || null,
+                        descuento_valor:
+                            Number(item.descuento_valor) || 0,
+                        existia_en_pedido: true
+                    };
+                }
+            )
+            .filter(
+                (item) =>
+                    Number.isInteger(item.producto_id) &&
+                    item.producto_id > 0
+            );
+
+    pedidoWebDescuentoGeneralTipoGestion =
+        ["porcentaje", "monto"].includes(
+            String(
+                pedido.descuento_general_tipo || ""
+            ).toLowerCase()
+        )
+            ? String(
+                pedido.descuento_general_tipo
+            ).toLowerCase()
+            : null;
+
+    pedidoWebDescuentoGeneralValorGestion =
+        Math.max(
+            0,
+            Number(
+                pedido.descuento_general_valor
+            ) || 0
+        );
+
+    pedidoWebEdicionBusquedaGestion = "";
+
+    const info =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-info");
+
+    if (info) {
+        info.textContent =
+            `${pedido.codigo} · Total actual ${formatearPrecio(Number(pedido.total) || 0)}`;
+    }
+
+    const buscador =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#editar-pedido-web-buscador");
+
+    if (buscador) {
+        buscador.value = "";
+    }
+
+    renderizarControlesDescuentoGeneralPedidoWeb();
+    renderizarItemsEdicionPedidoWeb();
+    renderizarResultadosBusquedaEdicionPedidoWeb();
+
+    modalEditarPedidoWebGestion
+        ?.classList.remove("oculto");
+
+    setTimeout(
+        () => buscador?.focus(),
+        0
+    );
+}
+
+
+async function guardarEdicionPedidoWebGestion() {
+    if (!pedidoWebEditandoGestion) return;
+
+    if (pedidoWebEdicionItemsGestion.length === 0) {
+        mostrarMensaje(
+            modalEditarPedidoWebGestion
+                ?.querySelector("#mensaje-editar-pedido-web"),
+            "El pedido debe tener al menos un producto."
+        );
+        return;
+    }
+
+    const boton =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#guardar-editar-pedido-web");
+
+    const mensaje =
+        modalEditarPedidoWebGestion
+            ?.querySelector("#mensaje-editar-pedido-web");
+
+    const items = [];
+
+    for (const item of pedidoWebEdicionItemsGestion) {
+        const producto =
+            obtenerProductoGestionPorIdPedidoWeb(
+                item.producto_id
+            );
+
+        const precioBase =
+            obtenerPrecioBaseEdicionPedidoWeb(
+                item,
+                producto
+            );
+
+        const precioFinal =
+            obtenerPrecioFinalEdicionPedidoWeb(
+                item,
+                producto
+            );
+
+        if (!Number.isFinite(precioBase) || precioBase <= 0) {
+            mostrarMensaje(
+                mensaje,
+                `Ingresá un precio válido para ${
+                    producto?.nombre_mostrar ||
+                    item.nombre ||
+                    "el producto"
+                }.`
+            );
+            return;
+        }
+
+        const cantidad =
+            Number(item.cantidad) || 0;
+
+        if (!Number.isInteger(cantidad) || cantidad <= 0) {
+            mostrarMensaje(
+                mensaje,
+                "Todas las cantidades deben ser mayores a cero."
+            );
+            return;
+        }
+
+        const tipoAutomatico =
+            obtenerTipoPrecioAutomaticoEdicionPedidoWeb(
+                producto
+            );
+
+        const descuento =
+            normalizarDescuentoItemPedidoWeb(item);
+
+        items.push({
+            producto_id:
+                Number(item.producto_id),
+            nombre:
+                producto?.nombre_mostrar ||
+                item.nombre ||
+                producto?.nombre ||
+                producto?.slug ||
+                "Producto",
+            cantidad,
+            precio_unitario_original:
+                Number(precioBase),
+            precio_unitario:
+                Number(precioFinal),
+            tipo_precio:
+                item.modo_precio === "personalizado"
+                    ? "Personalizado"
+                    : tipoAutomatico,
+            descuento_tipo:
+                descuento.tipo || null,
+            descuento_valor:
+                Number(descuento.valor) || 0
+        });
+    }
+
+    const general =
+        normalizarDescuentoGeneralPedidoWeb();
+
+    if (boton) {
+        boton.disabled = true;
+        boton.textContent = "Guardando...";
+    }
+
+    try {
+        const { data, error } =
+            await supabaseClient.rpc(
+                "editar_pedido_web",
+                {
+                    p_pedido_id:
+                        Number(
+                            pedidoWebEditandoGestion.pedido_id
+                        ),
+                    p_items: items,
+                    p_descuento_general_tipo:
+                        general.tipo || null,
+                    p_descuento_general_valor:
+                        Number(general.valor) || 0
+                }
+            );
+
+        if (error) {
+            console.error(
+                "Error al editar pedido web:",
+                error
+            );
+
+            mostrarMensaje(
+                mensaje,
+                error.message ||
+                    "No se pudo editar el pedido."
+            );
+            return;
+        }
+
+        const codigo =
+            pedidoWebEditandoGestion.codigo;
+
+        cerrarEditarPedidoWebGestion();
+
+        await cargarProductosGestion();
+        renderizarStock();
+        await actualizarResumenGeneral();
+        await cargarPedidosWebGestion();
+
+        mostrarMensaje(
+            mensajePedidosWebGestion,
+            `${codigo} actualizado correctamente.`,
+            "exito"
+        );
+
+        return data;
+
+    } catch (error) {
+        console.error(error);
+
+        mostrarMensaje(
+            mensaje,
+            "No se pudo editar el pedido."
+        );
+
+    } finally {
+        if (boton) {
+            boton.disabled = false;
+            boton.textContent = "Guardar cambios";
+        }
+    }
+}
+
+
+pedidosWebListaGestion
+    ?.addEventListener(
+        "click",
+        (evento) => {
+            const botonEditar =
+                evento.target.closest(
+                    ".editar-pedido-web"
+                );
+
+            if (!botonEditar) return;
+
+            abrirEditarPedidoWebGestion(
+                Number(
+                    botonEditar.dataset.pedidoId
+                )
+            );
+        }
+    );
+
 
 
 // =========================================================
