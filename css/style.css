@@ -6829,3 +6829,219 @@ body[data-linea="inspiraciones"] .productos {
         height: 22px;
     }
 }
+
+/* =========================================================
+   RESERVA DE VISITA - SETMORE
+   ========================================================= */
+
+.reserva-visita {
+    padding: 72px 40px;
+    background: #050505;
+    scroll-margin-top: 150px;
+}
+
+.reserva-visita-card {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 30px;
+    padding: 34px 38px;
+    border: 1px solid rgba(212, 175, 55, 0.40);
+    border-radius: 22px;
+    background:
+        radial-gradient(circle at 0% 50%, rgba(212, 175, 55, 0.13), transparent 36%),
+        linear-gradient(135deg, #121212 0%, #0b0b0b 100%);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.32);
+}
+
+.reserva-visita-card::after {
+    content: "";
+    position: absolute;
+    top: -80px;
+    right: -70px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(212, 175, 55, 0.08);
+    filter: blur(8px);
+    pointer-events: none;
+}
+
+.reserva-visita-icono {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border: 1px solid rgba(212, 175, 55, 0.55);
+    border-radius: 18px;
+    background: rgba(212, 175, 55, 0.08);
+    color: #d4af37;
+}
+
+.reserva-visita-icono svg {
+    width: 36px;
+    height: 36px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.reserva-visita-contenido {
+    min-width: 0;
+}
+
+.reserva-visita-etiqueta {
+    display: inline-block;
+    margin-bottom: 8px;
+    color: #d4af37;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 1.8px;
+}
+
+.reserva-visita h2 {
+    margin: 0 0 8px;
+    color: #ffffff;
+    font-size: 30px;
+    line-height: 1.15;
+}
+
+.reserva-visita p {
+    max-width: 660px;
+    margin: 0;
+    color: #c8c8c8;
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.reserva-visita-accion {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.reserva-visita-boton {
+    min-width: 220px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 15px 20px;
+    border: 1px solid #d4af37;
+    border-radius: 12px;
+    background: #d4af37;
+    color: #090909;
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 800;
+    white-space: nowrap;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.reserva-visita-boton svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.reserva-visita-boton:hover {
+    transform: translateY(-2px);
+    background: #e2c458;
+    box-shadow: 0 10px 28px rgba(212, 175, 55, 0.20);
+}
+
+.reserva-visita-accion small {
+    color: #8f8f8f;
+    font-size: 11px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .reserva-visita {
+        padding: 28px 14px 50px;
+        scroll-margin-top: 115px;
+    }
+
+    .reserva-visita-card {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        padding: 26px 20px;
+        text-align: center;
+        border-radius: 18px;
+    }
+
+    .reserva-visita-icono {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto;
+        border-radius: 15px;
+    }
+
+    .reserva-visita-icono svg {
+        width: 31px;
+        height: 31px;
+    }
+
+    .reserva-visita-etiqueta {
+        margin-bottom: 7px;
+        font-size: 10px;
+        letter-spacing: 1.5px;
+    }
+
+    .reserva-visita h2 {
+        font-size: 25px;
+        line-height: 1.16;
+    }
+
+    .reserva-visita p {
+        margin: 0 auto;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .reserva-visita-accion {
+        width: 100%;
+    }
+
+    .reserva-visita-boton {
+        width: 100%;
+        min-width: 0;
+        padding: 14px 18px;
+        font-size: 14px;
+    }
+}
+
+
+
+/* ===== AJUSTE HOME: CATEGORÍAS + RESERVA DE VISITA ===== */
+/* Acerca la tarjeta de reserva a la sección de categorías sin alterar otras páginas. */
+.categorias:has(+ .reserva-visita) {
+    padding-bottom: 34px;
+}
+
+.categorias + .reserva-visita {
+    padding-top: 30px;
+}
+
+@media (max-width: 768px) {
+    .categorias:has(+ .reserva-visita) {
+        padding-bottom: 18px !important;
+    }
+
+    .categorias + .reserva-visita {
+        padding-top: 18px;
+    }
+}

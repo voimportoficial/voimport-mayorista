@@ -37,6 +37,7 @@
     <a href="#marcas">Marcas</a>
     <a href="catalogo.html">Catálogo</a>
     <a href="mayorista.html">Mayorista</a>
+    <a href="#reservar-visita">Reservar visita</a>
     <a href="#contacto">Contacto</a>
 
     <button class="boton-buscador" id="abrir-buscador" aria-label="Abrir buscador">
@@ -152,6 +153,51 @@
     <img src="images/scandal.PNG" alt="Inspiraciones de diseñador">
     <h3>Inspiraciones de diseñador</h3>
 </div>
+
+        </div>
+    </div>
+</section>
+
+
+<!-- RESERVA DE VISITA -->
+<section class="reserva-visita" id="reservar-visita">
+    <div class="container">
+        <div class="reserva-visita-card">
+
+            <div class="reserva-visita-icono" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                    <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+                    <line x1="8" y1="3" x2="8" y2="7"></line>
+                    <line x1="16" y1="3" x2="16" y2="7"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                    <path d="M8 15l2.2 2.2L16 13"></path>
+                </svg>
+            </div>
+
+            <div class="reserva-visita-contenido">
+                <span class="reserva-visita-etiqueta">VISITÁ NUESTRO LOCAL</span>
+                <h2>Reservá tu visita a Vo Import</h2>
+                <p>
+                    Elegí el día y horario que más te convenga para visitarnos
+                    y conocer nuestros perfumes en persona.
+                </p>
+            </div>
+
+            <div class="reserva-visita-accion">
+                <a
+                    href="https://voimport.setmore.com/book?step=time-slot&products=4796622b-4e0d-4c66-835f-2fdbe71434f4&type=service&staff=c5666017-3058-45b4-87e2-dd43cd7b558a&staffSelected=true"
+                    class="reserva-visita-boton"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <span>Reservar mi visita</span>
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M5 12h14"></path>
+                        <path d="m13 6 6 6-6 6"></path>
+                    </svg>
+                </a>
+                <small>Reserva online mediante Setmore</small>
+            </div>
 
         </div>
     </div>
@@ -369,6 +415,12 @@ const destinosGenerales = [
         categoria: "SECCIÓN",
         descripcion: "Explorá todas nuestras categorías",
         url: "#categorias"
+    },
+    {
+        titulo: "Reservar visita",
+        categoria: "SECCIÓN",
+        descripcion: "Elegí día y horario para visitar nuestro local",
+        url: "#reservar-visita"
     },
     {
         titulo: "Contacto",
