@@ -19492,6 +19492,34 @@ function calcularCostoUsdtProductoGestion() {
 
 const DESCUENTO_EFECTIVO_TRANSFERENCIA_GESTION = 20;
 
+// Inspiraciones de diseñador: los precios calculados se redondean
+// siempre hacia arriba al próximo múltiplo de $100.
+const REDONDEO_PRECIO_INSPIRACIONES_DISENADOR_GESTION = 100;
+
+function redondearPrecioInspiracionDisenadorGestion(
+    precio
+) {
+
+    const valor =
+        Number(precio);
+
+    if (
+        !Number.isFinite(valor) ||
+        valor < 0
+    ) {
+        return 0;
+    }
+
+    return (
+        Math.ceil(
+            valor /
+            REDONDEO_PRECIO_INSPIRACIONES_DISENADOR_GESTION
+        ) *
+        REDONDEO_PRECIO_INSPIRACIONES_DISENADOR_GESTION
+    );
+
+}
+
 function calcularPrecioListaDesdeEfectivoGestion(
     precioEfectivo
 ) {
@@ -19653,6 +19681,11 @@ function calcularPreciosProductoGestion() {
         );
 
 
+    const esInspiracionDisenador =
+        productoEditando?.categoria_mostrar ===
+        "inspiraciones-disenador";
+
+
     const redondeoDecant =
         Math.max(
             1,
@@ -19679,6 +19712,15 @@ function calcularPreciosProductoGestion() {
                     redondeoDecant
                 ) *
                 redondeoDecant
+            );
+
+        }
+
+
+        if (esInspiracionDisenador) {
+
+            return redondearPrecioInspiracionDisenadorGestion(
+                precioSinRedondear
             );
 
         }
@@ -25502,6 +25544,17 @@ function calcularPreciosNuevoProductoGestion() {
         return;
     }
 
+    const categoria =
+        String(nuevoProductoCategoriaGestion?.value || "");
+
+    const redondearPrecioCalculado =
+        (precio) =>
+            categoria === "inspiraciones-disenador"
+                ? redondearPrecioInspiracionDisenadorGestion(
+                    precio
+                )
+                : Math.round(precio);
+
     const markupMayoristaTexto =
         nuevoProductoMarkupMayoristaGestion?.value.trim() || "";
 
@@ -25512,7 +25565,9 @@ function calcularPreciosNuevoProductoGestion() {
         const markup = Number(markupMayoristaTexto);
         if (Number.isFinite(markup) && markup >= 0) {
             nuevoProductoPrecioMayoristaGestion.value =
-                Math.round(costo * (1 + markup / 100));
+                redondearPrecioCalculado(
+                    costo * (1 + markup / 100)
+                );
         }
     }
 
@@ -25520,7 +25575,9 @@ function calcularPreciosNuevoProductoGestion() {
         const markup = Number(markupMinoristaTexto);
         if (Number.isFinite(markup) && markup >= 0) {
             nuevoProductoPrecioMinoristaGestion.value =
-                Math.round(costo * (1 + markup / 100));
+                redondearPrecioCalculado(
+                    costo * (1 + markup / 100)
+                );
         }
     }
 }
@@ -37550,11 +37607,19 @@ function sincronizarParPrecioMasivoGestion(
             markup >= 0
         ) {
 
+            const precioCalculado =
+                costoReferencia *
+                (1 + markup / 100);
+
             campoPrecio.value =
-                Math.round(
-                    costoReferencia *
-                    (1 + markup / 100)
-                );
+                categoriaEdicionMasivaGestion?.value ===
+                "inspiraciones-disenador"
+                    ? redondearPrecioInspiracionDisenadorGestion(
+                        precioCalculado
+                    )
+                    : Math.round(
+                        precioCalculado
+                    );
 
             if (campoAyuda) {
                 campoAyuda.textContent =
@@ -38164,6 +38229,10 @@ function prepararPlanEdicionMasivaGestion() {
     const esDecant =
         categoriaMasivaEsDecantGestion();
 
+    const esInspiracionDisenador =
+        categoria.clave ===
+        "inspiraciones-disenador";
+
     const costoManualDato =
         obtenerNumeroOpcionalMasivoGestion(
             costoManualEdicionMasivaGestion
@@ -38473,6 +38542,15 @@ function prepararPlanEdicionMasivaGestion() {
                                 redondeoPrecioDecant
                             ) *
                             redondeoPrecioDecant
+                        );
+
+                    }
+
+
+                    if (esInspiracionDisenador) {
+
+                        return redondearPrecioInspiracionDisenadorGestion(
+                            precioSinRedondear
                         );
 
                     }
