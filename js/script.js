@@ -2116,11 +2116,60 @@ function crearPrecioCatalogo(producto) {
             producto.precioMinorista
         );
 
-    const bloqueMinorista = `
-        <div class="producto-precios-ordenados">
-            <div class="precio-efectivo-destacado">
-                <span class="precio-efectivo-etiqueta">
-                    20% OFF efectivo / transferencia
+    // Los productos sin precio mayorista (por ejemplo, decants)
+    // conservan el efectivo / transferencia como precio principal.
+    if (!regla.tieneMayorista) {
+        return `
+            <div class="producto-precios-ordenados">
+                <div class="precio-efectivo-destacado">
+                    <span class="precio-efectivo-etiqueta">
+                        20% OFF efectivo / transferencia
+                    </span>
+                    <strong>
+                        ${formatearPrecio(producto.precioMinorista)}
+                    </strong>
+                </div>
+
+                <div class="precio-secundario precio-tarjeta">
+                    <span class="precio-secundario-etiqueta">
+                        <svg
+                            class="icono-tarjeta-precio"
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                        >
+                            <rect x="2.5" y="5" width="19" height="14" rx="2.5"></rect>
+                            <path d="M2.5 9h19"></path>
+                            <path d="M6 15h4"></path>
+                        </svg>
+                        Mercado Pago 3 cuotas sin interés
+                    </span>
+                    <strong>
+                        ${formatearPrecio(precioLista)}
+                    </strong>
+                </div>
+            </div>
+        `;
+    }
+
+    // En productos con mayorista, el precio mayorista es el protagonista.
+    return `
+        <div class="producto-precios-ordenados producto-precios-con-mayorista">
+            <div class="precio-mayorista-destacado">
+                <span class="precio-mayorista-etiqueta">
+                    PRECIO MAYORISTA
+                </span>
+                <small>
+                    Desde 3 perfumes surtidos
+                </small>
+                <strong>
+                    ${formatearPrecio(producto.precioMayorista)}
+                </strong>
+            </div>
+
+            <div class="precio-secundario precio-efectivo-secundario">
+                <span class="precio-secundario-etiqueta">
+                    Minorista · 20% OFF<br>
+                    efectivo / transferencia
                 </span>
                 <strong>
                     ${formatearPrecio(producto.precioMinorista)}
@@ -2144,23 +2193,6 @@ function crearPrecioCatalogo(producto) {
                     ${formatearPrecio(precioLista)}
                 </strong>
             </div>
-        </div>
-    `;
-
-    if (!regla.tieneMayorista) {
-        return bloqueMinorista;
-    }
-
-    return `
-        ${bloqueMinorista}
-
-        <div class="precio-secundario precio-mayorista-nuevo">
-            <span class="precio-secundario-etiqueta">
-                Mayorista desde 3 surtidos
-            </span>
-            <strong>
-                ${formatearPrecio(producto.precioMayorista)}
-            </strong>
         </div>
     `;
 }
@@ -2447,9 +2479,12 @@ const nombreVisible =
         ? `${textoSuperior} ${producto.nombre}`
         : producto.nombre;
 
+const tieneMayorista =
+    obtenerReglaCategoria(producto.categoria).tieneMayorista;
+
 return `
     <div
-        class="producto-card"
+        class="producto-card${tieneMayorista ? " producto-card-con-mayorista" : ""}"
         data-slug="${escaparHTML(producto.slug)}"
     >
 

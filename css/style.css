@@ -7057,3 +7057,108 @@ body[data-linea="inspiraciones"] .productos {
         padding-top: 18px;
     }
 }
+
+/* =========================================================
+   TARJETAS DE PRODUCTO - JERARQUÍA MAYORISTA
+   Mayorista protagonista + minorista/MP secundarios.
+   No modifica carrito ni ficha individual.
+   ========================================================= */
+
+.producto-precios-con-mayorista {
+    gap: 7px;
+}
+
+.precio-mayorista-destacado {
+    width: 100%;
+    padding: 12px 13px;
+    box-sizing: border-box;
+    text-align: left;
+    border: 1.5px solid #d4af37;
+    border-radius: 12px;
+    background: linear-gradient(
+        135deg,
+        rgba(212, 175, 55, 0.22) 0%,
+        rgba(212, 175, 55, 0.08) 100%
+    );
+    box-shadow:
+        0 0 0 1px rgba(212, 175, 55, 0.08),
+        0 8px 20px rgba(0, 0, 0, 0.20),
+        0 0 18px rgba(212, 175, 55, 0.12);
+}
+
+.precio-mayorista-etiqueta {
+    display: block;
+    margin-bottom: 3px;
+    color: #f0cf5d;
+    font-size: 12px;
+    line-height: 1.15;
+    font-weight: 900;
+    letter-spacing: 0.7px;
+}
+
+.precio-mayorista-destacado small {
+    display: block;
+    margin-bottom: 5px;
+    color: #f4f4f4;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.precio-mayorista-destacado strong {
+    display: block;
+    color: #d4af37;
+    font-size: 25px;
+    line-height: 1.05;
+    font-weight: 900;
+    letter-spacing: -0.35px;
+}
+
+.precio-efectivo-secundario,
+.precio-efectivo-secundario .precio-secundario-etiqueta,
+.precio-efectivo-secundario strong {
+    color: #f2f2f2;
+}
+
+.precio-efectivo-secundario {
+    padding-top: 5px;
+}
+
+@media (max-width: 768px) {
+    .producto-precios-con-mayorista {
+        gap: 5px;
+        margin-top: 7px;
+    }
+
+    .precio-mayorista-destacado {
+        padding: 9px 9px;
+        border-radius: 9px;
+    }
+
+    .precio-mayorista-etiqueta {
+        font-size: 9px;
+        letter-spacing: 0.45px;
+    }
+
+    .precio-mayorista-destacado small {
+        margin-bottom: 4px;
+        font-size: 10px;
+    }
+
+    .precio-mayorista-destacado strong {
+        font-size: 21px;
+    }
+
+    .producto-precios-con-mayorista .precio-secundario {
+        padding: 2px 0;
+    }
+
+    .producto-precios-con-mayorista .precio-secundario-etiqueta {
+        font-size: 11px;
+    }
+
+    .producto-precios-con-mayorista .precio-secundario strong {
+        font-size: 13px;
+    }
+}
+
