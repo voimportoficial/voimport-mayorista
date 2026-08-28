@@ -3079,11 +3079,124 @@ ventaPagoInicial?.addEventListener(
 // RENDERIZAR ITEMS
 // ========================================
 
+function actualizarResumenCantidadVentaGestion() {
+
+    const resumenCantidad =
+        document.getElementById(
+            "venta-resumen-cantidad"
+        );
+
+    if (!resumenCantidad) {
+        return;
+    }
+
+    const productos =
+        itemsVentaActual.length;
+
+    const unidades =
+        itemsVentaActual.reduce(
+            (acumulado, item) =>
+                acumulado +
+                Math.max(
+                    0,
+                    Number(item.cantidad) || 0
+                ),
+            0
+        );
+
+    resumenCantidad.textContent =
+        `${productos} ${productos === 1 ? "producto" : "productos"} · ${unidades} ${unidades === 1 ? "unidad" : "unidades"}`;
+
+}
+
+
+function cambiarCantidadItemVentaGestion(
+    indice,
+    diferencia
+) {
+
+    const item =
+        itemsVentaActual[indice];
+
+    if (!item) {
+        return;
+    }
+
+    const cantidadActual =
+        Math.max(
+            1,
+            Number(item.cantidad) || 1
+        );
+
+    const nuevaCantidad =
+        cantidadActual +
+        Number(diferencia || 0);
+
+    if (nuevaCantidad < 1) {
+        return;
+    }
+
+    const esPresupuesto =
+        typeof modoPresupuestoGestion !==
+            "undefined" &&
+        modoPresupuestoGestion === true;
+
+    if (
+        diferencia > 0 &&
+        !esPresupuesto
+    ) {
+
+        const producto =
+            productosGestion.find(
+                (productoActual) =>
+                    Number(productoActual.id) ===
+                    Number(item.producto_id)
+            );
+
+        if (producto) {
+
+            const disponible =
+                typeof obtenerStockDisponibleParaAgregarGestion === "function"
+                    ? obtenerStockDisponibleParaAgregarGestion(
+                        producto
+                    )
+                    : Math.max(
+                        0,
+                        Number(producto.stock) || 0
+                    );
+
+            if (disponible < 1) {
+
+                mostrarMensaje(
+                    mensajeItemVenta,
+                    `No hay más stock disponible de ${item.nombre}.`
+                );
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    item.cantidad =
+        nuevaCantidad;
+
+    renderizarItemsVenta();
+
+    actualizarDatosProductoVenta();
+
+}
+
+
 function renderizarItemsVenta() {
 
     recalcularPreciosAutomaticos();
 
     normalizarDescuentosItemsGestion();
+
+    actualizarResumenCantidadVentaGestion();
 
     if (
         itemsVentaActual.length === 0
@@ -3101,8 +3214,17 @@ function renderizarItemsVenta() {
 
     }
 
-    ventaItemsContenedor.innerHTML =
-        itemsVentaActual
+    ventaItemsContenedor.innerHTML = `
+        <div class="venta-items-encabezado" aria-hidden="true">
+            <span>Producto</span>
+            <span>Cant.</span>
+            <span>Precio unit.</span>
+            <span>Descuento</span>
+            <span>Subtotal</span>
+            <span></span>
+        </div>
+
+        ${itemsVentaActual
             .map(
                 (item, indice) => {
 
@@ -3138,72 +3260,79 @@ function renderizarItemsVenta() {
                                 : "Sin descuento";
 
                     return `
-                        <div class="venta-item venta-item-con-descuento">
+                        <div class="venta-item venta-item-compacto">
 
-                            <div class="venta-item-info">
-
+                            <div class="venta-item-producto">
                                 <strong>
                                     ${escaparHTML(item.nombre)}
                                 </strong>
 
                                 <span>
-                                    ${item.cantidad}
-                                    ×
-                                    ${formatearPrecio(precioOriginal)}
-                                    ·
                                     ${escaparHTML(item.precio_aplicado)}
                                 </span>
-
-                                <div class="venta-item-descuento">
-
-                                    <label>
-                                        Descuento por unidad
-                                    </label>
-
-                                    <div class="venta-item-descuento-controles">
-
-                                        <select
-                                            class="venta-item-descuento-tipo"
-                                            data-indice="${indice}"
-                                            aria-label="Tipo de descuento"
-                                        >
-                                            <option value="" ${!item.descuento_tipo ? "selected" : ""}>
-                                                Sin descuento
-                                            </option>
-                                            <option value="porcentaje" ${item.descuento_tipo === "porcentaje" ? "selected" : ""}>
-                                                %
-                                            </option>
-                                            <option value="monto" ${item.descuento_tipo === "monto" ? "selected" : ""}>
-                                                $
-                                            </option>
-                                        </select>
-
-                                        <input
-                                            type="number"
-                                            min="0"
-                                            step="1"
-                                            class="venta-item-descuento-valor"
-                                            data-indice="${indice}"
-                                            value="${Number(item.descuento_valor) || 0}"
-                                            ${!item.descuento_tipo ? "disabled" : ""}
-                                            ${item.descuento_tipo === "porcentaje" ? 'max="100"' : ''}
-                                            aria-label="Valor del descuento por unidad"
-                                        >
-
-                                    </div>
-
-                                    <small>
-                                        ${detalleDescuento}
-                                        ${descuentoLinea > 0 ? ` · Descuento en esta línea: ${formatearPrecio(descuentoLinea)}` : ""}
-                                    </small>
-
-                                </div>
-
                             </div>
 
+                            <div class="venta-item-cantidad" aria-label="Cantidad">
+                                <button
+                                    type="button"
+                                    class="venta-item-cantidad-menos"
+                                    data-indice="${indice}"
+                                    aria-label="Restar una unidad"
+                                    ${Number(item.cantidad) <= 1 ? "disabled" : ""}
+                                >−</button>
 
-                            <div class="venta-item-derecha">
+                                <strong>${Number(item.cantidad) || 1}</strong>
 
+                                <button
+                                    type="button"
+                                    class="venta-item-cantidad-mas"
+                                    data-indice="${indice}"
+                                    aria-label="Sumar una unidad"
+                                >+</button>
+                            </div>
+
+                            <div class="venta-item-precio-unitario">
+                                <span>Precio unit.</span>
+                                <strong>${formatearPrecio(precioOriginal)}</strong>
+                            </div>
+
+                            <div class="venta-item-descuento venta-item-descuento-compacto">
+                                <div class="venta-item-descuento-controles">
+                                    <select
+                                        class="venta-item-descuento-tipo"
+                                        data-indice="${indice}"
+                                        aria-label="Tipo de descuento"
+                                    >
+                                        <option value="" ${!item.descuento_tipo ? "selected" : ""}>
+                                            Sin descuento
+                                        </option>
+                                        <option value="porcentaje" ${item.descuento_tipo === "porcentaje" ? "selected" : ""}>
+                                            %
+                                        </option>
+                                        <option value="monto" ${item.descuento_tipo === "monto" ? "selected" : ""}>
+                                            $
+                                        </option>
+                                    </select>
+
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        class="venta-item-descuento-valor"
+                                        data-indice="${indice}"
+                                        value="${Number(item.descuento_valor) || 0}"
+                                        ${!item.descuento_tipo ? "disabled" : ""}
+                                        ${item.descuento_tipo === "porcentaje" ? 'max="100"' : ''}
+                                        aria-label="Valor del descuento por unidad"
+                                    >
+                                </div>
+
+                                <small>
+                                    ${detalleDescuento}${descuentoLinea > 0 ? ` · -${formatearPrecio(descuentoLinea)}` : ""}
+                                </small>
+                            </div>
+
+                            <div class="venta-item-subtotal">
                                 ${
                                     descuentoLinea > 0
                                         ? `
@@ -3217,23 +3346,25 @@ function renderizarItemsVenta() {
                                 <strong>
                                     ${formatearPrecio(subtotalFinal)}
                                 </strong>
-
-                                <button
-                                    type="button"
-                                    class="eliminar-item-venta"
-                                    data-indice="${indice}"
-                                >
-                                    Eliminar
-                                </button>
-
                             </div>
+
+                            <button
+                                type="button"
+                                class="eliminar-item-venta"
+                                data-indice="${indice}"
+                                title="Eliminar producto"
+                                aria-label="Eliminar ${escaparHTML(item.nombre)}"
+                            >×</button>
 
                         </div>
                     `;
 
                 }
             )
-            .join("");
+            .join("")}
+    `;
+
+    actualizarResumenCantidadVentaGestion();
 
     actualizarTotalesVentaGestion();
 
@@ -3262,6 +3393,46 @@ function renderizarItemsVenta() {
 
                         actualizarDatosProductoVenta();
 
+                    }
+                );
+
+            }
+        );
+
+    document
+        .querySelectorAll(
+            ".venta-item-cantidad-menos"
+        )
+        .forEach(
+            (boton) => {
+
+                boton.addEventListener(
+                    "click",
+                    () => {
+                        cambiarCantidadItemVentaGestion(
+                            Number(boton.dataset.indice),
+                            -1
+                        );
+                    }
+                );
+
+            }
+        );
+
+    document
+        .querySelectorAll(
+            ".venta-item-cantidad-mas"
+        )
+        .forEach(
+            (boton) => {
+
+                boton.addEventListener(
+                    "click",
+                    () => {
+                        cambiarCantidadItemVentaGestion(
+                            Number(boton.dataset.indice),
+                            1
+                        );
                     }
                 );
 
@@ -3386,6 +3557,7 @@ function renderizarItemsVenta() {
         );
 
 }
+
 
 
 // ========================================

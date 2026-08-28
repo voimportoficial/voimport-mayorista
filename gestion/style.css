@@ -8610,3 +8610,490 @@ header .cerrar-venta:hover {
     }
 }
 
+
+
+/* =========================================================
+   VENTA / PRESUPUESTO - MODO COMPACTO DE ESCRITORIO
+   Misma lógica y funciones, mejor aprovechamiento horizontal.
+   ========================================================= */
+
+#seccion-venta {
+    width: min(1420px, calc(100vw - 46px));
+    max-width: none;
+    margin-left: 50%;
+    transform: translateX(-50%);
+}
+
+#seccion-venta .venta-encabezado {
+    margin-bottom: 14px;
+}
+
+#seccion-venta .venta-panel {
+    grid-template-columns: minmax(0, 1fr) minmax(330px, 390px);
+    gap: 14px;
+    align-items: start;
+}
+
+#seccion-venta .venta-formulario,
+#seccion-venta .venta-resumen {
+    padding: 16px;
+    border-radius: 12px;
+}
+
+#seccion-venta .venta-formulario {
+    min-width: 0;
+}
+
+#seccion-venta .venta-resumen {
+    position: sticky;
+    top: 84px;
+    max-height: calc(100vh - 104px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+#seccion-venta .venta-resumen-titulo {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e5eaf0;
+}
+
+#seccion-venta .venta-resumen-titulo span {
+    color: #172033;
+    font-size: 16px;
+    font-weight: 800;
+}
+
+#seccion-venta .venta-resumen-titulo small {
+    color: #64748b;
+    font-size: 10px;
+    text-align: right;
+}
+
+#seccion-venta .venta-buscador-rapido {
+    margin-bottom: 12px;
+}
+
+#seccion-venta #venta-buscador-producto {
+    min-height: 42px;
+}
+
+#seccion-venta .venta-formulario > .campo,
+#seccion-venta .venta-fila .campo {
+    margin-bottom: 10px;
+}
+
+#seccion-venta .venta-fila {
+    grid-template-columns: minmax(100px, .55fr) minmax(150px, 1fr);
+    gap: 10px;
+}
+
+#seccion-venta .venta-formulario .campo input,
+#seccion-venta .venta-formulario .campo select,
+#seccion-venta .venta-resumen .campo input,
+#seccion-venta .venta-resumen .campo select,
+#seccion-venta .venta-resumen .campo textarea {
+    min-height: 40px;
+    padding: 9px 10px;
+}
+
+#seccion-venta .venta-precio-preview {
+    margin: 2px 0 10px;
+    padding: 9px 11px;
+}
+
+#seccion-venta .agregar-item-venta {
+    min-height: 42px;
+    padding: 9px 12px;
+}
+
+#seccion-venta #mensaje-item-venta {
+    min-height: 14px;
+    margin-top: 7px;
+    margin-bottom: 5px;
+}
+
+#seccion-venta .venta-lista-cabecera {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 8px 0 8px;
+    padding-top: 12px;
+    border-top: 1px solid #e5eaf0;
+}
+
+#seccion-venta .venta-lista-cabecera h3 {
+    margin: 0 0 2px;
+    color: #172033;
+    font-size: 15px;
+}
+
+#seccion-venta .venta-lista-cabecera small {
+    display: block;
+    color: #64748b;
+    font-size: 10px;
+    line-height: 1.3;
+}
+
+#seccion-venta #venta-resumen-cantidad {
+    flex: 0 0 auto;
+    color: #2563eb;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+#seccion-venta .venta-items {
+    display: block;
+    margin-bottom: 0;
+    overflow-x: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #ffffff;
+}
+
+#seccion-venta .venta-vacia {
+    margin: 0;
+    padding: 18px;
+    border: 0 !important;
+    border-radius: 0;
+    text-align: center;
+}
+
+#seccion-venta .venta-items-encabezado,
+#seccion-venta .venta-item-compacto {
+    display: grid;
+    grid-template-columns:
+        minmax(210px, 2fr)
+        104px
+        minmax(110px, .8fr)
+        minmax(210px, 1.25fr)
+        minmax(105px, .8fr)
+        34px;
+    gap: 9px;
+    align-items: center;
+    min-width: 850px;
+}
+
+#seccion-venta .venta-items-encabezado {
+    padding: 7px 10px;
+    background: #eef4fb;
+    color: #475569;
+    border-bottom: 1px solid #dbe5f0;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .25px;
+}
+
+#seccion-venta .venta-item-compacto {
+    margin: 0;
+    padding: 8px 10px;
+    background: #ffffff !important;
+    border: 0 !important;
+    border-bottom: 1px solid #edf1f5 !important;
+    border-radius: 0;
+}
+
+#seccion-venta .venta-item-compacto:last-child {
+    border-bottom: 0 !important;
+}
+
+#seccion-venta .venta-item-producto,
+#seccion-venta .venta-item-precio-unitario,
+#seccion-venta .venta-item-subtotal {
+    min-width: 0;
+}
+
+#seccion-venta .venta-item-producto {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+#seccion-venta .venta-item-producto strong {
+    color: #172033;
+    font-size: 12px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#seccion-venta .venta-item-producto span {
+    color: #64748b;
+    font-size: 10px;
+}
+
+#seccion-venta .venta-item-cantidad {
+    display: grid;
+    grid-template-columns: 30px 34px 30px;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+
+#seccion-venta .venta-item-cantidad button {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    background: #ffffff;
+    color: #2563eb;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#seccion-venta .venta-item-cantidad button:hover:not(:disabled) {
+    background: #eff6ff;
+    border-color: #93c5fd;
+}
+
+#seccion-venta .venta-item-cantidad button:disabled {
+    color: #94a3b8;
+    background: #f8fafc;
+    cursor: not-allowed;
+}
+
+#seccion-venta .venta-item-cantidad > strong {
+    color: #172033;
+    font-size: 13px;
+    text-align: center;
+}
+
+#seccion-venta .venta-item-precio-unitario,
+#seccion-venta .venta-item-subtotal {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+#seccion-venta .venta-item-precio-unitario span {
+    display: none;
+}
+
+#seccion-venta .venta-item-precio-unitario strong,
+#seccion-venta .venta-item-subtotal strong {
+    color: #172033;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+#seccion-venta .venta-item-descuento {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+#seccion-venta .venta-item-descuento-controles {
+    display: grid;
+    grid-template-columns: minmax(105px, 1fr) 74px;
+    gap: 5px;
+}
+
+#seccion-venta .venta-item-descuento select,
+#seccion-venta .venta-item-descuento input {
+    min-height: 32px;
+    padding: 5px 7px;
+    border-radius: 7px;
+    font-size: 11px;
+}
+
+#seccion-venta .venta-item-descuento small {
+    margin-top: 3px;
+    color: #64748b;
+    font-size: 9px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#seccion-venta .venta-item-subtotal-original {
+    font-size: 9px;
+}
+
+#seccion-venta .eliminar-item-venta {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+    border-radius: 7px;
+    font-size: 19px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+#seccion-venta .eliminar-item-venta:hover {
+    background: #fef2f2;
+}
+
+#seccion-venta .venta-total {
+    margin: 0 0 10px;
+    padding: 12px;
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+    border-radius: 10px;
+}
+
+#seccion-venta .venta-total strong {
+    font-size: 22px;
+}
+
+#seccion-venta .venta-descuento-general {
+    margin: 0 0 10px;
+    padding: 11px;
+}
+
+#seccion-venta .venta-descuento-general-cabecera {
+    margin-bottom: 8px;
+}
+
+#seccion-venta .venta-descuento-general-controles {
+    grid-template-columns: 125px minmax(0, 1fr);
+    gap: 7px;
+}
+
+#seccion-venta .venta-descuento-general select,
+#seccion-venta .venta-descuento-general input {
+    min-height: 36px;
+    padding: 7px 8px;
+}
+
+#seccion-venta .venta-descuento-general-resumen {
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+#seccion-venta .venta-resumen > .campo {
+    margin-bottom: 10px;
+}
+
+#seccion-venta .venta-resumen .campo label {
+    margin-bottom: 5px;
+}
+
+#seccion-venta .venta-resumen .campo small {
+    margin-top: 4px;
+    font-size: 10px;
+}
+
+#seccion-venta .venta-resumen .campo textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+#seccion-venta .venta-cobro-resumen {
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+#seccion-venta .venta-cobro-resumen > div {
+    padding: 9px 10px;
+}
+
+#seccion-venta .confirmar-venta {
+    min-height: 44px;
+}
+
+#seccion-venta #mensaje-confirmar-venta {
+    min-height: 12px;
+    margin-top: 7px;
+}
+
+@media (max-width: 1050px) {
+    #seccion-venta {
+        width: 100%;
+        margin-left: 0;
+        transform: none;
+    }
+
+    #seccion-venta .venta-panel {
+        grid-template-columns: 1fr;
+    }
+
+    #seccion-venta .venta-resumen {
+        position: static;
+        max-height: none;
+        overflow: visible;
+    }
+}
+
+@media (max-width: 768px) {
+    #seccion-venta .venta-formulario,
+    #seccion-venta .venta-resumen {
+        padding: 12px;
+    }
+
+    #seccion-venta .venta-lista-cabecera {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    #seccion-venta .venta-items {
+        overflow: visible;
+        border: 0;
+        background: transparent;
+    }
+
+    #seccion-venta .venta-items-encabezado {
+        display: none;
+    }
+
+    #seccion-venta .venta-item-compacto {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 8px 12px;
+        min-width: 0;
+        margin-bottom: 8px;
+        padding: 11px;
+        border: 1px solid #e2e8f0 !important;
+        border-radius: 10px;
+    }
+
+    #seccion-venta .venta-item-producto {
+        grid-column: 1 / -1;
+    }
+
+    #seccion-venta .venta-item-cantidad {
+        grid-column: 1;
+        justify-content: start;
+    }
+
+    #seccion-venta .venta-item-precio-unitario {
+        grid-column: 2;
+        align-items: flex-end;
+    }
+
+    #seccion-venta .venta-item-precio-unitario span {
+        display: block;
+        color: #64748b;
+        font-size: 9px;
+    }
+
+    #seccion-venta .venta-item-descuento {
+        grid-column: 1 / -1;
+    }
+
+    #seccion-venta .venta-item-subtotal {
+        grid-column: 1;
+        justify-self: start;
+    }
+
+    #seccion-venta .eliminar-item-venta {
+        grid-column: 2;
+        justify-self: end;
+    }
+}
