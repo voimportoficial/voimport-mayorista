@@ -27440,6 +27440,1113 @@ buscarGastoGestion
     );
 
 // =========================================================
+// COMPRAS DE INSUMOS - REGISTRO E HISTORIAL
+// =========================================================
+
+const botonVerInsumosGestion =
+    document.getElementById(
+        "ver-insumos"
+    );
+
+const seccionInsumosGestion =
+    document.getElementById(
+        "seccion-insumos"
+    );
+
+const botonCerrarInsumosGestion =
+    document.getElementById(
+        "cerrar-insumos"
+    );
+
+const formInsumoGestion =
+    document.getElementById(
+        "form-insumo"
+    );
+
+const insumoFechaGestion =
+    document.getElementById(
+        "insumo-fecha"
+    );
+
+const insumoCategoriaGestion =
+    document.getElementById(
+        "insumo-categoria"
+    );
+
+const insumoConceptoGestion =
+    document.getElementById(
+        "insumo-concepto"
+    );
+
+const insumoMontoGestion =
+    document.getElementById(
+        "insumo-monto"
+    );
+
+const insumoMetodoPagoGestion =
+    document.getElementById(
+        "insumo-metodo-pago"
+    );
+
+const insumoObservacionesGestion =
+    document.getElementById(
+        "insumo-observaciones"
+    );
+
+const insumosFormTituloGestion =
+    document.getElementById(
+        "insumos-form-titulo"
+    );
+
+const botonGuardarInsumoGestion =
+    document.getElementById(
+        "guardar-insumo"
+    );
+
+const botonCancelarEdicionInsumoGestion =
+    document.getElementById(
+        "cancelar-edicion-insumo"
+    );
+
+const mensajeInsumoGestion =
+    document.getElementById(
+        "mensaje-insumo"
+    );
+
+const insumosListaGestion =
+    document.getElementById(
+        "insumos-lista"
+    );
+
+const insumosContadorGestion =
+    document.getElementById(
+        "insumos-contador"
+    );
+
+const buscarInsumoGestion =
+    document.getElementById(
+        "buscar-insumo"
+    );
+
+const insumosTotalMesGestion =
+    document.getElementById(
+        "insumos-total-mes"
+    );
+
+const insumosCantidadActivosGestion =
+    document.getElementById(
+        "insumos-cantidad-activos"
+    );
+
+let insumosGestion = [];
+let insumoEditandoIdGestion = null;
+
+
+// =========================================================
+// CERRAR INSUMOS JUNTO AL RESTO DE LAS SECCIONES
+// =========================================================
+
+const cerrarSeccionesGestionAntesInsumos =
+    cerrarSeccionesGestion;
+
+cerrarSeccionesGestion = function () {
+
+    cerrarSeccionesGestionAntesInsumos();
+
+    seccionInsumosGestion
+        ?.classList.add(
+            "oculto"
+        );
+
+};
+
+
+// =========================================================
+// UTILIDADES INSUMOS
+// =========================================================
+
+function establecerFechaInsumoActualGestion() {
+
+    if (!insumoFechaGestion) {
+        return;
+    }
+
+    insumoFechaGestion.value =
+        fechaLocalParaInputGestion(
+            new Date()
+        );
+
+}
+
+
+function obtenerFechaInsumoISOFormularioGestion() {
+
+    const valor =
+        insumoFechaGestion?.value;
+
+    if (!valor) {
+        return null;
+    }
+
+    const fecha =
+        new Date(valor);
+
+    if (
+        Number.isNaN(
+            fecha.getTime()
+        )
+    ) {
+        return null;
+    }
+
+    return fecha.toISOString();
+
+}
+
+
+function limpiarFormularioInsumoGestion() {
+
+    insumoEditandoIdGestion =
+        null;
+
+    formInsumoGestion?.reset();
+
+    establecerFechaInsumoActualGestion();
+
+    if (insumosFormTituloGestion) {
+        insumosFormTituloGestion.textContent =
+            "Registrar compra de insumos";
+    }
+
+    if (botonGuardarInsumoGestion) {
+        botonGuardarInsumoGestion.textContent =
+            "Registrar compra";
+    }
+
+    botonCancelarEdicionInsumoGestion
+        ?.classList.add(
+            "oculto"
+        );
+
+    limpiarMensaje(
+        mensajeInsumoGestion
+    );
+
+}
+
+
+function normalizarTextoInsumoGestion(
+    valor
+) {
+
+    return String(
+        valor || ""
+    )
+        .normalize("NFD")
+        .replace(
+            /[\u0300-\u036f]/g,
+            ""
+        )
+        .toLowerCase();
+
+}
+
+
+function insumoPerteneceMesActualGestion(
+    insumo
+) {
+
+    if (
+        insumo?.anulado ===
+        true
+    ) {
+        return false;
+    }
+
+    const fecha =
+        new Date(
+            insumo.fecha_insumo
+        );
+
+    if (
+        Number.isNaN(
+            fecha.getTime()
+        )
+    ) {
+        return false;
+    }
+
+    const hoy =
+        new Date();
+
+    return (
+        fecha.getFullYear() ===
+            hoy.getFullYear() &&
+        fecha.getMonth() ===
+            hoy.getMonth()
+    );
+
+}
+
+
+function actualizarResumenInsumosGestion() {
+
+    const activos =
+        insumosGestion.filter(
+            (insumo) =>
+                insumo.anulado !==
+                    true
+        );
+
+    const totalMes =
+        insumosGestion
+            .filter(
+                insumoPerteneceMesActualGestion
+            )
+            .reduce(
+                (total, insumo) =>
+                    total +
+                    (
+                        Number(
+                            insumo.monto
+                        ) || 0
+                    ),
+                0
+            );
+
+    if (insumosTotalMesGestion) {
+        insumosTotalMesGestion.textContent =
+            formatearPrecio(
+                totalMes
+            );
+    }
+
+    if (insumosCantidadActivosGestion) {
+        insumosCantidadActivosGestion.textContent =
+            String(
+                activos.length
+            );
+    }
+
+}
+
+
+function obtenerInsumosFiltradosGestion() {
+
+    const termino =
+        normalizarTextoInsumoGestion(
+            buscarInsumoGestion
+                ?.value
+                ?.trim() || ""
+        );
+
+    if (!termino) {
+        return insumosGestion;
+    }
+
+    return insumosGestion.filter(
+        (insumo) => {
+
+            const texto =
+                normalizarTextoInsumoGestion(
+                    [
+                        insumo.categoria,
+                        insumo.concepto,
+                        insumo.metodo_pago,
+                        insumo.observaciones
+                    ]
+                        .filter(Boolean)
+                        .join(" ")
+                );
+
+            return texto.includes(
+                termino
+            );
+
+        }
+    );
+
+}
+
+
+// =========================================================
+// CARGAR INSUMOS
+// =========================================================
+
+async function cargarInsumosGestion() {
+
+    if (!insumosListaGestion) {
+        return [];
+    }
+
+    insumosListaGestion.innerHTML = `
+        <p class="gastos-vacios">
+            Cargando compras de insumos...
+        </p>
+    `;
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("compras_insumos")
+                .select(`
+                    id,
+                    created_at,
+                    fecha_insumo,
+                    categoria,
+                    concepto,
+                    monto,
+                    metodo_pago,
+                    observaciones,
+                    anulado,
+                    anulado_at
+                `)
+                .order(
+                    "fecha_insumo",
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(200);
+
+        if (error) {
+            throw error;
+        }
+
+        insumosGestion =
+            Array.isArray(data)
+                ? data
+                : [];
+
+        actualizarResumenInsumosGestion();
+        renderizarInsumosGestion();
+
+        return insumosGestion;
+
+    } catch (error) {
+
+        console.error(
+            "Error al cargar compras de insumos:",
+            error
+        );
+
+        insumosGestion = [];
+        actualizarResumenInsumosGestion();
+
+        insumosListaGestion.innerHTML = `
+            <p class="gastos-vacios gastos-error">
+                No se pudieron cargar las compras de insumos.
+            </p>
+        `;
+
+        return [];
+
+    }
+
+}
+
+
+// =========================================================
+// RENDER INSUMOS
+// =========================================================
+
+function renderizarInsumosGestion() {
+
+    if (
+        !insumosListaGestion ||
+        !insumosContadorGestion
+    ) {
+        return;
+    }
+
+    const filtrados =
+        obtenerInsumosFiltradosGestion();
+
+    insumosContadorGestion.textContent =
+        `${insumosGestion.length} ${
+            insumosGestion.length === 1
+                ? "compra"
+                : "compras"
+        }`;
+
+    actualizarResumenInsumosGestion();
+
+    if (
+        insumosGestion.length ===
+        0
+    ) {
+
+        insumosListaGestion.innerHTML = `
+            <p class="gastos-vacios">
+                Todavía no registraste compras de insumos.
+            </p>
+        `;
+
+        return;
+
+    }
+
+    if (
+        filtrados.length ===
+        0
+    ) {
+
+        insumosListaGestion.innerHTML = `
+            <p class="gastos-vacios">
+                No encontramos compras con esa búsqueda.
+            </p>
+        `;
+
+        return;
+
+    }
+
+    insumosListaGestion.innerHTML =
+        filtrados
+            .map(
+                (insumo) => {
+
+                    const anulado =
+                        insumo.anulado ===
+                        true;
+
+                    return `
+                        <article class="gasto-card ${
+                            anulado
+                                ? "gasto-anulado"
+                                : ""
+                        }">
+
+                            <div class="gasto-card-superior">
+
+                                <div class="gasto-card-info">
+
+                                    <div class="gasto-card-titulo">
+
+                                        <strong>
+                                            ${escaparHTML(
+                                                insumo.concepto
+                                            )}
+                                        </strong>
+
+                                        ${
+                                            anulado
+                                                ? `
+                                                    <span class="gasto-estado-anulado">
+                                                        Anulado
+                                                    </span>
+                                                `
+                                                : `
+                                                    <span class="insumo-estado-capital">
+                                                        INSUMO
+                                                    </span>
+                                                `
+                                        }
+
+                                    </div>
+
+                                    <span class="gasto-categoria">
+                                        ${escaparHTML(
+                                            insumo.categoria
+                                        )}
+                                    </span>
+
+                                    <span class="gasto-fecha">
+                                        ${formatearFechaHora(
+                                            insumo.fecha_insumo
+                                        )}
+                                    </span>
+
+                                </div>
+
+                                <strong class="gasto-monto">
+                                    ${formatearPrecio(
+                                        insumo.monto
+                                    )}
+                                </strong>
+
+                            </div>
+
+                            <div class="gasto-card-detalles">
+
+                                <span>
+                                    Medio de pago:
+                                    <b>
+                                        ${
+                                            escaparHTML(
+                                                insumo.metodo_pago ||
+                                                "Sin especificar"
+                                            )
+                                        }
+                                    </b>
+                                </span>
+
+                                <span>
+                                    Impacto:
+                                    <b>
+                                        Capital para reinvertir, no gasto.
+                                    </b>
+                                </span>
+
+                                ${
+                                    insumo.observaciones
+                                        ? `
+                                            <span>
+                                                Observación:
+                                                <b>
+                                                    ${escaparHTML(
+                                                        insumo.observaciones
+                                                    )}
+                                                </b>
+                                            </span>
+                                        `
+                                        : ""
+                                }
+
+                            </div>
+
+                            ${
+                                !anulado
+                                    ? `
+                                        <div class="gasto-card-acciones">
+
+                                            <button
+                                                type="button"
+                                                class="editar-gasto editar-insumo"
+                                                data-insumo-id="${insumo.id}"
+                                            >
+                                                Editar
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                class="anular-gasto anular-insumo"
+                                                data-insumo-id="${insumo.id}"
+                                            >
+                                                Anular
+                                            </button>
+
+                                        </div>
+                                    `
+                                    : `
+                                        <div class="gasto-anulado-aviso">
+                                            Esta compra anulada no afecta el capital para reinvertir.
+                                        </div>
+                                    `
+                            }
+
+                        </article>
+                    `;
+
+                }
+            )
+            .join("");
+
+    insumosListaGestion
+        .querySelectorAll(
+            ".editar-insumo"
+        )
+        .forEach(
+            (boton) => {
+
+                boton.addEventListener(
+                    "click",
+                    () => {
+
+                        cargarInsumoEnFormularioGestion(
+                            Number(
+                                boton.dataset.insumoId
+                            )
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+    insumosListaGestion
+        .querySelectorAll(
+            ".anular-insumo"
+        )
+        .forEach(
+            (boton) => {
+
+                boton.addEventListener(
+                    "click",
+                    async () => {
+
+                        await anularInsumoGestion(
+                            Number(
+                                boton.dataset.insumoId
+                            )
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+// =========================================================
+// EDITAR INSUMO
+// =========================================================
+
+function cargarInsumoEnFormularioGestion(
+    insumoId
+) {
+
+    const insumo =
+        insumosGestion.find(
+            (item) =>
+                Number(item.id) ===
+                Number(insumoId)
+        );
+
+    if (
+        !insumo ||
+        insumo.anulado === true
+    ) {
+        return;
+    }
+
+    insumoEditandoIdGestion =
+        Number(insumo.id);
+
+    insumoFechaGestion.value =
+        fechaLocalParaInputGestion(
+            insumo.fecha_insumo
+        );
+
+    insumoCategoriaGestion.value =
+        insumo.categoria || "";
+
+    insumoConceptoGestion.value =
+        insumo.concepto || "";
+
+    insumoMontoGestion.value =
+        Number(
+            insumo.monto
+        ) || "";
+
+    insumoMetodoPagoGestion.value =
+        insumo.metodo_pago || "";
+
+    insumoObservacionesGestion.value =
+        insumo.observaciones || "";
+
+    insumosFormTituloGestion.textContent =
+        `Editar compra #${insumo.id}`;
+
+    botonGuardarInsumoGestion.textContent =
+        "Guardar cambios";
+
+    botonCancelarEdicionInsumoGestion
+        ?.classList.remove(
+            "oculto"
+        );
+
+    limpiarMensaje(
+        mensajeInsumoGestion
+    );
+
+    seccionInsumosGestion
+        ?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    setTimeout(
+        () => {
+            insumoConceptoGestion
+                ?.focus();
+        },
+        250
+    );
+
+}
+
+
+// =========================================================
+// GUARDAR INSUMO
+// =========================================================
+
+formInsumoGestion
+    ?.addEventListener(
+        "submit",
+        async (evento) => {
+
+            evento.preventDefault();
+
+            limpiarMensaje(
+                mensajeInsumoGestion
+            );
+
+            const fechaISO =
+                obtenerFechaInsumoISOFormularioGestion();
+
+            const categoria =
+                insumoCategoriaGestion
+                    ?.value
+                    ?.trim() || "";
+
+            const concepto =
+                insumoConceptoGestion
+                    ?.value
+                    ?.trim() || "";
+
+            const monto =
+                Number(
+                    insumoMontoGestion
+                        ?.value
+                );
+
+            const metodoPago =
+                insumoMetodoPagoGestion
+                    ?.value
+                    ?.trim() || null;
+
+            const observaciones =
+                insumoObservacionesGestion
+                    ?.value
+                    ?.trim() || null;
+
+            if (!fechaISO) {
+
+                mostrarMensaje(
+                    mensajeInsumoGestion,
+                    "Elegí una fecha válida."
+                );
+
+                return;
+
+            }
+
+            if (
+                !categoria ||
+                !concepto
+            ) {
+
+                mostrarMensaje(
+                    mensajeInsumoGestion,
+                    "Completá la categoría y el concepto."
+                );
+
+                return;
+
+            }
+
+            if (
+                !Number.isFinite(
+                    monto
+                ) ||
+                monto <= 0
+            ) {
+
+                mostrarMensaje(
+                    mensajeInsumoGestion,
+                    "Ingresá un monto mayor a cero."
+                );
+
+                return;
+
+            }
+
+            const estabaEditando =
+                insumoEditandoIdGestion !==
+                null;
+
+            botonGuardarInsumoGestion.disabled =
+                true;
+
+            botonGuardarInsumoGestion.textContent =
+                estabaEditando
+                    ? "Guardando..."
+                    : "Registrando...";
+
+            try {
+
+                const resultado =
+                    estabaEditando
+                        ? await supabaseClient.rpc(
+                            "editar_insumo",
+                            {
+                                p_insumo_id:
+                                    insumoEditandoIdGestion,
+                                p_fecha_insumo:
+                                    fechaISO,
+                                p_categoria:
+                                    categoria,
+                                p_concepto:
+                                    concepto,
+                                p_monto:
+                                    monto,
+                                p_metodo_pago:
+                                    metodoPago,
+                                p_observaciones:
+                                    observaciones
+                            }
+                        )
+                        : await supabaseClient.rpc(
+                            "registrar_insumo",
+                            {
+                                p_fecha_insumo:
+                                    fechaISO,
+                                p_categoria:
+                                    categoria,
+                                p_concepto:
+                                    concepto,
+                                p_monto:
+                                    monto,
+                                p_metodo_pago:
+                                    metodoPago,
+                                p_observaciones:
+                                    observaciones
+                            }
+                        );
+
+                const {
+                    data,
+                    error
+                } =
+                    resultado;
+
+                if (error) {
+                    throw error;
+                }
+
+                limpiarFormularioInsumoGestion();
+
+                await cargarInsumosGestion();
+                await actualizarResumenGeneral();
+
+                mostrarMensaje(
+                    mensajeInsumoGestion,
+                    estabaEditando
+                        ? `Compra #${data} actualizada correctamente.`
+                        : `Compra #${data} registrada correctamente.`,
+                    "exito"
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "Error al guardar compra de insumos:",
+                    error
+                );
+
+                mostrarMensaje(
+                    mensajeInsumoGestion,
+                    error?.message ||
+                    "No se pudo guardar la compra de insumos."
+                );
+
+            } finally {
+
+                botonGuardarInsumoGestion.disabled =
+                    false;
+
+                if (
+                    insumoEditandoIdGestion ===
+                    null
+                ) {
+                    botonGuardarInsumoGestion.textContent =
+                        "Registrar compra";
+                } else {
+                    botonGuardarInsumoGestion.textContent =
+                        "Guardar cambios";
+                }
+
+            }
+
+        }
+    );
+
+
+// =========================================================
+// ANULAR INSUMO
+// =========================================================
+
+async function anularInsumoGestion(
+    insumoId
+) {
+
+    const insumo =
+        insumosGestion.find(
+            (item) =>
+                Number(item.id) ===
+                Number(insumoId)
+        );
+
+    if (
+        !insumo ||
+        insumo.anulado === true
+    ) {
+        return;
+    }
+
+    const confirmar =
+        window.confirm(
+            `¿Anular la compra "${insumo.concepto}" por ${formatearPrecio(insumo.monto)}?`
+        );
+
+    if (!confirmar) {
+        return;
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.rpc(
+                "anular_insumo",
+                {
+                    p_insumo_id:
+                        Number(insumoId)
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        if (
+            Number(
+                insumoEditandoIdGestion
+            ) ===
+            Number(
+                insumoId
+            )
+        ) {
+            limpiarFormularioInsumoGestion();
+        }
+
+        await cargarInsumosGestion();
+        await actualizarResumenGeneral();
+
+        mostrarMensaje(
+            mensajeInsumoGestion,
+            `Compra #${data} anulada correctamente.`,
+            "exito"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Error al anular compra de insumos:",
+            error
+        );
+
+        mostrarMensaje(
+            mensajeInsumoGestion,
+            error?.message ||
+            "No se pudo anular la compra de insumos."
+        );
+
+    }
+
+}
+
+
+// =========================================================
+// ABRIR / CERRAR INSUMOS
+// =========================================================
+
+async function abrirInsumosGestion() {
+
+    if (
+        typeof ventaEditandoIdGestion !==
+            "undefined" &&
+        ventaEditandoIdGestion !==
+            null &&
+        typeof salirModoEdicionVentaGestion ===
+            "function"
+    ) {
+        salirModoEdicionVentaGestion(
+            true
+        );
+    }
+
+    if (
+        typeof modoPresupuestoGestion !==
+            "undefined" &&
+        modoPresupuestoGestion ===
+            true &&
+        typeof salirModoPresupuestoGestion ===
+            "function"
+    ) {
+        salirModoPresupuestoGestion(
+            true
+        );
+    }
+
+    cerrarSeccionesGestion();
+
+    seccionInsumosGestion
+        ?.classList.remove(
+            "oculto"
+        );
+
+    limpiarFormularioInsumoGestion();
+
+    await cargarInsumosGestion();
+
+    setTimeout(
+        () => {
+
+            seccionInsumosGestion
+                ?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+        },
+        40
+    );
+
+}
+
+
+botonVerInsumosGestion
+    ?.addEventListener(
+        "click",
+        abrirInsumosGestion
+    );
+
+botonCerrarInsumosGestion
+    ?.addEventListener(
+        "click",
+        () => {
+            seccionInsumosGestion
+                ?.classList.add(
+                    "oculto"
+                );
+        }
+    );
+
+botonCancelarEdicionInsumoGestion
+    ?.addEventListener(
+        "click",
+        limpiarFormularioInsumoGestion
+    );
+
+buscarInsumoGestion
+    ?.addEventListener(
+        "input",
+        renderizarInsumosGestion
+    );
+
+
+// =========================================================
 // RETIROS + INGRESOS EXTRA + APORTES
 // =========================================================
 
@@ -29031,6 +30138,7 @@ calcularDisponibleRetirarGestion =
             gananciaCobrada: 0,
             perdidasVenta: 0,
             totalReposiciones: 0,
+            totalInsumos: 0,
             totalGastos: 0,
             totalRetiros: 0,
             totalExtras: 0,
@@ -29134,7 +30242,8 @@ calcularDisponibleRetirarGestion =
             resultadoGastos,
             resultadoRetiros,
             resultadoIngresos,
-            resultadoReposiciones
+            resultadoReposiciones,
+            resultadoInsumos
         ] =
             await Promise.all([
 
@@ -29213,6 +30322,22 @@ calcularDisponibleRetirarGestion =
                     .gte(
                         "created_at",
                         fechaInicioISO
+                    ),
+
+                supabaseClient
+                    .from("compras_insumos")
+                    .select(`
+                        monto,
+                        fecha_insumo,
+                        anulado
+                    `)
+                    .gte(
+                        "fecha_insumo",
+                        fechaInicioISO
+                    )
+                    .eq(
+                        "anulado",
+                        false
                     )
 
             ]);
@@ -29223,7 +30348,8 @@ calcularDisponibleRetirarGestion =
             resultadoGastos.error ||
             resultadoRetiros.error ||
             resultadoIngresos.error ||
-            resultadoReposiciones.error;
+            resultadoReposiciones.error ||
+            resultadoInsumos.error;
 
 
         if (errorGeneral) {
@@ -29946,6 +31072,50 @@ calcularDisponibleRetirarGestion =
 
 
         // =====================================================
+        // COMPRAS DE INSUMOS CAPITALIZABLES
+        // =====================================================
+
+        const insumosCapitalizables =
+            Array.isArray(
+                resultadoInsumos.data
+            )
+                ? resultadoInsumos.data
+                : [];
+
+        const totalInsumos =
+            insumosCapitalizables.reduce(
+                (total, insumo) =>
+                    total +
+                    (
+                        Number(
+                            insumo.monto
+                        ) || 0
+                    ),
+                0
+            );
+
+        insumosCapitalizables.forEach(
+            (insumo) => {
+
+                agregarEvento(
+                    insumo.fecha_insumo,
+                    "insumo",
+                    {
+                        monto:
+                            Math.max(
+                                0,
+                                Number(
+                                    insumo.monto
+                                ) || 0
+                            )
+                    }
+                );
+
+            }
+        );
+
+
+        // =====================================================
         // REPOSICIONES
         // =====================================================
 
@@ -30020,8 +31190,9 @@ calcularDisponibleRetirarGestion =
             extra: 2,
             aporte: 3,
             reposicion: 4,
-            gasto: 5,
-            retiro: 6
+            insumo: 5,
+            gasto: 6,
+            retiro: 7
         };
 
 
@@ -30475,7 +31646,9 @@ calcularDisponibleRetirarGestion =
 
                 if (
                     evento.tipo ===
-                    "reposicion"
+                    "reposicion" ||
+                    evento.tipo ===
+                    "insumo"
                 ) {
 
                     aplicarReposicion(
@@ -30560,6 +31733,7 @@ calcularDisponibleRetirarGestion =
             perdidasVenta,
 
             totalReposiciones,
+            totalInsumos,
             totalGastos,
             totalRetiros,
             totalExtras,
@@ -30615,6 +31789,15 @@ async function calcularCapitalParaReinvertirGestion(
                 Number(
                     resultadoDisponible
                         .totalReposiciones
+                ) || 0
+            ),
+
+        totalInsumos:
+            Math.max(
+                0,
+                Number(
+                    resultadoDisponible
+                        .totalInsumos
                 ) || 0
             ),
 
@@ -30781,7 +31964,7 @@ actualizarResumenGeneral =
                     );
 
                 capitalReinversionGestion.title =
-                    "Capital recuperado de productos vendidos que todavía está disponible para volver a comprar mercadería.";
+                    "Capital recuperado de productos vendidos que todavía está disponible para reponer mercadería o comprar insumos incluidos en el costo.";
 
             }
 
@@ -31423,7 +32606,8 @@ async function obtenerPeriodosConActividadGestion() {
         ventasResultado,
         gastosResultado,
         retirosResultado,
-        ingresosResultado
+        ingresosResultado,
+        insumosResultado
     ] =
         await Promise.all([
 
@@ -31469,6 +32653,17 @@ async function obtenerPeriodosConActividadGestion() {
                 .eq(
                     "anulado",
                     false
+                ),
+
+            supabaseClient
+                .from("compras_insumos")
+                .select(`
+                    fecha_insumo,
+                    anulado
+                `)
+                .eq(
+                    "anulado",
+                    false
                 )
 
         ]);
@@ -31477,7 +32672,8 @@ async function obtenerPeriodosConActividadGestion() {
         ventasResultado.error ||
         gastosResultado.error ||
         retirosResultado.error ||
-        ingresosResultado.error;
+        ingresosResultado.error ||
+        insumosResultado.error;
 
     if (error) {
         throw error;
@@ -31530,6 +32726,11 @@ async function obtenerPeriodosConActividadGestion() {
     agregar(
         ingresosResultado.data,
         "fecha_ingreso"
+    );
+
+    agregar(
+        insumosResultado.data,
+        "fecha_insumo"
     );
 
     return Array.from(periodos)
@@ -36630,6 +37831,7 @@ const idsPantallasGestion = [
     "seccion-pedidos-web",
     "seccion-reposicion",
     "seccion-gastos",
+    "seccion-insumos",
     "seccion-dinero",
     "seccion-cierres-mensuales"
 ];

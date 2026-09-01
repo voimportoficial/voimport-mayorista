@@ -5283,7 +5283,8 @@ section h2 {
     font-size: 21px;
 }
 
-#gastos-total-mes {
+#gastos-total-mes,
+#insumos-total-mes {
     color: #2563eb;
 }
 
@@ -5357,7 +5358,8 @@ section h2 {
     font-size: 12px;
 }
 
-#buscar-gasto {
+#buscar-gasto,
+#buscar-insumo {
     width: min(260px, 100%);
     min-height: 42px;
     padding: 10px 12px;
@@ -5368,7 +5370,8 @@ section h2 {
     outline: none;
 }
 
-#buscar-gasto:focus {
+#buscar-gasto:focus,
+#buscar-insumo:focus {
     border-color: #2563eb;
 }
 
@@ -5506,6 +5509,17 @@ section h2 {
     text-transform: uppercase;
 }
 
+.insumo-estado-capital {
+    padding: 3px 7px;
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.08);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
 .gasto-anulado-aviso {
     margin-top: 11px;
     color: #dc2626;
@@ -5562,7 +5576,8 @@ section h2 {
         flex-direction: column;
     }
 
-    #buscar-gasto {
+    #buscar-gasto,
+    #buscar-insumo {
         width: 100%;
     }
 

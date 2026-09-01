@@ -378,6 +378,14 @@
                         <button
                             type="button"
                             class="gestion-menu-accion"
+                            id="ver-insumos"
+                        >
+                            Compras de insumos
+                        </button>
+
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
                             id="ver-dinero"
                         >
                             Retiros e ingresos
@@ -421,7 +429,7 @@
         <span>Capital para reinvertir</span>
         <strong id="capital-reinversion">$ 0</strong>
         <small class="resumen-reinversion-ayuda">
-            Dinero reservado para volver a comprar mercadería.
+            Dinero reservado para reponer mercadería e insumos incluidos en el costo.
         </small>
     </article>
 
@@ -1363,7 +1371,7 @@
                 <div class="gastos-aviso">
                     <strong>Importante</strong>
                     <span>
-                        Las compras de perfumes y los costos que ya forman parte de una reposición no se cargan acá.
+                        Las compras de mercadería y los insumos que ya están incluidos en el costo de un producto se cargan por separado.
                     </span>
                 </div>
 
@@ -1435,7 +1443,7 @@
                                     </option>
 
                                     <option value="Insumos y embalaje">
-                                        Insumos y embalaje
+                                        Insumos / embalaje no incluidos en costo
                                     </option>
 
                                     <option value="Envíos y logística">
@@ -1618,6 +1626,297 @@
 
                             <p class="gastos-vacios">
                                 Cargando gastos...
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- ========================================
+                 COMPRAS DE INSUMOS
+                 ======================================== -->
+
+            <section
+                class="seccion-gastos seccion-insumos oculto"
+                id="seccion-insumos"
+            >
+
+                <div class="gastos-encabezado">
+
+                    <div>
+
+                        <h2>
+                            Compras de insumos
+                        </h2>
+
+                        <p>
+                            Registrá insumos cuyo valor ya está incluido en el costo de los productos que vendés.
+                        </p>
+
+                    </div>
+
+                    <button
+                        type="button"
+                        class="cerrar-gastos"
+                        id="cerrar-insumos"
+                    >
+                        Cerrar
+                    </button>
+
+                </div>
+
+
+                <div class="gastos-aviso">
+                    <strong>Cómo impacta</strong>
+                    <span>
+                        No se descuenta de la ganancia como un gasto. Usa primero el capital para reinvertir y queda registrado como compra de insumos.
+                    </span>
+                </div>
+
+
+                <div class="gastos-resumen">
+
+                    <article>
+                        <span>Compras de insumos del mes</span>
+                        <strong id="insumos-total-mes">$ 0</strong>
+                    </article>
+
+                    <article>
+                        <span>Registros activos</span>
+                        <strong id="insumos-cantidad-activos">0</strong>
+                    </article>
+
+                </div>
+
+
+                <div class="gastos-panel">
+
+                    <div class="gastos-formulario">
+
+                        <h3 id="insumos-form-titulo">
+                            Registrar compra de insumos
+                        </h3>
+
+                        <form id="form-insumo">
+
+                            <div class="campo">
+
+                                <label for="insumo-fecha">
+                                    Fecha
+                                </label>
+
+                                <input
+                                    type="datetime-local"
+                                    id="insumo-fecha"
+                                    step="60"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="insumo-categoria">
+                                    Categoría
+                                </label>
+
+                                <select
+                                    id="insumo-categoria"
+                                    required
+                                >
+
+                                    <option value="">
+                                        Seleccionar categoría
+                                    </option>
+
+                                    <option value="Frascos para decants">
+                                        Frascos para decants
+                                    </option>
+
+                                    <option value="Atomizadores y tapas">
+                                        Atomizadores y tapas
+                                    </option>
+
+                                    <option value="Etiquetas">
+                                        Etiquetas
+                                    </option>
+
+                                    <option value="Packaging incluido en costo">
+                                        Packaging incluido en costo
+                                    </option>
+
+                                    <option value="Materia prima">
+                                        Materia prima
+                                    </option>
+
+                                    <option value="Otros insumos incluidos en costo">
+                                        Otros insumos incluidos en costo
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="insumo-concepto">
+                                    Concepto
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="insumo-concepto"
+                                    placeholder="Ej: 500 frascos vacíos de decant"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="insumo-monto">
+                                    Monto
+                                </label>
+
+                                <input
+                                    type="number"
+                                    id="insumo-monto"
+                                    min="1"
+                                    step="1"
+                                    placeholder="Ej: 84000"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="insumo-metodo-pago">
+                                    Medio de pago
+                                </label>
+
+                                <select id="insumo-metodo-pago">
+
+                                    <option value="">
+                                        Sin especificar
+                                    </option>
+
+                                    <option value="Efectivo">
+                                        Efectivo
+                                    </option>
+
+                                    <option value="Transferencia">
+                                        Transferencia
+                                    </option>
+
+                                    <option value="Mercado Pago">
+                                        Mercado Pago
+                                    </option>
+
+                                    <option value="Tarjeta">
+                                        Tarjeta
+                                    </option>
+
+                                    <option value="Dólares">
+                                        Dólares
+                                    </option>
+
+                                    <option value="USDT">
+                                        USDT
+                                    </option>
+
+                                    <option value="Otro">
+                                        Otro
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div class="campo">
+
+                                <label for="insumo-observaciones">
+                                    Observaciones
+                                </label>
+
+                                <textarea
+                                    id="insumo-observaciones"
+                                    rows="3"
+                                    placeholder="Opcional"
+                                ></textarea>
+
+                            </div>
+
+
+                            <div class="gastos-form-botones">
+
+                                <button
+                                    type="submit"
+                                    class="guardar-gasto"
+                                    id="guardar-insumo"
+                                >
+                                    Registrar compra
+                                </button>
+
+                                <button
+                                    type="button"
+                                    class="cancelar-edicion-gasto oculto"
+                                    id="cancelar-edicion-insumo"
+                                >
+                                    Cancelar edición
+                                </button>
+
+                            </div>
+
+
+                            <p
+                                class="venta-mensaje"
+                                id="mensaje-insumo"
+                            ></p>
+
+                        </form>
+
+                    </div>
+
+
+                    <div class="gastos-historial">
+
+                        <div class="gastos-historial-superior">
+
+                            <div>
+                                <h3>Historial</h3>
+                                <span id="insumos-contador">
+                                    0 compras
+                                </span>
+                            </div>
+
+                            <input
+                                type="search"
+                                id="buscar-insumo"
+                                placeholder="Buscar compra..."
+                                autocomplete="off"
+                            >
+
+                        </div>
+
+
+                        <div
+                            class="gastos-lista"
+                            id="insumos-lista"
+                        >
+
+                            <p class="gastos-vacios">
+                                Cargando compras de insumos...
                             </p>
 
                         </div>
