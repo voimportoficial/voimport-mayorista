@@ -3293,7 +3293,17 @@ function renderizarItemsVenta() {
 
                             <div class="venta-item-precio-unitario">
                                 <span>Precio unit.</span>
-                                <strong>${formatearPrecio(precioOriginal)}</strong>
+                                <div class="venta-item-precio-editor">
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        class="venta-item-precio-input"
+                                        data-indice="${indice}"
+                                        value="${Math.round(precioOriginal)}"
+                                        aria-label="Precio unitario de ${escaparHTML(item.nombre)}"
+                                    >
+                                </div>
                             </div>
 
                             <div class="venta-item-descuento venta-item-descuento-compacto">
@@ -3438,6 +3448,78 @@ function renderizarItemsVenta() {
 
             }
         );
+
+    document
+        .querySelectorAll(
+            ".venta-item-precio-input"
+        )
+        .forEach(
+            (input) => {
+
+                input.addEventListener(
+                    "change",
+                    () => {
+
+                        const indice =
+                            Number(
+                                input.dataset.indice
+                            );
+
+                        const item =
+                            itemsVentaActual[indice];
+
+                        if (!item) {
+                            return;
+                        }
+
+                        const precio =
+                            Number(
+                                input.value
+                            );
+
+                        if (
+                            input.value === "" ||
+                            !Number.isFinite(precio) ||
+                            precio < 0
+                        ) {
+
+                            input.value =
+                                String(
+                                    Math.round(
+                                        obtenerPrecioOriginalItemGestion(
+                                            item
+                                        )
+                                    )
+                                );
+
+                            return;
+                        }
+
+                        // Al editar el precio directamente desde el item,
+                        // ese producto deja de seguir el precio automático.
+                        item.tipo_precio =
+                            "personalizado";
+
+                        item.precio_unitario_original =
+                            precio;
+
+                        item.precio_aplicado =
+                            "Personalizado";
+
+                        aplicarDescuentoItemGestion(
+                            item
+                        );
+
+                        renderizarItemsVenta();
+
+                        actualizarDatosProductoVenta();
+
+                    }
+                );
+
+            }
+        );
+
 
     document
         .querySelectorAll(
