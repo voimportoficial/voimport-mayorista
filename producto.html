@@ -188,27 +188,41 @@
         const precioLista = obtenerPrecioListaDetalle(producto.precioMinorista);
         const tieneMayorista = producto.categoria !== "decants";
 
-        contenedor.innerHTML = `
-            <div class="detalle-precio-efectivo">
-                <span>20% OFF efectivo / transferencia</span>
-                <strong>${formatearPrecioLocal(producto.precioMinorista)}</strong>
-            </div>
-
-            <div class="detalle-precio-secundario detalle-precio-tarjeta">
-                <span class="detalle-precio-etiqueta">
-                    ${iconoTarjetaDetalle()}
-                    Mercado Pago 3 cuotas sin interés
-                </span>
-                <strong>${formatearPrecioLocal(precioLista)}</strong>
-            </div>
-
-            ${tieneMayorista ? `
-                <div class="detalle-precio-secundario detalle-precio-mayorista">
-                    <span class="detalle-precio-etiqueta">Mayorista desde 3 surtidos</span>
+        contenedor.innerHTML = tieneMayorista
+            ? `
+                <div class="detalle-precio-mayorista-principal">
+                    <span class="detalle-mayorista-titulo">PRECIO MAYORISTA</span>
+                    <small>Desde 3 perfumes surtidos</small>
                     <strong>${formatearPrecioLocal(producto.precioMayorista)}</strong>
                 </div>
-            ` : ""}
-        `;
+
+                <div class="detalle-precio-secundario detalle-precio-minorista">
+                    <span class="detalle-precio-etiqueta">Minorista · 20% OFF efectivo / transferencia</span>
+                    <strong>${formatearPrecioLocal(producto.precioMinorista)}</strong>
+                </div>
+
+                <div class="detalle-precio-secundario detalle-precio-tarjeta">
+                    <span class="detalle-precio-etiqueta">
+                        ${iconoTarjetaDetalle()}
+                        Mercado Pago · 3 cuotas sin interés
+                    </span>
+                    <strong>${formatearPrecioLocal(precioLista)}</strong>
+                </div>
+            `
+            : `
+                <div class="detalle-precio-efectivo">
+                    <span>20% OFF efectivo / transferencia</span>
+                    <strong>${formatearPrecioLocal(producto.precioMinorista)}</strong>
+                </div>
+
+                <div class="detalle-precio-secundario detalle-precio-tarjeta">
+                    <span class="detalle-precio-etiqueta">
+                        ${iconoTarjetaDetalle()}
+                        Mercado Pago · 3 cuotas sin interés
+                    </span>
+                    <strong>${formatearPrecioLocal(precioLista)}</strong>
+                </div>
+            `;
     }
 
     function crearSlugMarca(marca) {

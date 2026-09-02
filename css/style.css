@@ -5862,6 +5862,7 @@ body[data-linea="inspiraciones"] .productos {
     margin: 0 0 14px;
 }
 
+.detalle-precio-mayorista-principal,
 .detalle-precio-efectivo {
     width: 100%;
     padding: 13px 15px;
@@ -5873,17 +5874,33 @@ body[data-linea="inspiraciones"] .productos {
     text-align: left;
 }
 
+.detalle-precio-mayorista-principal {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.detalle-precio-mayorista-principal .detalle-mayorista-titulo,
 .detalle-precio-efectivo span {
     display: block;
-    margin-bottom: 4px;
     color: #d4af37;
     font-size: 15px;
     line-height: 1.25;
-    font-weight: 800;
+    font-weight: 850;
 }
 
+.detalle-precio-mayorista-principal small {
+    display: block;
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.detalle-precio-mayorista-principal strong,
 .detalle-precio-efectivo strong {
     display: block;
+    margin-top: 4px;
     color: #d4af37;
     font-size: 27px;
     line-height: 1.08;
@@ -5896,7 +5913,7 @@ body[data-linea="inspiraciones"] .productos {
     justify-content: space-between;
     gap: 16px;
     width: 100%;
-    padding: 6px 2px;
+    padding: 7px 2px;
     box-sizing: border-box;
 }
 
@@ -5918,19 +5935,19 @@ body[data-linea="inspiraciones"] .productos {
     white-space: nowrap;
 }
 
+.detalle-precio-minorista,
+.detalle-precio-minorista .detalle-precio-etiqueta,
+.detalle-precio-minorista strong {
+    color: #ffffff;
+}
+
 .detalle-precio-tarjeta,
 .detalle-precio-tarjeta .detalle-precio-etiqueta,
 .detalle-precio-tarjeta strong {
     color: #55c985;
 }
 
-.detalle-precio-mayorista,
-.detalle-precio-mayorista .detalle-precio-etiqueta,
-.detalle-precio-mayorista strong {
-    color: #ffffff;
-}
-
-.detalle-precio-mayorista {
+.detalle-precio-tarjeta {
     padding-top: 9px;
     border-top: 1px solid rgba(255, 255, 255, 0.10);
 }
@@ -5947,14 +5964,21 @@ body[data-linea="inspiraciones"] .productos {
         margin-bottom: 12px;
     }
 
+    .detalle-precio-mayorista-principal,
     .detalle-precio-efectivo {
         padding: 11px 13px;
     }
 
+    .detalle-precio-mayorista-principal .detalle-mayorista-titulo,
     .detalle-precio-efectivo span {
         font-size: 14px;
     }
 
+    .detalle-precio-mayorista-principal small {
+        font-size: 13px;
+    }
+
+    .detalle-precio-mayorista-principal strong,
     .detalle-precio-efectivo strong {
         font-size: 24px;
     }
@@ -5972,7 +5996,6 @@ body[data-linea="inspiraciones"] .productos {
         height: 17px;
     }
 }
-
 
 /* =========================================================
    DETALLE DE PRODUCTO - BANDERITA 20% OFF DIAGONAL IZQUIERDA

@@ -2744,30 +2744,47 @@ function actualizarFichaIndividual() {
         );
 
     if (bloquePreciosDetalle) {
-        bloquePreciosDetalle.innerHTML = `
-            <div class="detalle-precio-efectivo">
-                <span>20% OFF efectivo / transferencia</span>
-                <strong>${formatearPrecio(producto.precioMinorista)}</strong>
-            </div>
-
-            <div class="detalle-precio-secundario detalle-precio-tarjeta">
-                <span class="detalle-precio-etiqueta">
-                    <svg class="icono-tarjeta-precio" viewBox="0 0 24 24" aria-hidden="true">
-                        <rect x="3" y="6" width="18" height="12" rx="2"></rect>
-                        <path d="M3 10h18"></path>
-                    </svg>
-                    Mercado Pago 3 cuotas sin interés
-                </span>
-                <strong>${formatearPrecio(precioLista)}</strong>
-            </div>
-
-            ${regla.tieneMayorista ? `
-                <div class="detalle-precio-secundario detalle-precio-mayorista">
-                    <span class="detalle-precio-etiqueta">Mayorista desde ${regla.minimoMayorista} surtidos</span>
+        bloquePreciosDetalle.innerHTML = regla.tieneMayorista
+            ? `
+                <div class="detalle-precio-mayorista-principal">
+                    <span class="detalle-mayorista-titulo">PRECIO MAYORISTA</span>
+                    <small>Desde ${regla.minimoMayorista} perfumes surtidos</small>
                     <strong>${formatearPrecio(producto.precioMayorista)}</strong>
                 </div>
-            ` : ""}
-        `;
+
+                <div class="detalle-precio-secundario detalle-precio-minorista">
+                    <span class="detalle-precio-etiqueta">Minorista · 20% OFF efectivo / transferencia</span>
+                    <strong>${formatearPrecio(producto.precioMinorista)}</strong>
+                </div>
+
+                <div class="detalle-precio-secundario detalle-precio-tarjeta">
+                    <span class="detalle-precio-etiqueta">
+                        <svg class="icono-tarjeta-precio" viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="6" width="18" height="12" rx="2"></rect>
+                            <path d="M3 10h18"></path>
+                        </svg>
+                        Mercado Pago · 3 cuotas sin interés
+                    </span>
+                    <strong>${formatearPrecio(precioLista)}</strong>
+                </div>
+            `
+            : `
+                <div class="detalle-precio-efectivo">
+                    <span>20% OFF efectivo / transferencia</span>
+                    <strong>${formatearPrecio(producto.precioMinorista)}</strong>
+                </div>
+
+                <div class="detalle-precio-secundario detalle-precio-tarjeta">
+                    <span class="detalle-precio-etiqueta">
+                        <svg class="icono-tarjeta-precio" viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="6" width="18" height="12" rx="2"></rect>
+                            <path d="M3 10h18"></path>
+                        </svg>
+                        Mercado Pago · 3 cuotas sin interés
+                    </span>
+                    <strong>${formatearPrecio(precioLista)}</strong>
+                </div>
+            `;
     }
 
     let stockDetalle = document.querySelector(
