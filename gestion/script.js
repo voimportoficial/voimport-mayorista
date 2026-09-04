@@ -25149,9 +25149,12 @@ if (!modalNuevoProductoGestion) {
                             <input
                                 type="text"
                                 id="nuevo-producto-nombre"
-                                placeholder="Ej: 9 PM Elixir"
+                                placeholder="Ej: Momento"
                                 required
                             >
+                            <small>
+                                Escribí solo el nombre/modelo. La marca se agrega automáticamente.
+                            </small>
                         </div>
 
                         <div class="campo">
@@ -26026,11 +26029,33 @@ formNuevoProductoGestion?.addEventListener(
 
         evento.preventDefault();
 
-        const nombre =
+        const nombreIngresado =
             nuevoProductoNombreGestion?.value.trim() || "";
 
         const marca =
             nuevoProductoMarcaGestion?.value.trim() || "";
+
+        const nombreIngresadoNormalizado =
+            nombreIngresado
+                .toLocaleLowerCase("es-AR")
+                .replace(/\s+/g, " ")
+                .trim();
+
+        const marcaNormalizada =
+            marca
+                .toLocaleLowerCase("es-AR")
+                .replace(/\s+/g, " ")
+                .trim();
+
+        // En Gestión guardamos el nombre con formato "Marca + Producto".
+        // Si el usuario ya escribió la marca al principio, no la duplicamos.
+        const nombre =
+            nombreIngresadoNormalizado === marcaNormalizada ||
+            nombreIngresadoNormalizado.startsWith(
+                `${marcaNormalizada} `
+            )
+                ? nombreIngresado
+                : `${marca} ${nombreIngresado}`.trim();
 
         const categoria =
             String(nuevoProductoCategoriaGestion?.value || "");
@@ -26069,7 +26094,7 @@ formNuevoProductoGestion?.addEventListener(
             categoria === "perfumes-grandes" ||
             categoria === "maison-30ml";
 
-        if (!nombre || !marca || !categoria) {
+        if (!nombreIngresado || !marca || !categoria) {
             mostrarMensaje(
                 mensajeNuevoProductoGestion,
                 "Completá nombre, marca y categoría."
