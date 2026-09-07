@@ -55,6 +55,7 @@ try {
 
 let catalogoActualizado = [];
 let productosSupabasePorSlug = new Map();
+let productosSupabasePorClave = new Map();
 let carrito = cargarCarritoGuardado();
 
 
@@ -1903,9 +1904,34 @@ async function cargarDatosDesdeSupabase() {
     }
 }
 
+function normalizarClaveProductoWeb(valor) {
+    return String(valor ?? "")
+        .trim()
+        .toLocaleLowerCase("es-AR")
+        .replace(/\s+/g, " ");
+}
+
+function obtenerClaveCoincidenciaProductoWeb(producto) {
+    return [
+        normalizarClaveProductoWeb(producto?.nombre),
+        normalizarClaveProductoWeb(producto?.marca),
+        normalizarClaveProductoWeb(producto?.categoria),
+        normalizarClaveProductoWeb(producto?.linea)
+    ].join("|");
+}
+
+
 function combinarProductoConSupabase(productoLocal) {
-    const slug = obtenerSlug(productoLocal);
-    const remoto = productosSupabasePorSlug.get(slug);
+    const slugLocal = obtenerSlug(productoLocal);
+    const claveCoincidencia =
+        obtenerClaveCoincidenciaProductoWeb(productoLocal);
+
+    const remoto =
+        productosSupabasePorSlug.get(slugLocal) ||
+        productosSupabasePorClave.get(claveCoincidencia);
+
+    const slug =
+        String(remoto?.slug || slugLocal).trim();
 
     const precioMinoristaLocal =
         numeroValido(productoLocal.precioMinorista) || 0;
@@ -2510,7 +2536,7 @@ return `
 
 
         <a
-            href="producto.html?slug=${encodeURIComponent(producto.id)}"
+            href="producto.html?slug=${encodeURIComponent(producto.slug)}"
             class="boton-producto"
         >
             Ver producto
@@ -4724,6 +4750,15 @@ async function iniciarAplicacion() {
             .map((producto) => [producto.slug, producto])
     );
 
+    productosSupabasePorClave = new Map(
+        datosSupabase
+            .map((producto) => [
+                obtenerClaveCoincidenciaProductoWeb(producto),
+                producto
+            ])
+            .filter(([clave]) => clave && clave !== "|||")
+    );
+
     const productosLocales =
         typeof productos !== "undefined" &&
         Array.isArray(productos)
@@ -5433,7 +5468,7 @@ if (
 
                     return `
                         <a
-                            href="producto.html?slug=${encodeURIComponent(producto.id)}"
+                            href="producto.html?slug=${encodeURIComponent(producto.slug)}"
                             class="catalogo-resultado-item"
                         >
 

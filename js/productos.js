@@ -2524,6 +2524,31 @@ const productos = [
     recomendacion:
         "Ideal para quienes buscan una fragancia masculina fresca, tropical y veraniega. Perfecta para playa, calor, salidas diurnas o vacaciones, gracias a su mezcla de frutas jugosas, notas acuáticas y un fondo dulce ambarado con excelente duración."
 },
+
+{
+    id: "riiffs-momento",
+    nombre: "Riiffs Momento",
+    marca: "Riiffs",
+    categoria: "perfumes-grandes",
+    imagen: "images/riiffs-momento.PNG",
+    precioMinorista: 101840,
+    precioMayorista: 75040,
+    stock: 3,
+    presentacion: "Extrait de Parfum · 100 ml · Unisex",
+
+    descripcion:
+        "Fragancia unisex intensa, dulce y oriental, con un perfil amaderado especiado que combina azafrán, rosa, oud y una base cálida de caramelo y maderas. La apertura mezcla azúcar, azafrán y mandarina, creando una salida dulce, especiada y luminosa. En el corazón aparecen el haba tonka, la rosa de Damasco y la madera de oud, aportando profundidad, elegancia y un carácter oriental muy marcado. El fondo de caramelo, Amberwood y cedro deja una estela cálida, envolvente y persistente, ideal para quienes buscan una fragancia con mucha presencia.",
+
+    notasSalida: "Azúcar, azafrán y mandarina.",
+    notasCorazon: "Haba tonka, rosa de Damasco y madera de oud.",
+    notasFondo: "Caramelo, Amberwood y cedro.",
+
+    inspiracion:
+        "Inspirado en el estilo de Montale Arabians Tonka, con un perfil dulce, especiado, rosado y amaderado de gran intensidad.",
+
+    recomendacion:
+        "Ideal para noches, salidas, citas, eventos y climas frescos. Recomendado si buscás una fragancia dulce, oriental y potente, con mucha presencia y una estela marcada."
+},
 {
     id: "maison-alhambra-alive-now-30ml",
     nombre: "Maison Alhambra Alive Now",
@@ -4782,6 +4807,24 @@ const productos = [
     notasFondo: "Ámbar, almizcle, maderas suaves",
     inspiracion: "Inspirado en creaciones tipo Versace Eros Energy y la vibra tropical de fragancias como Dolce & Gabbana Light Blue Sun, con un perfil frutal-acuático dulce muy similar. Destaca por su combinación de frutas tropicales, notas marinas limpias y un fondo ambarado moderno y seductor.",
     recomendacion: "Ideal para quienes buscan una fragancia masculina fresca, tropical y veraniega. Perfecta para playa, calor, salidas diurnas o vacaciones, gracias a su mezcla de frutas jugosas, notas acuáticas y un fondo dulce ambarado con excelente duración."
+},
+
+{
+    id: "decant-riiffs-momento",
+    nombre: "Riiffs Momento",
+    marca: "Riiffs",
+    categoria: "decants",
+    imagen: "images/decant-riiffs-momento.PNG",
+    precioMinorista: 7000,
+    precioMayorista: 7000,
+    stock: 0,
+    presentacion: "Extrait de Parfum · 5 ML · Unisex",
+    descripcion: "Fragancia unisex intensa, dulce y oriental, con un perfil amaderado especiado que combina azafrán, rosa, oud y una base cálida de caramelo y maderas. La apertura mezcla azúcar, azafrán y mandarina, seguida por un corazón de haba tonka, rosa de Damasco y oud. El fondo de caramelo, Amberwood y cedro deja una estela cálida, envolvente y persistente.",
+    notasSalida: "Azúcar, azafrán y mandarina.",
+    notasCorazon: "Haba tonka, rosa de Damasco y madera de oud.",
+    notasFondo: "Caramelo, Amberwood y cedro.",
+    inspiracion: "Inspirado en el estilo de Montale Arabians Tonka, con un perfil dulce, especiado, rosado y amaderado de gran intensidad.",
+    recomendacion: "Ideal para probar Riiffs Momento antes de comprar el frasco completo o para llevarlo siempre con vos. Perfecto para noches, salidas y climas frescos."
 },
 {
     id: "decant-maison-alhambra-alive-now-30ml",
