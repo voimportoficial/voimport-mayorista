@@ -15488,11 +15488,13 @@ function obtenerPresentacionProductoGestion(
 ) {
 
     const categoria =
+        productoSupabase?.categoria ||
         productoLocal?.categoria ||
         "";
 
 
     const linea =
+        productoSupabase?.linea ||
         productoLocal?.linea ||
         "";
 
