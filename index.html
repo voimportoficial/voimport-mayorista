@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="images/favicon.PNG">
 
-    <title>Vo Import</title>
+    <title>Mireka Perfumería</title>
 
     <link rel="stylesheet" href="css/style.css">
 
@@ -110,6 +110,196 @@
             }
         }
     </style>
+
+    <style>
+        /* =========================================
+           CARRUSEL INFORMATIVO HOME
+           ========================================= */
+        .explora-home {
+            padding: 42px 0 34px;
+            overflow: hidden;
+        }
+
+        .explora-home-encabezado {
+            text-align: center;
+            margin-bottom: 22px;
+            padding: 0 18px;
+        }
+
+        .explora-home-etiqueta {
+            display: inline-block;
+            margin-bottom: 7px;
+            color: #d7ad2f;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .explora-home-encabezado h2 {
+            margin: 0;
+            font-size: clamp(24px, 3vw, 34px);
+        }
+
+        .explora-home-encabezado p {
+            margin: 8px auto 0;
+            max-width: 640px;
+            color: #bdbdbd;
+        }
+
+        .explora-carousel {
+            position: relative;
+            width: 100%;
+        }
+
+        .explora-carousel-track {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 8px 58px 14px;
+            box-sizing: border-box;
+        }
+
+        .explora-carousel-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .explora-card {
+            position: relative;
+            flex: 0 0 calc((100% - 48px) / 4);
+            min-height: 172px;
+            padding: 24px 22px 22px;
+            border: 1px solid rgba(215, 173, 47, .55);
+            border-radius: 18px;
+            background:
+                radial-gradient(circle at top right, rgba(215, 173, 47, .14), transparent 42%),
+                linear-gradient(145deg, #151515, #090909);
+            color: #fff;
+            text-decoration: none;
+            scroll-snap-align: start;
+            box-sizing: border-box;
+            transition:
+                transform .22s ease,
+                border-color .22s ease,
+                box-shadow .22s ease;
+        }
+
+        .explora-card:hover {
+            transform: translateY(-3px);
+            border-color: #d7ad2f;
+            box-shadow: 0 12px 34px rgba(0, 0, 0, .28);
+        }
+
+        .explora-card-icono {
+            width: 46px;
+            height: 46px;
+            margin-bottom: 20px;
+            border-radius: 50%;
+            border: 1px solid rgba(215, 173, 47, .6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #d7ad2f;
+            font-size: 23px;
+            font-weight: 800;
+            background: rgba(215, 173, 47, .07);
+        }
+
+        .explora-card h3 {
+            margin: 0 0 8px;
+            color: #fff;
+            font-size: 20px;
+            line-height: 1.1;
+        }
+
+        .explora-card p {
+            margin: 0;
+            color: #bdbdbd;
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .explora-card-flecha {
+            position: absolute;
+            right: 18px;
+            bottom: 16px;
+            color: #d7ad2f;
+            font-size: 19px;
+            font-weight: 700;
+        }
+
+        .explora-carousel-boton {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 4;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid #d7ad2f;
+            background: rgba(5, 5, 5, .95);
+            color: #d7ad2f;
+            font-size: 32px;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .explora-carousel-boton:hover {
+            background: #d7ad2f;
+            color: #050505;
+        }
+
+        .explora-carousel-boton:disabled {
+            opacity: .28;
+            cursor: default;
+        }
+
+        .explora-carousel-boton.anterior {
+            left: 4px;
+        }
+
+        .explora-carousel-boton.siguiente {
+            right: 4px;
+        }
+
+        @media (max-width: 1100px) {
+            .explora-card {
+                flex-basis: calc((100% - 32px) / 3);
+            }
+        }
+
+        @media (max-width: 760px) {
+            .explora-home {
+                padding: 32px 0 28px;
+            }
+
+            .explora-carousel-track {
+                gap: 14px;
+                padding: 6px 42px 12px;
+            }
+
+            .explora-card {
+                flex-basis: 78%;
+                min-height: 160px;
+            }
+
+            .explora-carousel-boton {
+                width: 34px;
+                height: 34px;
+                font-size: 26px;
+            }
+        }
+    </style>
+
+
 </head>
 
 <body>
@@ -124,7 +314,7 @@
         <div class="nav-container">
 
             <a href="#" class="logo">
-                <img src="images/742EDEF7-08B5-4219-BC81-C48021D60480.PNG" alt="Vo Import">
+                <img src="images/742EDEF7-08B5-4219-BC81-C48021D60480.PNG" alt="Mireka Perfumería">
             </a>
 
             <div class="menu-toggle">
@@ -138,7 +328,6 @@
     <a href="#marcas">Marcas</a>
     <a href="catalogo.html">Catálogo</a>
     <a href="mayorista.html">Mayorista</a>
-    <a href="#reservar-visita">Reservar visita</a>
     <a href="#contacto">Contacto</a>
 
     <button class="boton-buscador" id="abrir-buscador" aria-label="Abrir buscador">
@@ -181,6 +370,107 @@
 
         </div>
     </header>
+
+    <section class="explora-home" id="explora">
+        <div class="container">
+
+            <div class="explora-home-encabezado">
+                <span class="explora-home-etiqueta">DESCUBRÍ MIREKA</span>
+                <h2>Encontrá lo que buscás</h2>
+                <p>
+                    Accesos rápidos para explorar nuestros perfumes.
+                </p>
+            </div>
+
+            <div class="explora-carousel">
+
+                <button
+                    type="button"
+                    class="explora-carousel-boton anterior"
+                    id="explora-anterior"
+                    aria-label="Ver opciones anteriores"
+                >‹</button>
+
+                <div
+                    class="explora-carousel-track"
+                    id="explora-carousel-track"
+                >
+
+                    <a
+                        class="explora-card"
+                        href="catalogo.html?coleccion=nuevos"
+                    >
+                        <div class="explora-card-icono">✦</div>
+                        <h3>Nuevos ingresos</h3>
+                        <p>Lo último que llegó a Mireka.</p>
+                        <span class="explora-card-flecha">→</span>
+                    </a>
+
+                    <a
+                        class="explora-card"
+                        href="catalogo.html?coleccion=ofertas"
+                    >
+                        <div class="explora-card-icono">%</div>
+                        <h3>Ofertas</h3>
+                        <p>Productos disponibles con beneficios vigentes.</p>
+                        <span class="explora-card-flecha">→</span>
+                    </a>
+
+                    <a
+                        class="explora-card"
+                        href="catalogo.html?genero=woman"
+                    >
+                        <div class="explora-card-icono">♀</div>
+                        <h3>Para ellas</h3>
+                        <p>Perfumes femeninos para todos los estilos.</p>
+                        <span class="explora-card-flecha">→</span>
+                    </a>
+
+                    <a
+                        class="explora-card"
+                        href="catalogo.html?genero=men"
+                    >
+                        <div class="explora-card-icono">♂</div>
+                        <h3>Para ellos</h3>
+                        <p>Fragancias masculinas con personalidad.</p>
+                        <span class="explora-card-flecha">→</span>
+                    </a>
+
+                    <a
+                        class="explora-card"
+                        href="catalogo.html?genero=unisex"
+                    >
+                        <div class="explora-card-icono">∞</div>
+                        <h3>Unisex</h3>
+                        <p>Fragancias versátiles para disfrutar sin etiquetas.</p>
+                        <span class="explora-card-flecha">→</span>
+                    </a>
+
+                    <a
+                        class="explora-card"
+                        href="catalogo.html"
+                    >
+                        <div class="explora-card-icono">★</div>
+                        <h3>Más vendidos</h3>
+                        <p>Descubrí los perfumes que más eligen nuestros clientes.</p>
+                        <span class="explora-card-flecha">→</span>
+                    </a>
+
+                </div>
+
+                <button
+                    type="button"
+                    class="explora-carousel-boton siguiente"
+                    id="explora-siguiente"
+                    aria-label="Ver más opciones"
+                >›</button>
+
+            </div>
+
+        </div>
+    </section>
+
+
     <!-- BUSCADOR GENERAL -->
 <div class="buscador-overlay" id="buscador-overlay">
 
@@ -248,61 +538,11 @@
     <h3>Maison Alhambra 30ml</h3>
 </div>
 
-            <div class="categoria-card"
-     onclick="window.location.href='inspiraciones.html'"
-     style="cursor: pointer;">
-    <img src="images/scandal.PNG" alt="Inspiraciones de diseñador">
-    <h3>Inspiraciones de diseñador</h3>
-</div>
-
         </div>
     </div>
 </section>
 
 
-<!-- RESERVA DE VISITA -->
-<section class="reserva-visita" id="reservar-visita">
-    <div class="container">
-        <div class="reserva-visita-card">
-
-            <div class="reserva-visita-icono" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                    <rect x="3" y="5" width="18" height="16" rx="3"></rect>
-                    <line x1="8" y1="3" x2="8" y2="7"></line>
-                    <line x1="16" y1="3" x2="16" y2="7"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                    <path d="M8 15l2.2 2.2L16 13"></path>
-                </svg>
-            </div>
-
-            <div class="reserva-visita-contenido">
-                <span class="reserva-visita-etiqueta">VISITÁ NUESTRO LOCAL</span>
-                <h2>Reservá tu visita a Vo Import</h2>
-                <p>
-                    Elegí el día y horario que más te convenga para visitarnos
-                    y conocer nuestros perfumes en persona.
-                </p>
-            </div>
-
-            <div class="reserva-visita-accion">
-                <a
-                    href="https://voimport.setmore.com/book?step=time-slot&products=4796622b-4e0d-4c66-835f-2fdbe71434f4&type=service&staff=c5666017-3058-45b4-87e2-dd43cd7b558a&staffSelected=true"
-                    class="reserva-visita-boton"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <span>Reservar mi visita</span>
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M5 12h14"></path>
-                        <path d="m13 6 6 6-6 6"></path>
-                    </svg>
-                </a>
-                <small>Reserva online mediante Setmore</small>
-            </div>
-
-        </div>
-    </div>
-</section>
 
 <section class="catalog" id="marcas">
 
@@ -522,10 +762,6 @@ class="contacto-boton">
             return "MAISON ALHAMBRA 30 ML";
         }
 
-        if (producto.categoria === "inspiraciones-disenador") {
-            return "INSPIRACIÓN 60 ML";
-        }
-
         return "";
     }
 
@@ -547,12 +783,6 @@ const destinosGenerales = [
         categoria: "SECCIÓN",
         descripcion: "Explorá todas nuestras categorías",
         url: "#categorias"
-    },
-    {
-        titulo: "Reservar visita",
-        categoria: "SECCIÓN",
-        descripcion: "Elegí día y horario para visitar nuestro local",
-        url: "#reservar-visita"
     },
     {
         titulo: "Contacto",
@@ -577,12 +807,6 @@ const destinosGenerales = [
         categoria: "CATEGORÍA",
         descripcion: "Perfumes Maison Alhambra de 30 ml",
         url: "categoria.html?categoria=maison-30ml"
-    },
-    {
-        titulo: "Inspiraciones de diseñador",
-        categoria: "CATEGORÍA",
-        descripcion: "Perfumes 60 ml y decants 5 ml",
-        url: "inspiraciones.html"
     }
 ];
 
@@ -797,6 +1021,76 @@ document.addEventListener("keydown", (e) => {
         }
 
         return anchoTarjeta * cantidad;
+    }
+
+    function actualizarFlechas() {
+        const margen = 3;
+
+        anterior.disabled =
+            track.scrollLeft <= margen;
+
+        siguiente.disabled =
+            track.scrollLeft + track.clientWidth >=
+            track.scrollWidth - margen;
+    }
+
+    anterior.addEventListener("click", () => {
+        track.scrollBy({
+            left: -anchoPaso(),
+            behavior: "smooth"
+        });
+    });
+
+    siguiente.addEventListener("click", () => {
+        track.scrollBy({
+            left: anchoPaso(),
+            behavior: "smooth"
+        });
+    });
+
+    track.addEventListener(
+        "scroll",
+        actualizarFlechas,
+        { passive: true }
+    );
+
+    window.addEventListener(
+        "resize",
+        actualizarFlechas
+    );
+
+    actualizarFlechas();
+})();
+</script>
+
+
+<script>
+(() => {
+    const track = document.getElementById("explora-carousel-track");
+    const anterior = document.getElementById("explora-anterior");
+    const siguiente = document.getElementById("explora-siguiente");
+
+    if (!track || !anterior || !siguiente) return;
+
+    function anchoPaso() {
+        const tarjeta = track.querySelector(".explora-card");
+        if (!tarjeta) return track.clientWidth;
+
+        const gap =
+            parseFloat(window.getComputedStyle(track).gap) || 0;
+
+        const ancho =
+            tarjeta.getBoundingClientRect().width + gap;
+
+        if (window.innerWidth <= 760) {
+            return ancho;
+        }
+
+        if (window.innerWidth <= 1100) {
+            return ancho * 2;
+        }
+
+        return ancho * 3;
     }
 
     function actualizarFlechas() {

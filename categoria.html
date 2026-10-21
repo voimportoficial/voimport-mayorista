@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="images/favicon.PNG">
 
-    <title>Perfumes Armaf | Vo Import</title>
+    <title>Categoría | Mireka Perfumería</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -85,7 +85,7 @@
     <div class="carrito-resumen">
 
         <p id="mensaje-mayorista">
-            Los mínimos mayoristas se calculan por categoría.
+            Agregá perfumes para acceder a las listas mayoristas.
         </p>
 
         <div class="carrito-total">
@@ -111,37 +111,23 @@
     const nombresCategorias = {
         "perfumes-grandes": "Perfumes árabes",
         "decants": "Decants 5 ml",
-        "maison-30ml": "Maison Alhambra 30 ml",
-        "inspiraciones": "Inspiraciones de diseñador"
+        "maison-30ml": "Maison Alhambra 30 ml"
     };
 
-    if (categoria) {
+    if (categoria && !nombresCategorias[categoria]) {
+        window.location.replace("catalogo.html");
+    } else if (categoria) {
         document.body.dataset.categoria = categoria;
 
         const nombreCategoria = nombresCategorias[categoria] || "Categoría";
 
         document.getElementById("titulo-categoria").textContent = nombreCategoria;
-        document.title = `${nombreCategoria} | Vo Import`;
+        document.title = `${nombreCategoria} | Mireka Perfumería`;
     }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/productos.js"></script>
-
-<script>
-    if (categoria === "decants") {
-        for (let i = productos.length - 1; i >= 0; i--) {
-            const producto = productos[i];
-
-            if (
-                producto.categoria === "decants" &&
-                producto.linea === "inspiraciones"
-            ) {
-                productos.splice(i, 1);
-            }
-        }
-    }
-</script>
 
 <script src="js/script.js"></script>
 

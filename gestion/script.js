@@ -934,25 +934,6 @@ const CATEGORIAS_STOCK = [
 
     {
         clave:
-            "inspiraciones-disenador",
-
-        nombre:
-            "Inspiraciones de diseñador 60 ml",
-
-        minimoMayorista:
-            3,
-
-        tieneMayorista:
-            true,
-
-        coincide:
-            (producto) =>
-                producto.categoria_mostrar ===
-                "inspiraciones-disenador"
-    },
-
-    {
-        clave:
             "decants-arabes",
 
         nombre:
@@ -967,30 +948,7 @@ const CATEGORIAS_STOCK = [
         coincide:
             (producto) =>
                 producto.categoria_mostrar ===
-                "decants" &&
-                producto.linea_mostrar !==
-                "inspiraciones"
-    },
-
-    {
-        clave:
-            "decants-disenador",
-
-        nombre:
-            "Decants de diseñador",
-
-        minimoMayorista:
-            0,
-
-        tieneMayorista:
-            false,
-
-        coincide:
-            (producto) =>
-                producto.categoria_mostrar ===
-                "decants" &&
-                producto.linea_mostrar ===
-                "inspiraciones"
+                "decants"
     }
 
 ];
@@ -5941,6 +5899,8 @@ async function anularVenta(
 // ========================================
 
 function cerrarSeccionesGestion() {
+    // Ocultar la nueva pantalla de listas al navegar a cualquier otra sección.
+    document.getElementById("seccion-listas-mireka")?.classList.add("oculto");
 
     seccionVenta?.classList.add(
         "oculto"
@@ -12042,6 +12002,8 @@ modalAgregarPago?.addEventListener(
 // =========================================================
 
 function cerrarSeccionesGestion() {
+    // Ocultar la nueva pantalla de listas al navegar a cualquier otra sección.
+    document.getElementById("seccion-listas-mireka")?.classList.add("oculto");
 
     seccionVenta?.classList.add(
         "oculto"
@@ -15220,6 +15182,8 @@ presupuestosListaGestion
 // =========================================================
 
 function cerrarSeccionesGestion() {
+    // Ocultar la nueva pantalla de listas al navegar a cualquier otra sección.
+    document.getElementById("seccion-listas-mireka")?.classList.add("oculto");
 
     seccionVenta?.classList.add(
         "oculto"
@@ -15528,20 +15492,6 @@ function obtenerPresentacionProductoGestion(
 
 
     // =====================================================
-    // INSPIRACIONES 60 ML
-    // =====================================================
-
-    if (
-        categoria ===
-        "inspiraciones-disenador"
-    ) {
-
-        return "Perfume 60 ml";
-
-    }
-
-
-    // =====================================================
     // PERFUMES ÁRABES
     // =====================================================
 
@@ -15697,84 +15647,10 @@ function obtenerNombreCompletoGestion(
 
 
 // =========================================================
-// DISEÑADORES - INSPIRACIONES
+// REFERENCIA DE PRODUCTO EN GESTIÓN
 // =========================================================
 
-const nombresDisenadoresGestion = {
-    "armani": "Giorgio Armani",
-    "azzaro": "Azzaro",
-    "bvlgari": "Bvlgari",
-    "cacharel": "Cacharel",
-    "carolina-herrera": "Carolina Herrera",
-    "chanel": "Chanel",
-    "creed": "Creed",
-    "dior": "Christian Dior",
-    "dolce-gabbana": "Dolce & Gabbana",
-    "francis-kurkdjian": "Francis Kurkdjian",
-    "jean-paul-gaultier": "Jean Paul Gaultier",
-    "kenzo": "Kenzo",
-    "lancome": "Lancôme",
-    "louis-vuitton": "Louis Vuitton",
-    "moschino": "Moschino",
-    "nina-ricci": "Nina Ricci",
-    "paco-rabanne": "Paco Rabanne",
-    "ralph-lauren": "Ralph Lauren",
-    "thierry-mugler": "Thierry Mugler",
-    "tom-ford": "Tom Ford",
-    "valentino": "Valentino",
-    "versace": "Versace",
-    "viktor-rolf": "Viktor & Rolf",
-    "xerjoff": "Xerjoff",
-    "yves-saint-laurent": "Yves Saint Laurent"
-};
-
-
-function obtenerDisenadorMostrarGestion(
-    productoSupabase,
-    productoLocal
-) {
-    const clave = String(
-        productoLocal?.disenador ||
-        productoSupabase?.disenador ||
-        ""
-    ).trim();
-
-    if (!clave) {
-        return "";
-    }
-
-    return nombresDisenadoresGestion[clave] ||
-        clave
-            .split("-")
-            .filter(Boolean)
-            .map(
-                (parte) =>
-                    parte.charAt(0).toUpperCase() +
-                    parte.slice(1)
-            )
-            .join(" ");
-}
-
-
-function esInspiracionDisenadorGestion(producto) {
-    return (
-        producto?.categoria_mostrar ===
-            "inspiraciones-disenador" ||
-        (
-            producto?.categoria_mostrar === "decants" &&
-            producto?.linea_mostrar === "inspiraciones"
-        )
-    );
-}
-
-
 function obtenerReferenciaProductoGestion(producto) {
-    // En inspiraciones el diseñador ya forma parte del nombre visible
-    // (ej.: "Azzaro Wanted"), así evitamos repetirlo debajo.
-    if (esInspiracionDisenadorGestion(producto)) {
-        return "";
-    }
-
     return producto?.marca_mostrar || "";
 }
 
@@ -15838,13 +15714,6 @@ async function cargarProductosGestion() {
                         );
 
 
-                    const disenadorMostrar =
-                        obtenerDisenadorMostrarGestion(
-                            productoSupabase,
-                            productoLocal
-                        );
-
-
                     const categoriaMostrar =
                         productoSupabase?.categoria ||
                         productoLocal?.categoria ||
@@ -15857,60 +15726,17 @@ async function cargarProductosGestion() {
                         "";
 
 
-                    const esInspiracionDisenador =
-                        categoriaMostrar === "inspiraciones-disenador" ||
-                        (
-                            categoriaMostrar === "decants" &&
-                            lineaMostrar === "inspiraciones"
-                        );
-
-
-                    let nombreMostrar =
-                        nombreCompleto;
-
-
-                    if (
-                        esInspiracionDisenador &&
-                        disenadorMostrar
-                    ) {
-                        const nombreNormalizado =
-                            normalizarBusquedaProducto(
-                                nombreCompleto
-                            );
-
-                        const disenadorNormalizado =
-                            normalizarBusquedaProducto(
-                                disenadorMostrar
-                            );
-
-                        if (
-                            !nombreNormalizado.startsWith(
-                                disenadorNormalizado
-                            )
-                        ) {
-                            nombreMostrar =
-                                `${disenadorMostrar} ${nombreCompleto}`;
-                        }
-                    }
-
-
                     return {
 
                         ...productoSupabase,
 
-                        // Inspiraciones: diseñador primero para que el orden
-                        // alfabético quede igual que en la web.
-                        // Ej.: "Azzaro Wanted — Perfume 60 ml".
                         nombre_mostrar:
-                            nombreMostrar,
+                            nombreCompleto,
 
                         marca_mostrar:
                             productoSupabase?.marca ||
                             productoLocal?.marca ||
                             "",
-
-                        disenador_mostrar:
-                            disenadorMostrar,
 
                         categoria_mostrar:
                             categoriaMostrar,
@@ -18748,6 +18574,15 @@ if (!modalEditarProductoGestion) {
 
                 </div>
 
+                <!-- Mireka: listas 1–4 en la misma edición que costo y minorista. -->
+                <section id="mireka-listas-editor-producto" class="mireka-listas-editor-producto oculto" aria-live="polite">
+                    <h4>Listas mayoristas · desde 3, 6, 15 y 30 perfumes</h4>
+                    <p>Se calculan desde el costo de este perfume, con redondeo hacia arriba cada $500. Un campo vacío usa el porcentaje general.</p>
+                    <div id="mireka-listas-editor-filas" class="mireka-editor-listas-grid"></div>
+                    <p id="mireka-listas-editor-estado" class="mireka-editor-aviso">Cargando precios...</p>
+                    <small>La web actual continúa usando su precio mayorista anterior hasta que adaptemos el carrito. Guardar estas listas no reemplaza ese precio web.</small>
+                </section>
+
                 <div class="editar-producto-precios-separados">
 
                     <div class="editar-producto-seccion editar-producto-seccion-precio">
@@ -19651,6 +19486,8 @@ function abrirEditarProductoGestion(
         "oculto"
     );
 
+    // Listas nuevas, sin reemplazar todavía el precio mayorista usado por la web.
+    window.MirekaListasGestion?.abrirEdicionProducto(producto);
 
     setTimeout(
         () => {
@@ -19748,10 +19585,9 @@ function calcularCostoUsdtProductoGestion() {
 
 const DESCUENTO_EFECTIVO_TRANSFERENCIA_GESTION = 20;
 
-// Inspiraciones de diseñador 60 ml y Maison Alhambra 30 ml:
-// los precios calculados se redondean siempre hacia arriba
-// al próximo múltiplo de $100.
-const REDONDEO_PRECIO_CATEGORIAS_CIEN_GESTION = 100;
+// Perfumes grandes y Maison 30 ml: redondeo de venta en $500.
+// Los decants mantienen su redondeo especial configurable.
+const REDONDEO_PRECIO_CATEGORIAS_CIEN_GESTION = 500;
 
 function redondearPrecioCategoriaCienGestion(
     precio
@@ -19938,10 +19774,6 @@ function calcularPreciosProductoGestion() {
         );
 
 
-    const esInspiracionDisenador =
-        productoEditando?.categoria_mostrar ===
-        "inspiraciones-disenador";
-
     const esMaison30ml =
         productoEditando?.categoria_mostrar ===
         "maison-30ml";
@@ -19978,10 +19810,7 @@ function calcularPreciosProductoGestion() {
         }
 
 
-        if (
-            esInspiracionDisenador ||
-            esMaison30ml
-        ) {
+        if (esMaison30ml) {
 
             return redondearPrecioCategoriaCienGestion(
                 precioSinRedondear
@@ -19990,7 +19819,7 @@ function calcularPreciosProductoGestion() {
         }
 
 
-        return Math.round(
+        return redondearPrecioCategoriaCienGestion(
             precioSinRedondear
         );
 
@@ -20049,6 +19878,8 @@ function calcularPreciosProductoGestion() {
         actualizarPrecioListaProductoGestion();
 
     }
+
+    window.MirekaListasGestion?.actualizarPreciosModal();
 
 }
 
@@ -20562,6 +20393,15 @@ formEditarProductoGestion?.addEventListener(
         }
 
 
+        // Validar las cuatro listas ANTES de modificar datos en Supabase.
+        let cambiosListasMireka = null;
+        try {
+            cambiosListasMireka = window.MirekaListasGestion?.validarEdicionProducto(producto) ?? null;
+        } catch (errorListas) {
+            mostrarMensaje(mensajeEditarProductoGestion, errorListas.message || "Revisá las cuatro listas mayoristas.");
+            return;
+        }
+
         botonGuardarEditarProductoGestion.disabled =
             true;
 
@@ -20715,6 +20555,16 @@ formEditarProductoGestion?.addEventListener(
                 throw error;
             }
 
+
+            // Se guardan por separado de la tarifa mayorista web actual.
+            // Si falla, el error indica que el guardado base ya pudo completarse.
+            try {
+                if (cambiosListasMireka) {
+                    await window.MirekaListasGestion.guardarEdicionProducto(productoId, cambiosListasMireka);
+                }
+            } catch (errorListas) {
+                throw new Error("El producto se guardó, pero NO se pudieron guardar sus cuatro listas: " + (errorListas.message || "revisá la conexión") + ". Recargá antes de reintentar.");
+            }
 
             await cargarProductosGestion();
 
@@ -25174,7 +25024,6 @@ if (!modalNuevoProductoGestion) {
                             <select id="nuevo-producto-categoria" required>
                                 <option value="perfumes-grandes">Perfume árabe</option>
                                 <option value="maison-30ml">Maison Alhambra 30 ml</option>
-                                <option value="inspiraciones-disenador">Inspiración de diseñador 60 ml</option>
                                 <option value="decants">Decant 5 ml</option>
                             </select>
                         </div>
@@ -25192,17 +25041,6 @@ if (!modalNuevoProductoGestion) {
                                 >
                                 <span>ml</span>
                             </div>
-                        </div>
-
-                        <div
-                            class="campo oculto"
-                            id="nuevo-producto-linea-decant-campo"
-                        >
-                            <label for="nuevo-producto-linea-decant">Tipo de decant</label>
-                            <select id="nuevo-producto-linea-decant">
-                                <option value="">Decant árabe</option>
-                                <option value="inspiraciones">Decant de diseñador</option>
-                            </select>
                         </div>
 
                         <div class="campo">
@@ -25476,12 +25314,6 @@ const nuevoProductoCategoriaGestion =
 const nuevoProductoMlGestion =
     document.getElementById("nuevo-producto-ml");
 
-const nuevoProductoLineaDecantCampoGestion =
-    document.getElementById("nuevo-producto-linea-decant-campo");
-
-const nuevoProductoLineaDecantGestion =
-    document.getElementById("nuevo-producto-linea-decant");
-
 const nuevoProductoStockInicialGestion =
     document.getElementById("nuevo-producto-stock-inicial");
 
@@ -25651,11 +25483,6 @@ function ajustarCategoriaNuevoProductoGestion() {
         !esDecant
     );
 
-    nuevoProductoLineaDecantCampoGestion?.classList.toggle(
-        "oculto",
-        !esDecant
-    );
-
     if (nuevoProductoCostoSubtituloGestion) {
         nuevoProductoCostoSubtituloGestion.textContent =
             usaUsdt
@@ -25670,8 +25497,6 @@ function ajustarCategoriaNuevoProductoGestion() {
             nuevoProductoMlGestion.value = 100;
         } else if (categoria === "maison-30ml") {
             nuevoProductoMlGestion.value = 30;
-        } else if (categoria === "inspiraciones-disenador") {
-            nuevoProductoMlGestion.value = 60;
         } else if (categoria === "decants") {
             nuevoProductoMlGestion.value = 5;
         }
@@ -25817,7 +25642,6 @@ function calcularPreciosNuevoProductoGestion() {
     const redondearPrecioCalculado =
         (precio) =>
             (
-                categoria === "inspiraciones-disenador" ||
                 categoria === "maison-30ml"
             )
                 ? redondearPrecioCategoriaCienGestion(
@@ -26142,13 +25966,7 @@ formNuevoProductoGestion?.addEventListener(
         let linea = "";
         let tipo = "perfume";
 
-        if (categoria === "inspiraciones-disenador") {
-            linea = "inspiraciones";
-        }
-
         if (esDecant) {
-            linea =
-                String(nuevoProductoLineaDecantGestion?.value || "");
             tipo = "decant";
         }
 
@@ -34010,55 +33828,8 @@ function obtenerSubtotalPostDescuentosItemGestion(documento) {
 
 
 function obtenerNombreProductoComprobanteGestion(item) {
-    const nombreGuardado =
-        item?.producto_nombre ||
-        item?.nombre ||
-        "Producto";
-
-    const producto =
-        productosGestion.find(
-            (productoActual) =>
-                Number(productoActual.id) ===
-                Number(item?.producto_id)
-        ) ||
-        productosGestion.find(
-            (productoActual) =>
-                String(productoActual.slug || "") ===
-                String(item?.producto_slug || "")
-        );
-
-    if (
-        !producto ||
-        !esInspiracionDisenadorGestion(producto) ||
-        !producto.disenador_mostrar
-    ) {
-        return nombreGuardado;
-    }
-
-    const disenador =
-        producto.disenador_mostrar;
-
-    const nombreNormalizado =
-        normalizarBusquedaProducto(
-            nombreGuardado
-        );
-
-    const disenadorNormalizado =
-        normalizarBusquedaProducto(
-            disenador
-        );
-
-    if (
-        nombreNormalizado.startsWith(
-            disenadorNormalizado
-        )
-    ) {
-        return nombreGuardado;
-    }
-
-    return `${disenador} ${nombreGuardado}`;
+    return item?.producto_nombre || item?.nombre || "Producto";
 }
-
 
 function abrirVentanaComprobanteGestion({
     tipo,
@@ -36268,8 +36039,7 @@ function obtenerCategoriaClavePedidoWeb(producto) {
 function categoriaTieneMayoristaPedidoWeb(categoria) {
     return [
         "perfumes-grandes",
-        "maison-30ml",
-        "inspiraciones-disenador"
+        "maison-30ml"
     ].includes(categoria);
 }
 
@@ -37942,7 +37712,8 @@ const idsPantallasGestion = [
     "seccion-gastos",
     "seccion-insumos",
     "seccion-dinero",
-    "seccion-cierres-mensuales"
+    "seccion-cierres-mensuales",
+    "seccion-listas-mireka"
 ];
 
 
@@ -38382,8 +38153,18 @@ if (!modalEdicionMasivaGestion) {
                     id="edicion-masiva-datos-bloque"
                 >
                     <div class="edicion-masiva-bloque-titulo">
-                        <strong>3. Datos a aplicar</strong>
-                        <span>Los campos vacíos no se modifican</span>
+                        <strong>3. Elegí qué querés modificar</strong>
+                        <span>Solo se aplicará la operación elegida</span>
+                    </div>
+
+                    <div class="mireka-modo-operacion">
+                        <label for="mireka-modo-operacion">¿Qué necesitás actualizar?</label>
+                        <select id="mireka-modo-operacion" aria-describedby="mireka-modo-descripcion">
+                            <option value="dolar">Cambiar cotización USDT</option>
+                            <option value="listas">Modificar las cuatro listas mayoristas</option>
+                            <option value="otros">Stock y precio minorista</option>
+                        </select>
+                        <p id="mireka-modo-descripcion" class="mireka-modo-descripcion"></p>
                     </div>
 
                     <div class="edicion-masiva-aviso">
@@ -38451,9 +38232,12 @@ if (!modalEdicionMasivaGestion) {
                         id="edicion-masiva-costo-usdt-bloque"
                     >
                         <div class="edicion-masiva-seccion-titulo">
-                            <strong>Costo en USDT</strong>
-                            <span>Opcional · misma lógica que la edición individual</span>
+                            <strong>Cotización USDT</strong>
+                            <span>Se conserva el costo individual en dólares de cada producto</span>
                         </div>
+
+                        <input id="edicion-masiva-solo-dolar" type="checkbox" hidden aria-hidden="true" tabindex="-1">
+                        <p class="mireka-modo-aviso">Cada perfume mantiene su propio precio de proveedor y recargo en USDT. Ingresá solamente la cotización nueva.</p>
 
                         <div class="edicion-masiva-usdt-grid">
                             <div class="campo">
@@ -38506,13 +38290,14 @@ if (!modalEdicionMasivaGestion) {
                         </div>
 
                         <small class="edicion-masiva-formula">
-                            Fórmula: (precio proveedor + recargo) × dólar de costo. Si dejás estos campos vacíos, el costo no cambia.
+                            Cada costo se calcula con los datos propios del perfume: (proveedor + recargo) × cotización nueva.
                         </small>
 
-                        <div class="edicion-masiva-costo-preview">
+                        <div class="edicion-masiva-costo-preview" id="edicion-masiva-preview-tradicional">
                             <span>Costo resultante</span>
                             <strong id="edicion-masiva-costo-usdt-preview">—</strong>
                         </div>
+                        <div id="mireka-preview-solo-dolar" class="mireka-preview-dolar oculto" aria-live="polite"></div>
                     </div>
 
                     <div
@@ -38532,7 +38317,7 @@ if (!modalEdicionMasivaGestion) {
 
                     <div class="edicion-masiva-precios-separados">
 
-                        <div class="edicion-masiva-seccion edicion-masiva-seccion-precio">
+                        <div class="edicion-masiva-seccion edicion-masiva-seccion-precio mireka-legacy-mayorista-masivo">
                             <div class="edicion-masiva-seccion-titulo">
                                 <strong>Mayorista</strong>
                                 <span>Editá margen o precio</span>
@@ -38696,6 +38481,9 @@ const dolarCostoEdicionMasivaGestion =
 const costoUsdtPreviewEdicionMasivaGestion =
     document.getElementById("edicion-masiva-costo-usdt-preview");
 
+const soloDolarMasivoMireka = document.getElementById("edicion-masiva-solo-dolar");
+const previewSoloDolarMireka = document.getElementById("mireka-preview-solo-dolar");
+
 const markupMayoristaEdicionMasivaGestion =
     document.getElementById("edicion-masiva-markup-mayorista");
 
@@ -38764,10 +38552,7 @@ function categoriaMasivaEsDecantGestion() {
     const clave =
         categoriaEdicionMasivaGestion?.value || "";
 
-    return (
-        clave === "decants-arabes" ||
-        clave === "decants-disenador"
-    );
+    return clave === "decants-arabes";
 }
 
 
@@ -38784,11 +38569,7 @@ function categoriaMasivaUsaUsdtGestion() {
 
 
 function categoriaMasivaUsaCostoManualGestion() {
-
-    return (
-        categoriaEdicionMasivaGestion?.value ===
-        "inspiraciones-disenador"
-    );
+    return false;
 }
 
 
@@ -38942,7 +38723,6 @@ function renderizarProductosEdicionMasivaGestion() {
                                 <small>
                                     Stock ${Number(producto.stock) || 0}
                                     · Costo ${costoTexto}
-                                    · May. ${formatearPrecio(producto.precio_mayorista)}
                                     · Min. ${formatearPrecio(producto.precio_minorista)}
                                 </small>
                             </span>
@@ -39109,14 +38889,11 @@ function sincronizarParPrecioMasivoGestion(
                 categoriaEdicionMasivaGestion?.value || "";
 
             campoPrecio.value =
-                (
-                    categoriaMasiva === "inspiraciones-disenador" ||
-                    categoriaMasiva === "maison-30ml"
-                )
+                categoriaMasiva === "maison-30ml"
                     ? redondearPrecioCategoriaCienGestion(
                         precioCalculado
                     )
-                    : Math.round(
+                    : redondearPrecioCategoriaCienGestion(
                         precioCalculado
                     );
 
@@ -39374,6 +39151,8 @@ function actualizarTipoCostoEdicionMasivaGestion() {
 // =========================================================
 
 function limpiarCamposEdicionMasivaGestion() {
+    if (soloDolarMasivoMireka) soloDolarMasivoMireka.checked = false;
+    cambiarModoSoloDolarMireka(false);
 
     productosSeleccionadosMasivoGestion =
         new Set();
@@ -39728,10 +39507,6 @@ function prepararPlanEdicionMasivaGestion() {
     const esDecant =
         categoriaMasivaEsDecantGestion();
 
-    const esInspiracionDisenador =
-        categoria.clave ===
-        "inspiraciones-disenador";
-
     const esMaison30ml =
         categoria.clave ===
         "maison-30ml";
@@ -40050,10 +39825,7 @@ function prepararPlanEdicionMasivaGestion() {
                     }
 
 
-                    if (
-                        esInspiracionDisenador ||
-                        esMaison30ml
-                    ) {
+                    if (esMaison30ml) {
 
                         return redondearPrecioCategoriaCienGestion(
                             precioSinRedondear
@@ -40062,7 +39834,7 @@ function prepararPlanEdicionMasivaGestion() {
                     }
 
 
-                    return Math.round(
+                    return redondearPrecioCategoriaCienGestion(
                         precioSinRedondear
                     );
 
@@ -40403,6 +40175,146 @@ async function guardarPlanProductoMasivoGestion(
 }
 
 
+// =========================================================
+// MIREKA: ACTUALIZAR SOLO DÓLAR EN EDICIÓN MASIVA
+// =========================================================
+function cambiarModoSoloDolarMireka(activo) {
+    // En este modo la operación es exclusivamente cambio de cotización.
+    // Deshabilitar el resto evita modificaciones accidentales de stock o markup.
+    const restringidos = [
+        proveedorUsdtEdicionMasivaGestion, recargoUsdtEdicionMasivaGestion,
+        stockEdicionMasivaGestion, costoManualEdicionMasivaGestion,
+        markupMayoristaEdicionMasivaGestion, precioMayoristaEdicionMasivaGestion,
+        markupMinoristaEdicionMasivaGestion, precioMinoristaEdicionMasivaGestion
+    ];
+    restringidos.forEach(campo => {
+        if (!campo) return;
+        campo.disabled = activo;
+        if (activo) campo.value = "";
+    });
+    if (activo) {
+        modoMayoristaMasivoGestion = null;
+        modoMinoristaMasivoGestion = null;
+    }
+    document.getElementById('edicion-masiva-preview-tradicional')?.classList.toggle('oculto', activo);
+    previewSoloDolarMireka?.classList.toggle('oculto', !activo);
+    dolarCostoEdicionMasivaGestion?.setAttribute('placeholder', activo ? 'Ej: 1650 (solo cotización)' : 'Ej: 1600');
+    if (previewSoloDolarMireka && !activo) previewSoloDolarMireka.textContent = '';
+    if (activo) renderizarPreviewSoloDolarMireka();
+}
+
+function construirPlanSoloDolarMireka() {
+    if (!categoriaMasivaUsaUsdtGestion()) throw new Error('Esta opción es para perfumes árabes y Maison 30 ml.');
+    const texto = dolarCostoEdicionMasivaGestion?.value.trim() || '';
+    const nuevoDolar = Number(texto);
+    if (!texto || !Number.isFinite(nuevoDolar) || nuevoDolar <= 0) throw new Error('Ingresá el dólar nuevo, mayor a cero.');
+    if (!productosSeleccionadosMasivoGestion.size) throw new Error('Seleccioná al menos un perfume.');
+    const planes = [], omitidos = [];
+    for (const id of productosSeleccionadosMasivoGestion) {
+        const p = productosGestion.find(x => Number(x.id) === Number(id));
+        if (!p || p.retirado === true) { omitidos.push({nombre: 'ID ' + id, motivo:'Producto no disponible'}); continue; }
+        // Nunca inventar valores faltantes con Number(null) = 0.
+        const proveedor = p.precio_proveedor_usdt == null || p.precio_proveedor_usdt === '' ? NaN : Number(p.precio_proveedor_usdt);
+        const recargo = p.recargo_usdt == null || p.recargo_usdt === '' ? NaN : Number(p.recargo_usdt);
+        const costoAnterior = p.costo_actual == null ? NaN : Number(p.costo_actual);
+        // Evitar que Number(null) se convierta silenciosamente en 0% markup.
+        const markupValido = (tipo) => {
+            const valor = p[tipo === 'mayorista' ? 'markup_mayorista' : 'markup_minorista'];
+            if (valor !== null && valor !== undefined && String(valor).trim() !== '') return Number(valor);
+            const precio = p[tipo === 'mayorista' ? 'precio_mayorista' : 'precio_minorista'];
+            const n = precio === null || precio === undefined ? NaN : Number(precio);
+            return Number.isFinite(costoAnterior) && costoAnterior > 0 && Number.isFinite(n) && n > 0
+                ? (n / costoAnterior - 1) * 100 : NaN;
+        };
+        const markupMayorista = markupValido('mayorista');
+        const markupMinorista = markupValido('minorista');
+        const nombre = p.nombre_mostrar || p.nombre || p.slug || String(p.id);
+        if (![proveedor,recargo].every(Number.isFinite) || proveedor < 0 || recargo < 0) {
+            omitidos.push({nombre, motivo:'Falta precio proveedor o recargo en USDT'}); continue;
+        }
+        if (![markupMayorista, markupMinorista].every(x => Number.isFinite(x) && x >= 0)) {
+            omitidos.push({nombre, motivo:'Falta markup minorista o mayorista válido'}); continue;
+        }
+        const costo = Math.round((proveedor + recargo) * nuevoDolar);
+        const mayorista = redondearPrecioCategoriaCienGestion(costo * (1 + markupMayorista / 100));
+        const minorista = redondearPrecioCategoriaCienGestion(costo * (1 + markupMinorista / 100));
+        planes.push({producto:p,nombre,proveedor,recargo,nuevoDolar,costo,costoAnterior,
+            markupMayorista,markupMinorista,mayorista,minorista});
+    }
+    return {planes, omitidos, nuevoDolar};
+}
+
+function renderizarPreviewSoloDolarMireka() {
+    if (!soloDolarMasivoMireka?.checked || !previewSoloDolarMireka) return;
+    try {
+        const plan = construirPlanSoloDolarMireka();
+        const muestra = plan.planes.slice(0, 10).map(p =>
+            `<tr><td>${escaparHTML(p.nombre)}</td><td>${p.proveedor} + ${p.recargo} USDT</td><td>${Number.isFinite(p.costoAnterior) ? formatearPrecio(p.costoAnterior) : 'Sin costo'}</td><td><strong>${formatearPrecio(p.costo)}</strong></td><td>${formatearPrecio(p.minorista)}</td></tr>`).join('');
+        const omitidos = plan.omitidos.slice(0, 8).map(p => `<li>${escaparHTML(p.nombre)}: ${escaparHTML(p.motivo)}</li>`).join('');
+        previewSoloDolarMireka.innerHTML = `<strong>Vista previa · ${plan.planes.length} productos listos</strong>
+            <p>Solo se cambia el dólar de costo a $${plan.nuevoDolar.toLocaleString('es-AR')}. Cada perfume conserva sus USDT de proveedor y recargo. Se actualizan costo y minorista con redondeo de $500; las cuatro listas se calculan desde el nuevo costo y sus porcentajes guardados.</p>
+            <div class="mireka-preview-tabla"><table><thead><tr><th>Perfume</th><th>Proveedor + recargo</th><th>Costo anterior</th><th>Nuevo costo</th><th>Minorista nuevo</th></tr></thead><tbody>${muestra}</tbody></table></div>
+            ${plan.planes.length > 10 ? `<small>Mostrando 10 de ${plan.planes.length} productos listos.</small>` : ''}
+            ${plan.omitidos.length ? `<p class="mireka-error">${plan.omitidos.length} sin datos suficientes: se omitirán sin cambios.</p><ul>${omitidos}</ul>` : ''}`;
+    } catch (error) {
+        previewSoloDolarMireka.textContent = error.message;
+    }
+}
+
+soloDolarMasivoMireka?.addEventListener('change', () => cambiarModoSoloDolarMireka(soloDolarMasivoMireka.checked));
+dolarCostoEdicionMasivaGestion?.addEventListener('input', renderizarPreviewSoloDolarMireka);
+productosEdicionMasivaGestion?.addEventListener('change', () => setTimeout(renderizarPreviewSoloDolarMireka, 0));
+botonMarcarTodosEdicionMasivaGestion?.addEventListener('click', () => setTimeout(renderizarPreviewSoloDolarMireka, 0));
+botonDesmarcarTodosEdicionMasivaGestion?.addEventListener('click', () => setTimeout(renderizarPreviewSoloDolarMireka, 0));
+
+async function guardarSoloDolarMasivoMireka() {
+    let plan;
+    try {
+        plan = construirPlanSoloDolarMireka();
+        if (!plan.planes.length) throw new Error('Ningún seleccionado tiene los datos completos. Revisá la vista previa.');
+    } catch (error) {
+        mostrarMensaje(mensajeEdicionMasivaGestion, error.message); return;
+    }
+    const primer = plan.planes.slice(0, 4).map(p => `• ${p.nombre}: ${formatearPrecio(p.costoAnterior)} → ${formatearPrecio(p.costo)}`).join('\n');
+    const confirmado = window.confirm(
+        `Actualizar el dólar a $${plan.nuevoDolar} en ${plan.planes.length} perfumes seleccionados.\n` +
+        `Se omitirán ${plan.omitidos.length} sin datos completos.\n\n${primer}\n\n` +
+        'Cada producto conserva sus propios USDT. Se recalcula el precio minorista y el cálculo de las cuatro listas. ¿Confirmar?'
+    );
+    if (!confirmado) return;
+    botonGuardarEdicionMasivaGestion.disabled = true;
+    let guardados = 0;
+    try {
+        for (const p of plan.planes) {
+            botonGuardarEdicionMasivaGestion.textContent = `Actualizando ${guardados+1}/${plan.planes.length}...`;
+            const {error: errorCosto} = await supabaseClient.rpc('actualizar_costos_producto_usdt', {
+                p_producto_id:Number(p.producto.id), p_precio_proveedor_usdt:p.proveedor,
+                p_recargo_usdt:p.recargo, p_dolar_costo:p.nuevoDolar,
+                p_markup_mayorista:p.markupMayorista, p_markup_minorista:p.markupMinorista
+            });
+            if (errorCosto) throw errorCosto;
+            const {error: errorPrecio} = await supabaseClient.rpc('editar_producto_gestion', {
+                p_producto_id:Number(p.producto.id), p_stock:Number(p.producto.stock) || 0,
+                p_precio_minorista:p.minorista, p_precio_mayorista:p.mayorista,
+                p_activo:p.producto.activo !== false
+            });
+            if (errorPrecio) throw new Error('Se guardó el costo de ' + p.nombre + ', pero falló su precio: ' + errorPrecio.message);
+            guardados++;
+        }
+        await cargarProductosGestion();
+        renderizarStock();
+        cerrarEdicionMasivaGestion();
+        mostrarMensaje(mensajeStockGestion, `${guardados} perfumes actualizados al dólar $${plan.nuevoDolar}. ${plan.omitidos.length} omitidos sin cambios.`, 'exito');
+    } catch (error) {
+        try { await cargarProductosGestion(); renderizarStock(); } catch (_) {}
+        mostrarMensaje(mensajeEdicionMasivaGestion,
+            `Se completaron ${guardados} de ${plan.planes.length}. Se detuvo: ${error.message || 'error de conexión'}. Revisá los productos antes de reintentar.`);
+    } finally {
+        botonGuardarEdicionMasivaGestion.disabled = false;
+        botonGuardarEdicionMasivaGestion.textContent = 'Aplicar a seleccionados';
+    }
+}
+
 formEdicionMasivaGestion?.addEventListener(
     "submit",
     async (evento) => {
@@ -40412,6 +40324,20 @@ formEdicionMasivaGestion?.addEventListener(
         limpiarMensaje(
             mensajeEdicionMasivaGestion
         );
+
+        const operacion = document.getElementById('mireka-modo-operacion')?.value;
+        if (operacion === 'dolar') {
+            await guardarSoloDolarMasivoMireka();
+            return;
+        }
+        if (operacion === 'listas') {
+            if (!window.MirekaListasGestion?.guardarMasivo) {
+                mostrarMensaje(mensajeEdicionMasivaGestion, 'No se cargó el módulo de listas. Actualizá la página e intentá nuevamente.');
+                return;
+            }
+            await window.MirekaListasGestion.guardarMasivo();
+            return;
+        }
 
         let planGeneral;
 
@@ -40563,3 +40489,60 @@ formEdicionMasivaGestion?.addEventListener(
         }
     }
 );
+
+
+// =========================================================
+// MIREKA: UNA SOLA OPERACIÓN POR EDICIÓN MASIVA
+// =========================================================
+const modoOperacionMasivaMireka = document.getElementById('mireka-modo-operacion');
+function actualizarInterfazMasivaMireka() {
+    if (!modoOperacionMasivaMireka) return;
+    const usaUsdt = categoriaMasivaUsaUsdtGestion();
+    const modo = usaUsdt ? modoOperacionMasivaMireka.value : 'otros';
+    if (!usaUsdt) modoOperacionMasivaMireka.value = 'otros';
+    for (const opt of modoOperacionMasivaMireka.options) {
+        if (opt.value === 'dolar' || opt.value === 'listas') opt.disabled = !usaUsdt;
+    }
+    const esDolar = usaUsdt && modo === 'dolar';
+    const esListas = usaUsdt && modo === 'listas';
+    const esOtros = modo === 'otros';
+    if (soloDolarMasivoMireka) soloDolarMasivoMireka.checked = esDolar;
+    cambiarModoSoloDolarMireka(esDolar);
+    const toggle = (n, mostrar) => n?.classList.toggle('oculto', !mostrar);
+    toggle(document.querySelector('#edicion-masiva-datos-bloque .edicion-masiva-seccion-stock'), esOtros);
+    toggle(costoUsdtBloqueEdicionMasivaGestion, esDolar);
+    toggle(costoManualBloqueEdicionMasivaGestion, false);
+    toggle(costoDecantBloqueEdicionMasivaGestion, esOtros && categoriaMasivaEsDecantGestion());
+    toggle(document.querySelector('#edicion-masiva-datos-bloque .edicion-masiva-precios-separados'), esOtros);
+    // Nunca mostrar el mayorista antiguo para perfumes con las cuatro listas.
+    toggle(document.querySelector('.mireka-legacy-mayorista-masivo'), esOtros && !usaUsdt);
+    const precioGrid = document.querySelector('#edicion-masiva-datos-bloque .edicion-masiva-precios-separados');
+    precioGrid?.classList.toggle('mireka-solo-minorista', esOtros && usaUsdt);
+    // El valor en USDT de cada producto no se puede reemplazar desde el modo cotización.
+    toggle(proveedorUsdtEdicionMasivaGestion?.closest('.campo'), false);
+    toggle(recargoUsdtEdicionMasivaGestion?.closest('.campo'), false);
+    const desc = document.getElementById('mireka-modo-descripcion');
+    if (desc) desc.textContent = esDolar
+        ? 'Ingresá una cotización nueva. Cada perfume conserva su costo de proveedor y recargo. Revisá la vista previa antes de guardar.'
+        : esListas
+            ? 'Editá solo los porcentajes de Lista 1, 2, 3 o 4 de los productos seleccionados. No cambia el stock ni el minorista.'
+            : usaUsdt
+                ? 'Cambiá el stock o el precio minorista. Para el costo de un perfume específico, usá «Editar» en Ver stock.'
+                : 'Cambiá el stock o los precios de los productos seleccionados. Los costos especiales de decants se conservan.';
+    if (botonGuardarEdicionMasivaGestion && !botonGuardarEdicionMasivaGestion.disabled) {
+        botonGuardarEdicionMasivaGestion.textContent = esDolar
+            ? 'Actualizar dólar de los seleccionados'
+            : esListas ? 'Guardar listas de los seleccionados' : 'Aplicar a seleccionados';
+    }
+    // El módulo de listas se carga después de script.js; se actualiza desde su callback.
+    window.MirekaListasGestion?.actualizarMasivo?.();
+}
+modoOperacionMasivaMireka?.addEventListener('change', actualizarInterfazMasivaMireka);
+categoriaEdicionMasivaGestion?.addEventListener('change', () => {
+    if (modoOperacionMasivaMireka) modoOperacionMasivaMireka.value = categoriaMasivaUsaUsdtGestion() ? 'dolar' : 'otros';
+    actualizarInterfazMasivaMireka();
+});
+botonEdicionMasivaStockGestion?.addEventListener('click', () => {
+    if (modoOperacionMasivaMireka) modoOperacionMasivaMireka.value = 'dolar';
+    actualizarInterfazMasivaMireka();
+});

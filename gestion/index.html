@@ -293,6 +293,14 @@
                             Registrar reposición
                         </button>
 
+                        <button
+                            type="button"
+                            class="gestion-menu-accion"
+                            id="abrir-listas-mireka"
+                        >
+                            Listas mayoristas
+                        </button>
+
                     </div>
 
                 </details>
@@ -603,16 +611,8 @@
                         Maison Alhambra 30 ml
                     </option>
 
-                    <option value="inspiraciones-disenador">
-                        Inspiraciones de diseñador 60 ml
-                    </option>
-
                     <option value="decants-arabes">
                         Decants árabes
-                    </option>
-
-                    <option value="decants-disenador">
-                        Decants de diseñador
                     </option>
 
                 </select>
@@ -2331,6 +2331,30 @@
 
             </section>
 
+
+            <!-- Configuración general de cuatro listas mayoristas. Edición individual y masiva en Ver stock. -->
+            <section id="seccion-listas-mireka" class="oculto listas-mireka-pantalla">
+                <div class="listas-mireka-cabecera">
+                    <div>
+                        <h2>Listas mayoristas</h2>
+                        <p>Configurá tus cuatro listas. Cada precio se calcula desde el costo con markup y redondeo hacia arriba de $500.</p>
+                    </div>
+                    <button type="button" id="cerrar-listas-mireka" class="cerrar-stock">Cerrar</button>
+                </div>
+                <div class="listas-mireka-panel">
+                    <h3>Porcentajes generales</h3>
+                    <p>Los porcentajes son markup sobre el costo, no margen sobre la venta. Los productos personalizados conservan sus propios porcentajes.</p>
+                    <div class="listas-mireka-grid" id="listas-mireka-config-campos">
+                        <label>Lista 1 · desde 3 unidades (%)<input id="listas-mireka-general-1" type="number" min="0" max="1000" step="0.01" placeholder="Sin configurar"></label>
+                        <label>Lista 2 · desde 6 unidades (%)<input id="listas-mireka-general-2" type="number" min="0" max="1000" step="0.01" placeholder="Sin configurar"></label>
+                        <label>Lista 3 · desde 15 unidades (%)<input id="listas-mireka-general-3" type="number" min="0" max="1000" step="0.01" placeholder="Sin configurar"></label>
+                        <label>Lista 4 · desde 30 unidades (%)<input id="listas-mireka-general-4" type="number" min="0" max="1000" step="0.01" placeholder="Sin configurar"></label>
+                    </div>
+                    <button id="listas-mireka-guardar-generales" type="button" class="listas-mireka-boton">Guardar porcentajes generales</button>
+                    <p class="listas-mireka-ayuda">Estos porcentajes se aplican automáticamente a los perfumes sin un porcentaje personalizado. Para editar perfumes específicos, andá a Stock → Ver stock.</p>
+                </div>
+                <p id="listas-mireka-estado" class="listas-mireka-estado" role="status" aria-live="polite"></p>
+            </section>
         </main>
 
     </div>
@@ -2343,6 +2367,7 @@
     <script src="../js/supabase.js"></script>
     <script src="../js/productos.js"></script>
     <script src="script.js"></script>
+    <script src="listas.js"></script>
 
 </body>
 

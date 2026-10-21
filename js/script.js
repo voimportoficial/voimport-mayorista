@@ -11,21 +11,240 @@ const REGLAS_CATEGORIAS = {
         tieneMayorista: true
     },
     "maison-30ml": {
-        nombre: "Maison de 30 ml",
-        minimoMayorista: 3,
-        tieneMayorista: true
-    },
-    "inspiraciones-disenador": {
-        nombre: "Inspiraciones en diseñador",
+        nombre: "Maison Alhambra 30 ml",
         minimoMayorista: 3,
         tieneMayorista: true
     },
     "decants": {
-        nombre: "Decants",
-        minimoMayorista: 0,
-        tieneMayorista: false
+        nombre: "Decants 5 ml",
+        minimoMayorista: 3,
+        tieneMayorista: true
     }
 };
+
+// MIREKA | Vista de prueba. Los pedidos no se finalizan hasta sincronizar el backend.
+const MIREKA_PRUEBA_SIN_CHECKOUT = true;
+const MIREKA_ESCALONES = [3, 6, 15, 30];
+let mirekaPreciosPorSlug = new Map();
+let mirekaCotizacionesCargadas = false;
+// La elección dura solo durante esta visita a la sección de compras.
+// Al volver al inicio se borra y al ingresar nuevamente se pregunta otra vez.
+// En la misma visita se mantiene al recorrer categorías, marcas y productos.
+const MIREKA_MODO_STORAGE = 'mireka-modo-compra-sesion-v3';
+function mirekaLeerModoElegido() {
+    try {
+        const guardado = sessionStorage.getItem(MIREKA_MODO_STORAGE);
+        return ['minorista', 'mayorista'].includes(guardado) ? guardado : null;
+    } catch (_) { return null; }
+}
+let mirekaModoElegido = mirekaLeerModoElegido();
+let mirekaModoCompra = mirekaModoElegido || 'minorista';
+let mirekaDestinoPendiente = '';
+function mirekaFinalizarVisitaCompra() {
+    mirekaModoElegido = null;
+    mirekaModoCompra = 'minorista';
+    // Eliminamos también la elección persistente de la versión anterior.
+    try { sessionStorage.removeItem(MIREKA_MODO_STORAGE); } catch (_) {}
+    try { localStorage.removeItem('mireka-modo-compra-elegido-v2'); } catch (_) {}
+}
+
+// Cada categoría usa sus propias cantidades para activar una lista.
+// Ej.: 2 árabes + 2 Maison + 2 decants NO forman una Lista 1.
+function mirekaCantidadCategoria(categoria) {
+    return carrito.reduce((total, item) =>
+        total + (item.categoria === categoria ? Number(item.cantidad) || 0 : 0), 0);
+}
+function mirekaNivelPorCantidad(cantidad) {
+    if (cantidad >= 30) return 4;
+    if (cantidad >= 15) return 3;
+    if (cantidad >= 6) return 2;
+    if (cantidad >= 3) return 1;
+    return 0;
+}
+function mirekaNivelCategoria(categoria) {
+    return mirekaNivelPorCantidad(mirekaCantidadCategoria(categoria));
+}
+function mirekaPrecioDeNivel(producto, nivel) {
+    if (!nivel || !obtenerReglaCategoria(producto.categoria).tieneMayorista) return null;
+    const n = Number(producto.preciosListas?.[nivel - 1]);
+    return Number.isFinite(n) && n > 0 ? n : null;
+}
+function mirekaFaltanCotizaciones() {
+    return carrito.some(p => {
+        const nivel = mirekaNivelCategoria(p.categoria);
+        return nivel > 0 && mirekaPrecioDeNivel(p, nivel) === null;
+    });
+}
+// A pedido del comercio, el precio minorista del decant se redondea hacia
+// arriba a $500. Se aplica antes de cargar el carrito, NO solo en pantalla.
+function mirekaRedondearDecant(precio) {
+    const n = Number(precio);
+    return Number.isFinite(n) && n > 0 ? Math.ceil(n / 500) * 500 : precio;
+}
+
+async function mirekaCargarPreciosPublicos() {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient?.rpc) return;
+    const {data, error} = await supabaseClient.rpc('mireka_precios_publicos');
+    if (error) {
+        console.warn('Mireka: las listas todavía no están conectadas a la web:', error.message);
+        mirekaCotizacionesCargadas = false;
+        return;
+    }
+    mirekaPreciosPorSlug = new Map((Array.isArray(data) ? data : []).map(row => [
+        String(row.slug),
+        [1,2,3,4].map(i => {
+            const v = Number(row['precio_lista_' + i]);
+            return Number.isFinite(v) && v > 0 ? v : null;
+        })
+    ]));
+    mirekaCotizacionesCargadas = true;
+}
+
+function mirekaActualizarSelector() {
+    const texto = document.getElementById('mireka-modo-elegido-texto');
+    if (texto) texto.textContent = mirekaModoCompra === 'mayorista' ? 'Compra mayorista' : 'Compra minorista';
+    document.body.dataset.mirekaModo = mirekaModoCompra;
+    const ayuda = document.getElementById('texto-precios-catalogo');
+    if (ayuda) {
+        ayuda.textContent = mirekaModoCompra === 'mayorista'
+            ? 'Cada categoría se calcula por separado: árabes, Maison 30 ml y decants. Desde 3 de la misma categoría accedés a Lista 1; luego 6, 15 y 30.'
+            : 'Precios minoristas por unidad. Efectivo / transferencia o Mercado Pago. Desde 3 unidades de la misma categoría el carrito aplica la lista mayorista.';
+    }
+}
+function mirekaCrearSelectorVisible() {
+    const grid = document.getElementById('productos-grid');
+    const ficha = document.querySelector('.producto-detalle-info');
+    if ((!grid && !ficha) || document.getElementById('mireka-resumen-eleccion')) return;
+    const bloque = document.createElement('div');
+    bloque.id = 'mireka-resumen-eleccion';
+    bloque.className = 'mireka-resumen-eleccion';
+    bloque.innerHTML = `<div class="mireka-vista-actual"><span class="mireka-punto-dorado"></span>
+        <strong id="mireka-modo-elegido-texto"></strong><small>Precios según tu elección</small></div>
+        <button type="button" class="mireka-cambiar-modo" id="mireka-cambiar-modo">Cambiar modalidad ↗</button>`;
+    if (grid) {
+        grid.parentElement.insertBefore(bloque, grid);
+    } else {
+        const precioDetalle = document.getElementById('producto-precios-detalle');
+        if (precioDetalle) ficha.insertBefore(bloque, precioDetalle);
+        else ficha.prepend(bloque);
+    }
+    bloque.querySelector('#mireka-cambiar-modo')?.addEventListener('click', () => mirekaMostrarEleccion(''));
+    mirekaActualizarSelector();
+}
+function mirekaCrearPortalModo() {
+    if (document.getElementById('mireka-portal-modo')) return;
+    const modal = document.createElement('div');
+    modal.className = 'mireka-portal-modo';
+    modal.id = 'mireka-portal-modo';
+    modal.hidden = true;
+    modal.innerHTML = `<div class="mireka-portal-contenido" role="dialog" aria-modal="true" aria-labelledby="mireka-portal-titulo">
+        <div class="mireka-portal-marca">MIREKA <span>PERFUMERÍA</span></div>
+        <span class="mireka-portal-eyebrow">BIENVENIDO A MIREKA</span>
+        <h2 id="mireka-portal-titulo">¿Cómo querés comprar?</h2>
+        <p class="mireka-portal-subtitulo">Elegí una opción para ver únicamente los precios que te interesan.</p>
+        <div class="mireka-portal-opciones">
+            <button type="button" class="mireka-portal-opcion" data-mireka-elegir="minorista">
+                <span class="mireka-portal-icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg></span>
+                <strong>Compra minorista</strong><span>Para vos o para regalar</span>
+                <small>Comprá 1 perfume o los que quieras. Pagá en efectivo, transferencia o Mercado Pago.</small>
+                <em>Ver precios minoristas →</em>
+            </button>
+            <button type="button" class="mireka-portal-opcion" data-mireka-elegir="mayorista">
+                <span class="mireka-portal-icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="M3 7v10l9 5 9-5V7"/><path d="M12 12v10"/></svg></span>
+                <strong>Compra mayorista</strong><span>Para revender</span>
+                <small>Precios especiales desde 3 unidades de la misma categoría. Árabes, Maison 30 ml y decants se cuentan por separado.</small>
+                <em>Ver precios mayoristas →</em>
+            </button>
+        </div>
+        <p class="mireka-portal-nota">Podés cambiar de modalidad cuando quieras.</p>
+        <button type="button" class="mireka-portal-volver" id="mireka-portal-volver">Volver al inicio</button>
+    </div>`;
+    document.body.appendChild(modal);
+    modal.querySelectorAll('[data-mireka-elegir]').forEach(boton => boton.addEventListener('click', () => {
+        mirekaElegirModalidad(boton.dataset.mirekaElegir);
+    }));
+    modal.querySelector('#mireka-portal-volver')?.addEventListener('click', () => {
+        mirekaDestinoPendiente = '';
+        modal.hidden = true;
+        document.body.classList.remove('mireka-portal-abierto');
+        if (document.getElementById('productos-grid') || document.querySelector('.producto-detalle-info')) window.location.href = 'index.html';
+    });
+}
+function mirekaMostrarEleccion(destino = '') {
+    mirekaCrearPortalModo();
+    mirekaDestinoPendiente = destino;
+    const portal = document.getElementById('mireka-portal-modo');
+    portal.hidden = false;
+    document.body.classList.add('mireka-portal-abierto');
+    portal.querySelector('[data-mireka-elegir="minorista"]')?.focus();
+}
+function mirekaElegirModalidad(modo) {
+    if (!['minorista', 'mayorista'].includes(modo)) return;
+    mirekaModoCompra = modo;
+    mirekaModoElegido = modo;
+    try { sessionStorage.setItem(MIREKA_MODO_STORAGE, modo); } catch (_) {}
+    document.body.classList.remove('mireka-portal-abierto');
+    const modal = document.getElementById('mireka-portal-modo');
+    if (modal) modal.hidden = true;
+    const destino = mirekaDestinoPendiente;
+    mirekaDestinoPendiente = '';
+    mirekaActualizarSelector();
+    if (destino) {
+        window.location.href = destino;
+        return;
+    }
+    generarCatalogo();
+    actualizarFichaIndividual();
+    actualizarCarrito();
+}
+function mirekaIniciarSelectorCompra() {
+    const enPaginaCompra = Boolean(document.getElementById('productos-grid') || document.querySelector('.producto-detalle-info'));
+    // Si el cliente volvió a Inicio, terminó la modalidad anterior.
+    // En BFCache (botón Atrás del navegador), pageshow vuelve a limpiar.
+    if (!enPaginaCompra) {
+        mirekaFinalizarVisitaCompra();
+        window.addEventListener('pageshow', () => mirekaFinalizarVisitaCompra());
+    } else {
+        // Si el navegador restaura una página de compras después de haber
+        // pasado por Inicio, se debe pedir la modalidad nuevamente.
+        window.addEventListener('pageshow', evento => {
+            if (!evento.persisted || mirekaLeerModoElegido()) return;
+            mirekaModoElegido = null;
+            mirekaModoCompra = 'minorista';
+            mirekaActualizarSelector();
+            mirekaMostrarEleccion('');
+        });
+    }
+    mirekaCrearPortalModo();
+    mirekaCrearSelectorVisible();
+    mirekaActualizarSelector();
+    if (enPaginaCompra && !mirekaModoElegido) {
+        mirekaMostrarEleccion('');
+    }
+    // En Inicio, preguntar antes de navegar a catálogo, categorías o marcas.
+    // También cubre los divs de marcas y categorías con onclick en index.html.
+    if (!enPaginaCompra) {
+        document.addEventListener('click', evento => {
+            if (mirekaModoElegido || evento.defaultPrevented || evento.button !== 0 || evento.metaKey || evento.ctrlKey) return;
+            const enlace = evento.target.closest('a[href]');
+            const tarjeta = evento.target.closest('.categoria-card, .catalog-card');
+            const elemento = enlace || tarjeta;
+            if (!elemento) return;
+            let destino = enlace?.getAttribute('href') || '';
+            if (!destino && tarjeta) {
+                const codigo = tarjeta.getAttribute('onclick') || '';
+                const encontrado = codigo.match(/window\.location\.href=['"]([^'"]+)['"]/);
+                destino = encontrado?.[1] || '';
+            }
+            const seleccionable = /^(?:catalogo|categoria|producto|afnan|al-haramain|al-wataniah|armaf|asdaaf|bharara|french-avenue|lattafa|maison-alhambra|maison-30ml|rasasi|riiffs)\.html(?:[?#]|$)/i.test(destino)
+                || ['#categorias','#marcas'].includes(destino);
+            if (!seleccionable) return;
+            evento.preventDefault();
+            evento.stopImmediatePropagation();
+            mirekaMostrarEleccion(destino);
+        }, true);
+    }
+}
 
 const CATEGORIA_PREDETERMINADA = "perfumes-grandes";
 const numeroWhatsApp = "5491134293000";
@@ -1734,27 +1953,15 @@ function obtenerCantidadCategoria(categoria) {
 }
 
 function aplicaMayorista(producto) {
-    const regla = obtenerReglaCategoria(producto.categoria);
-
-    if (!regla.tieneMayorista) return false;
-
-    return (
-        obtenerCantidadCategoria(producto.categoria) >=
-        regla.minimoMayorista
-    );
+    return obtenerReglaCategoria(producto.categoria).tieneMayorista && mirekaNivelCategoria(producto.categoria) > 0;
 }
 
-function obtenerPrecioListaDesdeEfectivo(precioEfectivo) {
+function obtenerPrecioListaDesdeEfectivo(precioEfectivo, categoria = '') {
     const precio = Number(precioEfectivo);
-
-    if (!Number.isFinite(precio) || precio <= 0) {
-        return 0;
-    }
-
-    return Math.round(
-        precio /
-        (1 - DESCUENTO_EFECTIVO_TRANSFERENCIA)
-    );
+    if (!Number.isFinite(precio) || precio <= 0) return 0;
+    const precioLista = precio / (1 - DESCUENTO_EFECTIVO_TRANSFERENCIA);
+    // Redondear el importe de Mercado Pago en decants también a $500.
+    return categoria === 'decants' ? Math.ceil(precioLista / 500) * 500 : Math.round(precioLista);
 }
 
 function carritoTieneMayorista() {
@@ -1773,36 +1980,18 @@ function usarPrecioListaMinorista() {
 
 function obtenerPrecioUnitario(producto) {
     if (aplicaMayorista(producto)) {
-        return producto.precioMayorista;
+        return mirekaPrecioDeNivel(producto, mirekaNivelCategoria(producto.categoria)) ?? producto.precioMinorista;
     }
-
-    if (usarPrecioListaMinorista()) {
-        return obtenerPrecioListaDesdeEfectivo(
-            producto.precioMinorista
-        );
-    }
-
+    if (usarPrecioListaMinorista()) return obtenerPrecioListaDesdeEfectivo(producto.precioMinorista, producto.categoria);
     return producto.precioMinorista;
 }
-
 function obtenerTipoPrecio(producto) {
-    if (aplicaMayorista(producto)) {
-        return "Mayorista";
-    }
-
-    if (usarPrecioListaMinorista()) {
-        return "Precio de lista";
-    }
-
-    return "20% OFF efectivo/transferencia";
+    if (aplicaMayorista(producto)) return `Mayorista Lista ${mirekaNivelCategoria(producto.categoria)}`;
+    if (usarPrecioListaMinorista()) return 'Precio de lista';
+    return 'Efectivo / transferencia';
 }
-
-
 function obtenerPrecioCarritoBase(producto) {
-    if (aplicaMayorista(producto)) {
-        return producto.precioMayorista;
-    }
-
+    if (aplicaMayorista(producto)) return mirekaPrecioDeNivel(producto, mirekaNivelCategoria(producto.categoria)) ?? producto.precioMinorista;
     return producto.precioMinorista;
 }
 
@@ -1821,7 +2010,8 @@ function calcularTotalMercadoPagoMinorista() {
         (acumulado, producto) =>
             acumulado +
             obtenerPrecioListaDesdeEfectivo(
-                producto.precioMinorista
+                producto.precioMinorista,
+                producto.categoria
             ) *
             producto.cantidad,
         0
@@ -1857,6 +2047,7 @@ function cargarCarritoGuardado() {
                     producto.categoria ||
                     CATEGORIA_PREDETERMINADA,
                 precioMinorista,
+                preciosListas: Array.isArray(producto.preciosListas) ? producto.preciosListas : [],
                 precioMayorista:
                     precioMayoristaIngresado !== null &&
                     precioMayoristaIngresado > 0
@@ -1894,7 +2085,12 @@ async function cargarDatosDesdeSupabase() {
 
     try {
         const datos = await obtenerDatosProductos();
-        return Array.isArray(datos) ? datos : [];
+        return Array.isArray(datos)
+            ? datos.filter((producto) =>
+                producto.categoria !== "inspiraciones-disenador" &&
+                producto.linea !== "inspiraciones"
+              )
+            : [];
     } catch (error) {
         console.error(
             "No se pudieron cargar precios y stock desde Supabase:",
@@ -2068,8 +2264,10 @@ function sincronizarCarritoConCatalogo() {
                 nombre: productoCarrito.nombre
             });
 
+            // Un producto eliminado del catálogo tampoco debe quedar en
+            // carritos anteriores guardados en el navegador.
             if (!productoActual) {
-                return productoCarrito;
+                return null;
             }
 
             if (!productoActual.activo || productoActual.stock === 0) {
@@ -2097,6 +2295,7 @@ function sincronizarCarritoConCatalogo() {
                     productoActual.precioMinorista,
                 precioMayorista:
                     productoActual.precioMayorista,
+                preciosListas: productoActual.preciosListas || [],
                 imagen: productoActual.imagen || "",
                 stock: productoActual.stock,
                 cantidad: cantidadMaxima
@@ -2135,92 +2334,57 @@ function crearTextoStock(producto) {
 }
 
 function crearPrecioCatalogo(producto) {
-    const regla = obtenerReglaCategoria(producto.categoria);
-
-    const precioLista =
-        obtenerPrecioListaDesdeEfectivo(
-            producto.precioMinorista
-        );
-
-    // Los productos sin precio mayorista (por ejemplo, decants)
-    // conservan el efectivo / transferencia como precio principal.
-    if (!regla.tieneMayorista) {
-        return `
-            <div class="producto-precios-ordenados">
-                <div class="precio-efectivo-destacado">
-                    <span class="precio-efectivo-etiqueta">
-                        20% OFF efectivo / transferencia
-                    </span>
-                    <strong>
-                        ${formatearPrecio(producto.precioMinorista)}
-                    </strong>
+    // Visual únicamente: se mantienen los mismos precios y reglas de compra.
+    const tieneMayorista = obtenerReglaCategoria(producto.categoria).tieneMayorista;
+    const precioMP = obtenerPrecioListaDesdeEfectivo(producto.precioMinorista, producto.categoria);
+    if (mirekaModoCompra !== 'mayorista' || !tieneMayorista) {
+        return `<div class="mireka-precios-tarjeta mireka-precio-simple mireka-precios-premium">
+            <div class="mireka-efectivo-panel">
+                <div class="mireka-precio-cabecera">
+                    <span class="mireka-metodo-label">EFECTIVO / TRANSFERENCIA</span>
+                    <span class="mireka-beneficio-badge">${producto.categoria === 'decants' ? 'MEJOR PRECIO' : '20% OFF'}</span>
                 </div>
-
-                <div class="precio-secundario precio-tarjeta">
-                    <span class="precio-secundario-etiqueta">
-                        <svg
-                            class="icono-tarjeta-precio"
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                        >
-                            <rect x="2.5" y="5" width="19" height="14" rx="2.5"></rect>
-                            <path d="M2.5 9h19"></path>
-                            <path d="M6 15h4"></path>
-                        </svg>
-                        Mercado Pago 3 cuotas sin interés
-                    </span>
-                    <strong>
-                        ${formatearPrecio(precioLista)}
-                    </strong>
-                </div>
+                <strong class="mireka-precio-principal">${formatearPrecio(producto.precioMinorista)}</strong>
+                <small class="mireka-precio-beneficio">Precio por unidad</small>
             </div>
-        `;
+            <div class="mireka-mp-panel">
+                <div class="mireka-mp-titulo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 10h18"/></svg>
+                    <span>MERCADO PAGO</span>
+                </div>
+                <strong class="mireka-mp-monto">${formatearPrecio(precioMP)}</strong>
+                <span class="mireka-cuotas-label">3 CUOTAS SIN INTERÉS</span>
+            </div>
+        </div>`;
     }
-
-    // En productos con mayorista, el precio mayorista es el protagonista.
-    return `
-        <div class="producto-precios-ordenados producto-precios-con-mayorista">
-            <div class="precio-mayorista-destacado">
-                <span class="precio-mayorista-etiqueta">
-                    PRECIO MAYORISTA
-                </span>
-                <small>
-                    Desde 3 perfumes surtidos
-                </small>
-                <strong>
-                    ${formatearPrecio(producto.precioMayorista)}
-                </strong>
-            </div>
-
-            <div class="precio-secundario precio-efectivo-secundario">
-                <span class="precio-secundario-etiqueta">
-                    Minorista · 20% OFF<br>
-                    efectivo / transferencia
-                </span>
-                <strong>
-                    ${formatearPrecio(producto.precioMinorista)}
-                </strong>
-            </div>
-
-            <div class="precio-secundario precio-tarjeta">
-                <span class="precio-secundario-etiqueta">
-                    <svg
-                        class="icono-tarjeta-precio"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <rect x="2.5" y="5" width="19" height="14" rx="2.5"></rect>
-                        <path d="M2.5 9h19"></path>
-                        <path d="M6 15h4"></path>
-                    </svg>
-                    Mercado Pago 3 cuotas sin interés
-                </span>
-                <strong>
-                    ${formatearPrecio(precioLista)}
-                </strong>
-            </div>
+    const nivelActual = mirekaNivelCategoria(producto.categoria);
+    const listas = MIREKA_ESCALONES.map((unidades, indice) => {
+        const nivel = indice + 1;
+        const precio = mirekaPrecioDeNivel(producto, nivel);
+        const activa = nivelActual === nivel;
+        return `<div class="mireka-lista-visible${activa ? ' mireka-lista-visible-activa' : ''}">
+            <span class="mireka-lista-identidad">
+                <strong>LISTA ${nivel}</strong>
+                <small>${unidades}+ perfumes</small>
+            </span>
+            <strong class="mireka-lista-monto${precio === null ? ' mireka-lista-monto-pendiente' : ''}">${precio === null ? 'A confirmar' : formatearPrecio(precio)}</strong>
+        </div>`;
+    }).join('');
+    return `<div class="mireka-precios-tarjeta mireka-precios-premium mireka-precio-mayorista mireka-cuatro-listas">
+        <div class="mireka-listas-encabezado">
+            <span>PRECIOS MAYORISTAS</span>
+            ${nivelActual > 0 ? `<small>LISTA ${nivelActual} ACTIVA</small>` : ''}
         </div>
-    `;
+        <div class="mireka-listas-todas">${listas}</div>
+    </div>`;
+}
+function mirekaActualizarPreciosVisibles() {
+    document.querySelectorAll('.producto-card[data-slug]').forEach(tarjeta => {
+        const producto = buscarProductoActual({slug: tarjeta.dataset.slug});
+        const contenedor = tarjeta.querySelector('.mireka-precios-tarjeta');
+        if (producto && contenedor) contenedor.outerHTML = crearPrecioCatalogo(producto);
+    });
+    actualizarFichaIndividual();
 }
 
 function generarCatalogo() {
@@ -2238,9 +2402,21 @@ function generarCatalogo() {
     const tipoActual =
         document.body.dataset.tipo;
 
-    const disenadorActual =
-        new URLSearchParams(window.location.search)
-            .get("disenador");
+    const parametrosCatalogo =
+        new URLSearchParams(window.location.search);
+
+    const coleccionActual =
+        parametrosCatalogo.get("coleccion") || "";
+
+    const generoActual =
+        parametrosCatalogo.get("genero") || "";
+
+    const nuevosIngresosNombres =
+        new Set([
+            "Afnan 9 PM Night Out",
+            "Lattafa Khamrah Waha",
+            "Riiffs Momento"
+        ]);
 
     const terminoBusqueda =
         document.getElementById("buscador-catalogo")
@@ -2260,10 +2436,10 @@ function generarCatalogo() {
                 !marcaActual ||
                 producto.marca === marcaActual;
 
+            // La búsqueda respeta la categoría elegida: no mezclar
+            // perfumes grandes, decants y Maison Alhambra 30 ml.
             const coincideCategoria =
-    terminoBusqueda
-        ? true
-        : !categoriaActual || producto.categoria === categoriaActual;
+                !categoriaActual || producto.categoria === categoriaActual;
 
             const coincideLinea =
                 !lineaActual ||
@@ -2273,9 +2449,49 @@ function generarCatalogo() {
                 !tipoActual ||
                 producto.tipo === tipoActual;
 
-            const coincideDisenador =
-                !disenadorActual ||
-                producto.disenador === disenadorActual;
+            const presentacionNormalizada =
+                String(producto.presentacion || "")
+                    .toLowerCase();
+
+            const coincideGenero =
+                !generoActual ||
+                (
+                    producto.categoria === "perfumes-grandes" &&
+                    (
+                        (generoActual === "woman" &&
+                            (
+                                presentacionNormalizada.includes("woman") ||
+                                presentacionNormalizada.includes("mujer")
+                            )
+                        ) ||
+                        (generoActual === "men" &&
+                            (
+                                presentacionNormalizada.includes(" men") ||
+                                presentacionNormalizada.includes("hombre")
+                            ) &&
+                            !presentacionNormalizada.includes("women")
+                        ) ||
+                        (generoActual === "unisex" &&
+                            presentacionNormalizada.includes("unisex")
+                        )
+                    )
+                );
+
+            const coincideColeccion =
+                !coleccionActual ||
+                (
+                    coleccionActual === "nuevos" &&
+                    producto.categoria === "perfumes-grandes" &&
+                    nuevosIngresosNombres.has(producto.nombre)
+                ) ||
+                (
+                    coleccionActual === "ofertas" &&
+                    producto.activo !== false &&
+                    (
+                        producto.stock === null ||
+                        Number(producto.stock) > 0
+                    )
+                );
 
             const nombreProducto =
                 String(producto.nombre || "")
@@ -2295,28 +2511,13 @@ function generarCatalogo() {
                 producto.stock === null ||
                 Number(producto.stock) > 0;
 
-
-            /*
-                En el catálogo general de Decants 5 ml
-                NO mostramos los decants de inspiraciones.
-
-                Pero en inspiraciones-decants.html,
-                donde lineaActual = "inspiraciones",
-                SÍ deben aparecer.
-            */
-            const ocultarDecantInspiracionGeneral =
-                categoriaActual === "decants" &&
-                !lineaActual &&
-                producto.linea === "inspiraciones";
-
-
             return (
                 coincideMarca &&
                 coincideCategoria &&
                 coincideLinea &&
                 coincideTipo &&
-                coincideDisenador &&
-                !ocultarDecantInspiracionGeneral &&
+                coincideGenero &&
+                coincideColeccion &&
                 coincideBusqueda &&
                 coincideStock &&
                 producto.activo !== false
@@ -2343,45 +2544,7 @@ function generarCatalogo() {
         );
     }
 
-    const esInspiracion =
-    lineaActual === "inspiraciones" &&
-    ["perfume", "decant"].includes(tipoActual);
-
-
-if (esInspiracion) {
-
-    const disenadorA =
-        productoA.disenador === "armani"
-            ? "Giorgio Armani"
-            : productoA.disenador === "dior"
-                ? "Christian Dior"
-                : String(productoA.disenador || "");
-
-    const disenadorB =
-        productoB.disenador === "armani"
-            ? "Giorgio Armani"
-            : productoB.disenador === "dior"
-                ? "Christian Dior"
-                : String(productoB.disenador || "");
-
-
-    const ordenDisenador =
-        disenadorA.localeCompare(
-            disenadorB,
-            "es",
-            {
-                sensitivity: "base"
-            }
-        );
-
-
-    if (ordenDisenador !== 0) {
-        return ordenDisenador;
-    }
-}
-
-
-return productoA.nombre.localeCompare(
+    return productoA.nombre.localeCompare(
     productoB.nombre,
     "es",
     {
@@ -2405,48 +2568,12 @@ if (productosDeLaMarca.length === 0) {
 }
 
 
-const esPaginaInspiraciones =
-    lineaActual === "inspiraciones" &&
-    ["perfume", "decant"].includes(tipoActual);
-
-
-const nombresDisenadores = {
-    "armani": "Giorgio Armani",
-    "azzaro": "Azzaro",
-    "bvlgari": "Bvlgari",
-    "cacharel": "Cacharel",
-    "carolina-herrera": "Carolina Herrera",
-    "chanel": "Chanel",
-    "creed": "Creed",
-    "dior": "Christian Dior",
-    "dolce-gabbana": "Dolce & Gabbana",
-    "francis-kurkdjian": "Francis Kurkdjian",
-    "jean-paul-gaultier": "Jean Paul Gaultier",
-    "kenzo": "Kenzo",
-    "lancome": "Lancôme",
-    "louis-vuitton": "Louis Vuitton",
-    "moschino": "Moschino",
-    "nina-ricci": "Nina Ricci",
-    "paco-rabanne": "Paco Rabanne",
-    "ralph-lauren": "Ralph Lauren",
-    "thierry-mugler": "Thierry Mugler",
-    "tom-ford": "Tom Ford",
-    "valentino": "Valentino",
-    "versace": "Versace",
-    "viktor-rolf": "Viktor & Rolf",
-    "xerjoff": "Xerjoff",
-    "yves-saint-laurent": "Yves Saint Laurent"
-};
-
-
 const productosPorMarca = {};
 
 
 productosDeLaMarca.forEach((producto) => {
 
-    const grupo = esPaginaInspiraciones
-        ? nombresDisenadores[producto.disenador] || "Otros"
-        : producto.marca;
+    const grupo = producto.marca;
 
     if (!productosPorMarca[grupo]) {
         productosPorMarca[grupo] = [];
@@ -2467,24 +2594,11 @@ const crearTarjetaProducto = (producto) => {
             : "Agregar al carrito";
 
 
-    const nombreDisenador =
-        nombresDisenadores[producto.disenador] ||
-        producto.disenador ||
-        "";
-
-
     const esProductoArabe =
-    !esPaginaInspiraciones &&
-    ["perfumes-grandes", "decants", "maison-30ml"]
-        .includes(producto.categoria);
+        ["perfumes-grandes", "decants", "maison-30ml"]
+            .includes(producto.categoria);
 
-
-    const textoSuperior =
-        esPaginaInspiraciones
-            ? nombreDisenador
-            : esProductoArabe
-                ? producto.marca
-                : "";
+    const textoSuperior = esProductoArabe ? producto.marca : "";
 
 
     const etiquetaSuperior =
@@ -2500,10 +2614,7 @@ const crearTarjetaProducto = (producto) => {
 
 const esMobile = window.matchMedia("(max-width: 768px)").matches;
 
-const nombreVisible =
-    producto.linea === "inspiraciones" && textoSuperior
-        ? `${textoSuperior} ${producto.nombre}`
-        : producto.nombre;
+const nombreVisible = producto.nombre;
 
 const tieneMayorista =
     obtenerReglaCategoria(producto.categoria).tieneMayorista;
@@ -2584,6 +2695,7 @@ return `
         .map(crearTarjetaProducto)
         .join("");
 }
+
 // =============================
 // FICHA INDIVIDUAL DEL PRODUCTO
 // =============================
@@ -2626,7 +2738,7 @@ function actualizarFichaIndividual() {
     }
 
     document.title =
-        `${producto.nombre} | Vo Import`;
+        `${producto.nombre} | Mireka Perfumería`;
 
     const imagenProducto =
         producto.imagen || "images/favicon.PNG";
@@ -2770,47 +2882,7 @@ function actualizarFichaIndividual() {
         );
 
     if (bloquePreciosDetalle) {
-        bloquePreciosDetalle.innerHTML = regla.tieneMayorista
-            ? `
-                <div class="detalle-precio-mayorista-principal">
-                    <span class="detalle-mayorista-titulo">PRECIO MAYORISTA</span>
-                    <small>Desde ${regla.minimoMayorista} perfumes surtidos</small>
-                    <strong>${formatearPrecio(producto.precioMayorista)}</strong>
-                </div>
-
-                <div class="detalle-precio-secundario detalle-precio-minorista">
-                    <span class="detalle-precio-etiqueta">Minorista · 20% OFF efectivo / transferencia</span>
-                    <strong>${formatearPrecio(producto.precioMinorista)}</strong>
-                </div>
-
-                <div class="detalle-precio-secundario detalle-precio-tarjeta">
-                    <span class="detalle-precio-etiqueta">
-                        <svg class="icono-tarjeta-precio" viewBox="0 0 24 24" aria-hidden="true">
-                            <rect x="3" y="6" width="18" height="12" rx="2"></rect>
-                            <path d="M3 10h18"></path>
-                        </svg>
-                        Mercado Pago · 3 cuotas sin interés
-                    </span>
-                    <strong>${formatearPrecio(precioLista)}</strong>
-                </div>
-            `
-            : `
-                <div class="detalle-precio-efectivo">
-                    <span>20% OFF efectivo / transferencia</span>
-                    <strong>${formatearPrecio(producto.precioMinorista)}</strong>
-                </div>
-
-                <div class="detalle-precio-secundario detalle-precio-tarjeta">
-                    <span class="detalle-precio-etiqueta">
-                        <svg class="icono-tarjeta-precio" viewBox="0 0 24 24" aria-hidden="true">
-                            <rect x="3" y="6" width="18" height="12" rx="2"></rect>
-                            <path d="M3 10h18"></path>
-                        </svg>
-                        Mercado Pago · 3 cuotas sin interés
-                    </span>
-                    <strong>${formatearPrecio(precioLista)}</strong>
-                </div>
-            `;
+        bloquePreciosDetalle.innerHTML = crearPrecioCatalogo(producto);
     }
 
     let stockDetalle = document.querySelector(
@@ -2880,41 +2952,67 @@ function actualizarFichaIndividual() {
 // MENSAJE DE MÍNIMOS MAYORISTAS
 // =============================
 
-function crearMensajeMayorista() {
-    if (carrito.length === 0) {
-        return "Los mínimos mayoristas se calculan por categoría.";
-    }
-
-    const categoriasPresentes = [
-        ...new Set(
-            carrito.map((producto) => producto.categoria)
-        )
-    ];
-
-    return categoriasPresentes
-        .map((categoria) => {
-            const regla = obtenerReglaCategoria(categoria);
-
-            if (!regla.tieneMayorista) {
-                return `${regla.nombre}: precio único.`;
-            }
-
-            const cantidad =
-                obtenerCantidadCategoria(categoria);
-
-            if (cantidad >= regla.minimoMayorista) {
-                return `${regla.nombre}: ¡precio mayorista aplicado!`;
-            }
-
-            const faltan = regla.minimoMayorista - cantidad;
-
-            return `${regla.nombre}: faltan ${faltan} ${
-                faltan === 1 ? "unidad" : "unidades"
-            } para mayorista.`;
-        })
-        .join(" • ");
+function mirekaCategoriasCarrito() {
+    return Object.keys(REGLAS_CATEGORIAS).filter(cat => mirekaCantidadCategoria(cat) > 0);
 }
-
+function crearMensajeMayorista() {
+    if (!carrito.length) return 'Sumá productos para acceder a precios mayoristas.';
+    return mirekaCategoriasCarrito().map(categoria => {
+        const cantidad = mirekaCantidadCategoria(categoria);
+        const nivel = mirekaNivelCategoria(categoria);
+        const nombre = obtenerReglaCategoria(categoria).nombre;
+        if (nivel === 4) return `${nombre}: Lista 4 activa.`;
+        const faltan = MIREKA_ESCALONES[nivel] - cantidad;
+        return `${nombre}: ${nivel ? `Lista ${nivel} activa; ` : ''}faltan ${faltan} para Lista ${nivel + 1}.`;
+    }).join(' · ');
+}
+function mirekaCalcularAhorroSiguienteLista(categoria) {
+    const nivel = mirekaNivelCategoria(categoria);
+    if (nivel >= 4) return 0;
+    let ahorro = 0;
+    for (const p of carrito.filter(item => item.categoria === categoria)) {
+        const actual = nivel ? mirekaPrecioDeNivel(p, nivel) : p.precioMinorista;
+        const siguiente = mirekaPrecioDeNivel(p, nivel + 1);
+        if (actual === null || siguiente === null) return null;
+        ahorro += (actual - siguiente) * Number(p.cantidad);
+    }
+    return Math.max(0, ahorro);
+}
+function mirekaActualizarProgreso() {
+    let bloque = document.getElementById('mireka-progreso-carrito');
+    if (!bloque && carritoPanel) {
+        bloque = document.createElement('section');
+        bloque.id = 'mireka-progreso-carrito';
+        bloque.className = 'mireka-progreso-carrito';
+        const referencia = carritoPanel.querySelector('.carrito-productos');
+        referencia?.insertAdjacentElement('beforebegin', bloque);
+    }
+    if (!bloque) return;
+    const categorias = mirekaCategoriasCarrito();
+    if (!categorias.length) { bloque.hidden = true; return; }
+    bloque.hidden = false;
+    bloque.innerHTML = categorias.map(categoria => {
+        const nombre = obtenerReglaCategoria(categoria).nombre;
+        const q = mirekaCantidadCategoria(categoria);
+        const nivel = mirekaNivelCategoria(categoria);
+        const siguiente = MIREKA_ESCALONES[nivel];
+        const previo = nivel > 0 ? MIREKA_ESCALONES[nivel-1] : 0;
+        const progreso = siguiente ? Math.max(0, Math.min(100,100*(q-previo)/(siguiente-previo))) : 100;
+        const mensaje = nivel === 4 ? '¡Llegaste a la Lista 4!' :
+            `Faltan ${siguiente-q} unidades de esta categoría para Lista ${nivel+1}`;
+        const ahorro = mirekaCalcularAhorroSiguienteLista(categoria);
+        const ahorroTexto = nivel === 4 ? 'Ya tenés el mejor precio mayorista.' :
+            ahorro === null ? 'El ahorro se mostrará cuando estén los precios de Supabase.' :
+            ahorro > 0 ? `Ahorrás ${formatearPrecio(ahorro)} en estos productos al pasar a la próxima lista.` :
+            'Sumá más unidades de esta categoría para mejorar el precio.';
+        return `<div class="mireka-progreso-grupo">
+            <div class="mireka-progreso-cabecera"><strong>${nombre}</strong><span>${q} unid. · ${nivel ? `Lista ${nivel}` : 'Minorista'}</span></div>
+            <div class="mireka-progreso-meta">${mensaje}</div>
+            <div class="mireka-progreso-barra" role="progressbar" aria-label="Progreso mayorista ${nombre}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(progreso)}"><span style="width:${progreso}%"></span></div>
+            <p class="mireka-ahorro">${ahorroTexto}</p>
+        </div>`;
+    }).join('');
+}
 
 // =============================
 // MOSTRAR EL CARRITO
@@ -2947,6 +3045,8 @@ function actualizarCarrito() {
 
                     const esMayoristaProducto =
                         aplicaMayorista(producto);
+                    const cotizacionMayoristaPendiente = esMayoristaProducto &&
+                        mirekaPrecioDeNivel(producto, mirekaNivelCategoria(producto.categoria)) === null;
 
                     const puedeSumar =
                         producto.stock === null ||
@@ -2974,7 +3074,7 @@ function actualizarCarrito() {
                                 </small>
 
                                 <p class="carrito-item-precio">
-                                    ${formatearPrecio(precioUnitario)} c/u
+                                    ${cotizacionMayoristaPendiente ? 'Precio mayorista a confirmar' : formatearPrecio(precioUnitario) + ' c/u'}
                                     ${
                                         esMayoristaProducto
                                             ? '<span class="carrito-item-mayorista">Mayorista</span>'
@@ -3030,9 +3130,10 @@ function actualizarCarrito() {
     }
 
     if (mensajeMayorista) {
-        mensajeMayorista.textContent =
-            crearMensajeMayorista();
+        mensajeMayorista.textContent = crearMensajeMayorista();
+        mensajeMayorista.hidden = true;
     }
+    mirekaActualizarProgreso();
 
     const carritoEsMayorista =
         carritoTieneMayorista();
@@ -3042,7 +3143,7 @@ function actualizarCarrito() {
 
     if (carritoTotal) {
         carritoTotal.textContent =
-            formatearPrecio(subtotal);
+            mirekaFaltanCotizaciones() ? 'A confirmar' : formatearPrecio(subtotal);
     }
 
     const etiquetaTotal =
@@ -3101,6 +3202,7 @@ function actualizarCarrito() {
         botonFinalizarPedido.textContent =
             "Continuar compra";
     }
+    mirekaActualizarPreciosVisibles();
 }
 
 
@@ -3209,8 +3311,8 @@ function agregarProductoAlCarrito(boton) {
         productoExistente.cantidad += cantidad;
         productoExistente.precioMinorista =
             precioMinorista;
-        productoExistente.precioMayorista =
-            precioMayorista;
+        productoExistente.precioMayorista = precioMayorista;
+        productoExistente.preciosListas = productoActual?.preciosListas || [];
         productoExistente.stock = stock;
     } else {
         carrito.push({
@@ -3219,6 +3321,7 @@ function agregarProductoAlCarrito(boton) {
             categoria,
             precioMinorista,
             precioMayorista,
+            preciosListas: productoActual?.preciosListas || [],
             imagen,
             cantidad,
             stock
@@ -3721,34 +3824,6 @@ function crearMensajePedido(
 ) {
     const cantidadTotal = obtenerCantidadTotal();
 
-    const nombresDisenadoresPedido = {
-        "armani": "Giorgio Armani",
-        "azzaro": "Azzaro",
-        "bvlgari": "Bvlgari",
-        "cacharel": "Cacharel",
-        "carolina-herrera": "Carolina Herrera",
-        "chanel": "Chanel",
-        "creed": "Creed",
-        "dior": "Christian Dior",
-        "dolce-gabbana": "Dolce & Gabbana",
-        "francis-kurkdjian": "Francis Kurkdjian",
-        "jean-paul-gaultier": "Jean Paul Gaultier",
-        "kenzo": "Kenzo",
-        "lancome": "Lancôme",
-        "louis-vuitton": "Louis Vuitton",
-        "moschino": "Moschino",
-        "nina-ricci": "Nina Ricci",
-        "paco-rabanne": "Paco Rabanne",
-        "ralph-lauren": "Ralph Lauren",
-        "thierry-mugler": "Thierry Mugler",
-        "tom-ford": "Tom Ford",
-        "valentino": "Valentino",
-        "versace": "Versace",
-        "viktor-rolf": "Viktor & Rolf",
-        "xerjoff": "Xerjoff",
-        "yves-saint-laurent": "Yves Saint Laurent"
-    };
-
     let mensaje =
         "Hola, quiero realizar el siguiente pedido:\n\n";
 
@@ -3777,52 +3852,7 @@ function crearMensajePedido(
         const subtotal =
             precioUnitario * producto.cantidad;
 
-        const productoActual =
-            buscarProductoActual({
-                slug: producto.slug,
-                nombre: producto.nombre
-            });
-
-        const disenador =
-            productoActual?.disenador || "";
-
-        const nombreDisenador =
-            nombresDisenadoresPedido[disenador] ||
-            disenador ||
-            "";
-
-        const esInspiracion =
-            producto.categoria === "inspiraciones-disenador" ||
-            (
-                producto.categoria === "decants" &&
-                productoActual?.linea === "inspiraciones"
-            );
-
-        let nombreCompleto =
-            producto.nombre;
-
-        if (esInspiracion && nombreDisenador) {
-            const nombreProductoNormalizado =
-                producto.nombre
-                    .toLowerCase()
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "");
-
-            const disenadorNormalizado =
-                nombreDisenador
-                    .toLowerCase()
-                    .normalize("NFD")
-                    .replace(/[\u0300-\u036f]/g, "");
-
-            if (
-                !nombreProductoNormalizado.startsWith(
-                    disenadorNormalizado
-                )
-            ) {
-                nombreCompleto =
-                    `${nombreDisenador} ${producto.nombre}`;
-            }
-        }
+        const nombreCompleto = producto.nombre;
 
         let categoriaTexto = "";
 
@@ -3832,10 +3862,6 @@ function crearMensajePedido(
 
         if (producto.categoria === "maison-30ml") {
             categoriaTexto = "Maison Alhambra 30 ml";
-        }
-
-        if (producto.categoria === "inspiraciones-disenador") {
-            categoriaTexto = "Inspiración 60 ml";
         }
 
         if (producto.categoria === "decants") {
@@ -4545,6 +4571,14 @@ function renderizarDetallePagoCheckout(
 botonFinalizarPedido?.addEventListener(
     "click",
     () => {
+        if (MIREKA_PRUEBA_SIN_CHECKOUT) {
+            alert('Esta es una prueba local del nuevo carrito. La finalización está pausada hasta conectar los precios de las 4 listas con el registro de pedidos en Supabase.');
+            return;
+        }
+        if (mirekaFaltanCotizaciones()) {
+            alert('Falta sincronizar los precios mayoristas. No se puede finalizar con precios sin confirmar.');
+            return;
+        }
         if (carrito.length === 0) {
             alert("Tu carrito está vacío.");
             return;
@@ -4791,6 +4825,13 @@ async function iniciarAplicacion() {
         ...productosSoloSupabase
     ];
 
+    // Se calcula una sola vez, para que fichas, carrito y navegación coincidan.
+    catalogoActualizado.forEach(producto => {
+        if (producto.categoria === 'decants') {
+            producto.precioMinorista = mirekaRedondearDecant(producto.precioMinorista);
+        }
+    });
+
     /*
         El buscador general del inicio usa el array local
         `productos`. Agregamos allí, solo en memoria, los
@@ -4813,12 +4854,19 @@ async function iniciarAplicacion() {
         });
     }
 
+    await mirekaCargarPreciosPublicos();
+    catalogoActualizado.forEach(producto => {
+        producto.preciosListas = mirekaPreciosPorSlug.get(String(producto.slug)) || [];
+    });
+    mirekaActualizarSelector();
     sincronizarCarritoConCatalogo();
     generarCatalogo();
     actualizarFichaIndividual();
     guardarCarrito();
     actualizarCarrito();
 }
+
+mirekaIniciarSelectorCompra();
 
 iniciarAplicacion().catch((error) => {
     console.error("Error al iniciar la web:", error);
@@ -4874,40 +4922,9 @@ if (cambiarPresentacion) {
     const vistaInicial =
         parametrosPresentacion.get("vista");
 
-    const esPaginaInspiracionesInicial =
-        document.body.dataset.linea ===
-        "inspiraciones";
-
-
     if (vistaInicial === "decants") {
-
-        document.body.dataset.categoria =
-            "decants";
-
-
-        if (esPaginaInspiracionesInicial) {
-
-            document.body.dataset.tipo =
-                "decant";
-
-            const tituloInspiraciones =
-                document.getElementById(
-                    "titulo-inspiraciones-listado"
-                );
-
-            if (tituloInspiraciones) {
-
-                tituloInspiraciones.textContent =
-                    "Decants 5 ml inspirados en diseñador";
-
-            }
-
-        }
-
-
-        cambiarPresentacion.textContent =
-            "← Volver a perfumes";
-
+        document.body.dataset.categoria = "decants";
+        cambiarPresentacion.textContent = "← Volver a perfumes";
     }
 
 
@@ -4919,101 +4936,18 @@ if (cambiarPresentacion) {
         "click",
         () => {
 
-            const esPaginaInspiraciones =
-                document.body.dataset.linea ===
-                "inspiraciones";
-
             const viendoDecants =
-                document.body.dataset.categoria ===
-                "decants";
+                document.body.dataset.categoria === "decants";
 
-
-            if (esPaginaInspiraciones) {
-
-                const tituloInspiraciones =
-                    document.getElementById(
-                        "titulo-inspiraciones-listado"
-                    );
-
-
-                if (viendoDecants) {
-
-                    document.body.dataset.categoria =
-                        "inspiraciones-disenador";
-
-                    document.body.dataset.tipo =
-                        "perfume";
-
-                    cambiarPresentacion.textContent =
-                        "Ver Decants 5 ml";
-
-                    actualizarUrlPresentacion(
-                        false
-                    );
-
-
-                    if (tituloInspiraciones) {
-
-                        tituloInspiraciones.textContent =
-                            "Perfumes inspirados en diseñador";
-
-                    }
-
-                } else {
-
-                    document.body.dataset.categoria =
-                        "decants";
-
-                    document.body.dataset.tipo =
-                        "decant";
-
-                    cambiarPresentacion.textContent =
-                        "← Volver a perfumes";
-
-                    actualizarUrlPresentacion(
-                        true
-                    );
-
-
-                    if (tituloInspiraciones) {
-
-                        tituloInspiraciones.textContent =
-                            "Decants 5 ml inspirados en diseñador";
-
-                    }
-
-                }
-
+            if (viendoDecants) {
+                document.body.dataset.categoria = "perfumes-grandes";
+                cambiarPresentacion.textContent = "Ver Decants 5 ml";
+                actualizarUrlPresentacion(false);
             } else {
-
-                if (viendoDecants) {
-
-                    document.body.dataset.categoria =
-                        "perfumes-grandes";
-
-                    cambiarPresentacion.textContent =
-                        "Ver Decants 5 ml";
-
-                    actualizarUrlPresentacion(
-                        false
-                    );
-
-                } else {
-
-                    document.body.dataset.categoria =
-                        "decants";
-
-                    cambiarPresentacion.textContent =
-                        "← Volver a perfumes";
-
-                    actualizarUrlPresentacion(
-                        true
-                    );
-
-                }
-
+                document.body.dataset.categoria = "decants";
+                cambiarPresentacion.textContent = "← Volver a perfumes";
+                actualizarUrlPresentacion(true);
             }
-
 
             generarCatalogo();
 
@@ -5035,8 +4969,7 @@ function crearVolverFlotanteGlobal() {
     // Buscamos si la página tiene un enlace Volver principal
     let enlaceVolver = document.querySelector(
         ".productos-header a, " +
-        ".producto-detalle-header a, " +
-        "#volver-inspiraciones"
+        ".producto-detalle-header a"
     );
 
 
@@ -5164,16 +5097,14 @@ function crearBarraInformativaGlobal() {
 
 
     const mensajes = `
-        <span>◆ MAYORISTA DESDE 3 PERFUMES SURTIDOS ◆</span>
+        <span>◆ MAYORISTA DESDE 3 PERFUMES ◆</span>
         <span>◆ PERFUMES 100% ORIGINALES ◆</span>
-        <span>◆ 20% OFF EN TODA LA TIENDA ◆</span>
-        <span>◆ 3 CUOTAS SIN INTERÉS CON MERCADO PAGO ◆</span>
-        <span>◆ TIENDA FÍSICA EN VILLA LUZURIAGA ◆</span>
+        <span>◆ 20% OFF MINORISTA ◆</span>
+        <span>◆ 3 CUOTAS SIN INTERÉS ◆</span>
+        <span>◆ TIENDA FÍSICA EN RAMOS MEJÍA ◆</span>
         <span>◆ ENVÍOS A TODO EL PAÍS ◆</span>
         <span>◆ COMPRA MINORISTA Y MAYORISTA ◆</span>
-        <span>◆ INSPIRACIONES DE DISEÑADOR ◆</span>
         <span>◆ DECANTS 5 ML PREMIUM ◆</span>
-        <span>◆ RETIRO DISPONIBLE ◆</span>
     `;
 
 
@@ -5370,22 +5301,7 @@ if (
 ) {
 
     const obtenerEtiquetaCategoria = (producto) => {
-
-        if (
-            producto.linea === "inspiraciones" &&
-            producto.tipo === "decant"
-        ) {
-            return "DECANT 5 ML";
-        }
-
-        if (
-            producto.linea === "inspiraciones" &&
-            producto.tipo === "perfume"
-        ) {
-            return "INSPIRACIÓN 60 ML";
-        }
-
-        if (producto.categoria === "decants") {
+if (producto.categoria === "decants") {
             return "DECANT 5 ML";
         }
 

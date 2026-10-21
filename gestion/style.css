@@ -9157,3 +9157,101 @@ header .cerrar-venta:hover {
         justify-self: end;
     }
 }
+
+/* ===== MIREKA: CUATRO LISTAS MAYORISTAS (GESTIÓN) ===== */
+.listas-mireka-pantalla { max-width: 1200px; margin: 0 auto; }
+.listas-mireka-cabecera, .listas-mireka-detalle-titulo { display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:16px; }
+.listas-mireka-cabecera h2 { margin:0 0 7px; }
+.listas-mireka-cabecera p, .listas-mireka-panel p { color:#64748b; line-height:1.55; font-size:14px; }
+.listas-mireka-panel { background:#fff; padding:25px; margin:0 0 20px; border:1px solid #d9e2ee; border-radius:14px; }
+.listas-mireka-panel h3 { margin:0 0 10px; }
+.listas-mireka-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:14px; margin:20px 0; }
+.listas-mireka-grid label, .listas-mireka-masivo-campo label { display:flex; flex-direction:column; gap:8px; color:#334155; font-size:13px; font-weight:700; }
+.listas-mireka-grid input, .listas-mireka-masivo-campo input, .listas-mireka-masivo-campo select, .listas-mireka-filtros input, .listas-mireka-filtros select { width:100%; min-height:44px; border:1px solid #cad5e2; background:#fff; border-radius:9px; padding:10px 12px; color:#172033; font-size:14px; }
+.listas-mireka-grid label small { color:#9b742c; font-size:13px; }
+.listas-mireka-ayuda { margin-top:12px; }
+.listas-mireka-boton { padding:12px 18px; background:#c8a24d; color:#131313; border:0; font-weight:700; border-radius:10px; cursor:pointer; }
+.listas-mireka-boton:hover { background:#d8b86b; }
+.listas-mireka-filtros { display:grid; grid-template-columns:220px minmax(0,1fr); gap:12px; margin-top:22px; }
+.listas-mireka-acciones { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:14px 0; }
+.listas-mireka-acciones button, .listas-mireka-editar, #listas-mireka-cerrar-detalle { border:1px solid #bdc9d9; background:#f8fafc; border-radius:8px; cursor:pointer; padding:9px 12px; color:#172033; font-weight:600; }
+.listas-mireka-acciones strong { margin-left:auto; font-size:13px; color:#475569; }
+.listas-mireka-tabla { max-height:560px; overflow:auto; border:1px solid #e1e7ee; border-radius:10px; }
+.listas-mireka-fila { display:grid; grid-template-columns:minmax(200px,1.5fr) minmax(360px,2fr) auto; align-items:center; gap:12px; padding:12px; border-bottom:1px solid #e8edf2; }
+.listas-mireka-fila:last-child { border-bottom:0; }
+.listas-mireka-fila > label { display:flex; align-items:center; gap:9px; min-width:0; cursor:pointer; }
+.listas-mireka-fila input[type="checkbox"] { width:17px; height:17px; flex-shrink:0; accent-color:#b28b33; }
+.listas-mireka-fila label span { min-width:0; }
+.listas-mireka-fila strong { display:block; font-size:13px; }
+.listas-mireka-fila small { display:block; font-size:12px; color:#64748b; margin-top:4px; }
+.listas-mireka-precios { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); text-align:center; gap:6px; color:#926d20; font-weight:700; font-size:13px; }
+.listas-mireka-precios span { white-space:nowrap; }
+.listas-mireka-masivo { border-top:1px solid #e1e7ee; margin-top:20px; padding-top:22px; }
+.listas-mireka-masivo-campo { display:flex; flex-direction:column; gap:8px; }
+.listas-mireka-estado { min-height:20px; margin-top:12px; font-size:14px; color:#15803d; }
+.listas-mireka-estado.listas-mireka-error { color:#b91c1c; }
+.listas-mireka-detalle { border-color:#c8a24d; background:#fffdf8; }
+@media (max-width:1000px) { .listas-mireka-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .listas-mireka-fila { grid-template-columns:minmax(180px,1fr) auto; } .listas-mireka-precios { grid-column:1 / -1; grid-row:2; } }
+@media (max-width:600px) { .listas-mireka-cabecera, .listas-mireka-detalle-titulo { align-items:flex-start; flex-direction:column; } .listas-mireka-panel { padding:16px; } .listas-mireka-grid, .listas-mireka-filtros { grid-template-columns:1fr; } .listas-mireka-fila { grid-template-columns:minmax(0,1fr) auto; } .listas-mireka-precios { font-size:11px; } }
+
+
+/* MIREKA - edición conjunta de cuatro listas y minorista */
+.mireka-listas-modo .editar-producto-precios-separados > .editar-producto-seccion-precio:first-child { display:none; }
+.mireka-listas-modo .editar-producto-precios-separados { grid-template-columns: minmax(0,1fr); }
+.mireka-listas-editor-producto { padding:18px; margin-bottom:16px; border:1px solid #c7a44f; border-radius:13px; background:#fffefa; }
+.mireka-listas-editor-producto h4 { margin:0 0 8px; color:#775513; font-size:16px; }
+.mireka-listas-editor-producto p, .mireka-listas-editor-producto small { color:#5b6370; font-size:12px; line-height:1.5; }
+.mireka-editor-listas-grid { margin:14px 0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+.mireka-editor-lista { background:#fff; border:1px solid #e8dabb; padding:12px; border-radius:10px; min-width:0; }
+.mireka-editor-lista > strong { display:block; font-size:14px; margin-bottom:9px; }
+.mireka-editor-lista-campos { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+.mireka-editor-lista label { color:#334155; font-weight:600; font-size:12px; display:block; }
+.mireka-editor-lista input { width:100%; margin-top:5px; min-width:0; border:1px solid #cbd5e1; border-radius:8px; padding:10px; font-size:14px; }
+.mireka-editor-lista small { display:block; margin-top:6px; }
+.mireka-editor-aviso { color:#744811 !important; font-weight:600; }
+.mireka-solo-dolar-etiqueta { display:flex !important; gap:12px; padding:13px; margin-bottom:15px; background:#fffbeb; border:1px solid #e8cf92; border-radius:10px; cursor:pointer; align-items:center; }
+.mireka-solo-dolar-etiqueta input { width:20px; height:20px; flex-shrink:0; accent-color:#b78c2f; }
+.mireka-solo-dolar-etiqueta strong { display:block; font-size:13px; }
+.mireka-solo-dolar-etiqueta small { display:block; margin-top:5px; font-size:11px; color:#475569; }
+.mireka-preview-dolar { padding:14px; margin-top:10px; border:1px solid #d8bd7b; border-radius:10px; background:#fffdfa; font-size:12px; }
+.mireka-preview-dolar p { margin:8px 0; line-height:1.5; }
+.mireka-preview-dolar .mireka-error { color:#b91c1c; font-weight:700; }
+.mireka-preview-dolar ul { margin-left:20px; }
+.mireka-preview-tabla { overflow:auto; max-height:285px; }
+.mireka-preview-tabla table { width:100%; border-collapse:collapse; font-size:11px; }
+.mireka-preview-tabla th, .mireka-preview-tabla td { padding:8px; border-bottom:1px solid #eee1c6; text-align:left; white-space:nowrap; }
+@media(max-width:720px) { .mireka-editor-listas-grid { grid-template-columns:1fr; } .mireka-editor-lista-campos { grid-template-columns:1fr 1fr; } }
+
+/* Cuatro listas dentro de la edición masiva de stock */
+.mireka-stock-listas-masivas { margin-top: 18px; background: #fffaf2; border: 1px solid #d7ad5d; border-radius: 12px; padding: 18px; }
+.mireka-stock-listas-masivas h3 { margin-bottom: 7px; font-size: 17px; }
+.mireka-stock-listas-masivas p { margin: 9px 0; line-height: 1.5; }
+.mireka-bulk-listas-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin:15px 0; }
+.mireka-bulk-lista { display:flex; flex-direction:column; gap:8px; padding:12px; border:1px solid #e8d9b8; border-radius:10px; background:#fff; }
+.mireka-bulk-lista strong { font-size: 13px; }
+.mireka-bulk-lista input,.mireka-bulk-lista select { width:100%; min-width:0; border:1px solid #c8d1de; border-radius:8px; background:white; padding:10px; color:#172033; }
+.mireka-stock-lista-preview { overflow-x:auto; }
+.mireka-tabla-masiva { max-width:100%; overflow-x:auto; margin-top:10px; }
+.mireka-tabla-masiva table { border-collapse:collapse; width:100%; min-width:670px; font-size:12px; }
+.mireka-tabla-masiva th,.mireka-tabla-masiva td { padding:9px 7px; text-align:left; border-bottom:1px solid #eee4d5; }
+.mireka-tabla-masiva th { white-space:nowrap; }
+@media(max-width:580px) { .mireka-bulk-listas-grid { grid-template-columns:1fr; } }
+
+
+/* MIREKA - Edición masiva por operación (sin campos superpuestos) */
+#form-edicion-masiva-gestion .mireka-modo-operacion { margin: 0 0 17px; padding: 17px; border: 1px solid #e6d3a6; background: #fffcf4; border-radius: 12px; }
+#form-edicion-masiva-gestion .mireka-modo-operacion > label { display:block; font-size: 14px; font-weight:700; color:#28364e; margin-bottom:9px; }
+#form-edicion-masiva-gestion #mireka-modo-operacion { width:100%; min-height:50px; font-size:15px; border-color:#c8a24d; background:white; }
+#form-edicion-masiva-gestion .mireka-modo-descripcion { font-size:13px; line-height:1.55; color:#475569; margin:10px 0 0; }
+#form-edicion-masiva-gestion .mireka-modo-aviso { font-size:13px; color:#795a20; line-height:1.5; margin:0 0 13px; }
+#form-edicion-masiva-gestion #edicion-masiva-solo-dolar[hidden] { display:none !important; }
+#form-edicion-masiva-gestion .edicion-masiva-usdt-grid { grid-template-columns: minmax(0,1fr); max-width:390px; }
+#form-edicion-masiva-gestion .mireka-solo-minorista { grid-template-columns:minmax(0,1fr); }
+#form-edicion-masiva-gestion .mireka-solo-minorista .edicion-masiva-seccion-precio { max-width:490px; }
+#form-edicion-masiva-gestion .mireka-stock-listas-masivas { margin-top:0; }
+#form-edicion-masiva-gestion .mireka-bulk-lista { min-width:0; }
+#form-edicion-masiva-gestion .mireka-bulk-lista select,
+#form-edicion-masiva-gestion .mireka-bulk-lista input { max-width:100%; }
+#form-edicion-masiva-gestion .mireka-preview-tabla { max-width:100%; }
+#form-edicion-masiva-gestion .edicion-masiva-seccion.oculto { display:none !important; }
+@media(max-width:620px) { #form-edicion-masiva-gestion .mireka-bulk-listas-grid { grid-template-columns:1fr; } }

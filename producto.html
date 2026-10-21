@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="images/favicon.PNG">
 
-    <title>Producto | Vo Import</title>
+    <title>Producto | Mireka Perfumería</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
@@ -50,7 +50,8 @@
             <div
                 class="producto-precios-detalle"
                 id="producto-precios-detalle"
-            ></div>
+                aria-live="polite"
+            ><p class="mireka-detalle-espera">Cargando precios...</p></div>
 
             <!-- Compatibilidad con la carga inicial/local -->
             <p class="detalle-precio minorista detalle-precio-legacy" id="precio-minorista"></p>
@@ -167,64 +168,6 @@
     }
 
 
-    function obtenerPrecioListaDetalle(precioEfectivo) {
-        const precio = Number(precioEfectivo || 0);
-        return precio > 0 ? Math.round(precio / 0.8) : 0;
-    }
-
-    function iconoTarjetaDetalle() {
-        return `
-            <svg class="icono-tarjeta-precio" viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3" y="6" width="18" height="12" rx="2"></rect>
-                <path d="M3 10h18"></path>
-            </svg>
-        `;
-    }
-
-    function renderizarPreciosDetalleLocal(producto) {
-        const contenedor = document.getElementById("producto-precios-detalle");
-        if (!contenedor || !producto) return;
-
-        const precioLista = obtenerPrecioListaDetalle(producto.precioMinorista);
-        const tieneMayorista = producto.categoria !== "decants";
-
-        contenedor.innerHTML = tieneMayorista
-            ? `
-                <div class="detalle-precio-mayorista-principal">
-                    <span class="detalle-mayorista-titulo">PRECIO MAYORISTA</span>
-                    <small>Desde 3 perfumes surtidos</small>
-                    <strong>${formatearPrecioLocal(producto.precioMayorista)}</strong>
-                </div>
-
-                <div class="detalle-precio-secundario detalle-precio-minorista">
-                    <span class="detalle-precio-etiqueta">Minorista · 20% OFF efectivo / transferencia</span>
-                    <strong>${formatearPrecioLocal(producto.precioMinorista)}</strong>
-                </div>
-
-                <div class="detalle-precio-secundario detalle-precio-tarjeta">
-                    <span class="detalle-precio-etiqueta">
-                        ${iconoTarjetaDetalle()}
-                        Mercado Pago · 3 cuotas sin interés
-                    </span>
-                    <strong>${formatearPrecioLocal(precioLista)}</strong>
-                </div>
-            `
-            : `
-                <div class="detalle-precio-efectivo">
-                    <span>20% OFF efectivo / transferencia</span>
-                    <strong>${formatearPrecioLocal(producto.precioMinorista)}</strong>
-                </div>
-
-                <div class="detalle-precio-secundario detalle-precio-tarjeta">
-                    <span class="detalle-precio-etiqueta">
-                        ${iconoTarjetaDetalle()}
-                        Mercado Pago · 3 cuotas sin interés
-                    </span>
-                    <strong>${formatearPrecioLocal(precioLista)}</strong>
-                </div>
-            `;
-    }
-
     function crearSlugMarca(marca) {
 
         return marca
@@ -252,7 +195,7 @@
     } else {
 
         document.title =
-            `${producto.nombre} | Vo Import`;
+            `${producto.nombre} | Mireka Perfumería`;
 
 
         const volverMarca =
@@ -285,26 +228,8 @@ volverMarca.textContent =
         ).textContent =
             producto.nombre;
 
-        renderizarPreciosDetalleLocal(producto);
-
-
-        document.getElementById(
-            "precio-minorista"
-        ).textContent =
-            `Minorista: ${formatearPrecioLocal(
-                producto.precioMinorista
-            )}`;
-
-
-        document.getElementById(
-            "precio-mayorista"
-        ).textContent =
-            `Mayorista: ${formatearPrecioLocal(
-                producto.precioMayorista
-            )}`;
-
-
-        document.getElementById(
+        // Los precios se muestran al sincronizar las listas desde Supabase.
+document.getElementById(
             "producto-presentacion"
         ).textContent =
             producto.presentacion || "";
@@ -374,26 +299,7 @@ volverMarca.textContent =
             producto.stock ?? "";
 
 
-        if (producto.categoria === "decants") {
 
-            document.getElementById(
-                "precio-minorista"
-            ).textContent =
-                `Precio: ${formatearPrecioLocal(
-                    producto.precioMinorista
-                )}`;
-
-            document.getElementById(
-                "precio-mayorista"
-            ).style.display =
-                "none";
-
-            document.getElementById(
-                "condicion-mayorista"
-            ).style.display =
-                "none";
-
-        }
 
     }
 
