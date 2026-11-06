@@ -9255,3 +9255,8 @@ header .cerrar-venta:hover {
 #form-edicion-masiva-gestion .mireka-preview-tabla { max-width:100%; }
 #form-edicion-masiva-gestion .edicion-masiva-seccion.oculto { display:none !important; }
 @media(max-width:620px) { #form-edicion-masiva-gestion .mireka-bulk-listas-grid { grid-template-columns:1fr; } }
+
+
+/* Acceso al panel de secciones del catálogo */
+.mireka-gestion-enlace-web{display:inline-flex;align-items:center;justify-content:center;padding:11px 14px;border-radius:10px;border:1px solid #b59650;color:#e2c578;text-decoration:none;font-weight:700;font-size:13px;background:#17140d;white-space:nowrap;}
+.mireka-gestion-enlace-web:hover{background:#292112;color:#fff}

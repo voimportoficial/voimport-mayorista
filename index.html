@@ -300,6 +300,259 @@
     </style>
 
 
+
+    <style>
+        /* MIREKA | Flechas fuera de las tarjetas en ambos carruseles.
+           Cada botón ocupa su propia columna, sin cubrir texto ni imágenes. */
+        #marcas .marcas-carousel,
+        .explora-home .explora-carousel {
+            display: grid;
+            grid-template-columns: 46px minmax(0, 1fr) 46px;
+            column-gap: 10px;
+            align-items: center;
+        }
+
+        #marcas .marcas-carousel > .catalog-grid,
+        .explora-home .explora-carousel > .explora-carousel-track {
+            grid-column: 2;
+            grid-row: 1;
+            width: 100%;
+            min-width: 0;
+            padding-left: 2px;
+            padding-right: 2px;
+        }
+
+        #marcas .marcas-carousel > .marcas-carousel-flecha,
+        .explora-home .explora-carousel > .explora-carousel-boton {
+            position: static;
+            top: auto;
+            left: auto;
+            right: auto;
+            transform: none;
+            grid-row: 1;
+            justify-self: center;
+            margin: 0;
+        }
+
+        #marcas .marcas-carousel > .anterior,
+        .explora-home .explora-carousel > .anterior {
+            grid-column: 1;
+        }
+
+        #marcas .marcas-carousel > .siguiente,
+        .explora-home .explora-carousel > .siguiente {
+            grid-column: 3;
+        }
+
+        /* Conserva la altura visual que tenía el carrusel de marcas en PC:
+           antes se desplazaban solo las tarjetas, no los controles. */
+        #marcas .marcas-carousel > .catalog-grid {
+            position: static !important;
+            top: auto !important;
+        }
+
+        @media (min-width: 901px) {
+            #marcas .marcas-carousel {
+                top: -105px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            #marcas .marcas-carousel,
+            .explora-home .explora-carousel {
+                grid-template-columns: 36px minmax(0, 1fr) 36px;
+                column-gap: 5px;
+            }
+        }
+        /* MIREKA - CENTRAR LAS TRES TARJETAS DE CATEGORÍAS EN PC.
+           El diseño de dos columnas para celulares se conserva. */
+        @media (min-width: 769px) {
+            #categorias .categorias-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                max-width: 955px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        }
+    </style>
+
+
+    <style>
+      /* MIREKA | Tarjetas comerciales premium de acceso rápido.
+         Diseño aislado: no modifica el resto de la web ni el carrusel de marcas. */
+      #explora.explora-home {
+        padding-top: 48px;
+        padding-bottom: 44px;
+        background: radial-gradient(ellipse at 50% 10%, rgba(172,120,32,.075), transparent 64%), #080808;
+      }
+      #explora .explora-home-encabezado { margin-bottom: 27px; }
+      #explora .explora-home-etiqueta { color: #e4bf65; }
+      #explora .explora-carousel-track {
+        padding-top: 12px;
+        padding-bottom: 20px;
+        align-items: stretch;
+      }
+      #explora .explora-card {
+        position: relative;
+        isolation: isolate;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 232px;
+        padding: 23px 22px 27px;
+        overflow: hidden;
+        border: 1px solid rgba(215,173,77,.63);
+        border-radius: 19px;
+        background:
+          radial-gradient(ellipse at 100% 0%, rgba(233,180,78,.17), transparent 60%),
+          linear-gradient(145deg, #202020 0%, #11100e 56%, #080808 100%);
+        box-shadow: inset 0 1px 0 rgba(255,231,164,.10), 0 5px 19px rgba(0,0,0,.19);
+        color: #fff;
+        text-decoration: none;
+        scroll-snap-align: start;
+        transition: transform .24s ease, border-color .24s ease, box-shadow .24s ease, background .24s ease;
+      }
+      #explora .explora-card::before {
+        content: attr(data-marca);
+        position: absolute;
+        right: -5px;
+        top: 6px;
+        z-index: -1;
+        font-size: clamp(115px, 12vw, 166px);
+        line-height: 1;
+        font-weight: 800;
+        color: #f3c66b;
+        opacity: .055;
+        pointer-events: none;
+        transform: rotate(-9deg);
+        transition: opacity .24s ease, transform .24s ease;
+      }
+      #explora .explora-card::after {
+        content: '';
+        position: absolute;
+        inset: auto 21px 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(236,188,89,.72), transparent);
+        opacity: .58;
+        pointer-events: none;
+      }
+      #explora .explora-card-superior {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 9px;
+        position: relative;
+      }
+      #explora .explora-card-icono {
+        flex: 0 0 auto;
+        width: 54px;
+        height: 54px;
+        margin: 0;
+        border: 1px solid rgba(233,190,105,.82);
+        border-radius: 16px;
+        color: #f0c766;
+        font-size: 29px;
+        font-weight: 750;
+        background: linear-gradient(145deg, rgba(235,184,74,.18), rgba(235,184,74,.045));
+        box-shadow: inset 0 1px 0 rgba(255,231,168,.16), 0 5px 18px rgba(0,0,0,.16);
+        transition: transform .24s ease, background .24s ease;
+      }
+      #explora .explora-card-etiqueta {
+        margin-top: 5px;
+        padding: 6px 9px;
+        border: 1px solid rgba(216,175,88,.28);
+        border-radius: 30px;
+        background: rgba(7,7,7,.34);
+        color: #d9bd80;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .10em;
+        line-height: 1.25;
+        text-align: center;
+        white-space: nowrap;
+      }
+      #explora .explora-card-contenido {
+        position: relative;
+        padding-top: 27px;
+        padding-right: 16px;
+      }
+      #explora .explora-card h3 {
+        margin: 0 0 9px;
+        color: #fff;
+        font-size: clamp(20px, 1.65vw, 24px);
+        font-weight: 800;
+        line-height: 1.16;
+        letter-spacing: -.025em;
+      }
+      #explora .explora-card p {
+        max-width: 25ch;
+        min-height: 40px;
+        color: #d1ccc4;
+        font-size: 13px;
+        line-height: 1.5;
+      }
+      #explora .explora-card-flecha {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        right: 16px;
+        bottom: 18px;
+        border: 1px solid rgba(219,173,78,.55);
+        border-radius: 50%;
+        background: rgba(223,174,76,.11);
+        color: #f3c979;
+        font-size: 21px;
+        line-height: 1;
+        transition: transform .24s ease, color .24s ease, background .24s ease;
+      }
+      #explora .explora-card--ofertas {
+        border-color: rgba(237,192,97,.83);
+        background: radial-gradient(ellipse at 85% 0%, rgba(212,151,39,.24), transparent 65%),
+                    linear-gradient(145deg, #292117, #16110b 65%, #0e0b08);
+      }
+      #explora .explora-card--top {
+        border-color: rgba(245,203,116,.94);
+        background: radial-gradient(ellipse at 83% 4%, rgba(239,187,79,.30), transparent 67%),
+                    linear-gradient(145deg, #342817, #21180d 61%, #100c08);
+        box-shadow: 0 9px 29px rgba(174,122,26,.15), inset 0 1px 0 rgba(255,235,178,.22);
+      }
+      #explora .explora-card--top .explora-card-etiqueta {
+        border-color: rgba(235,185,77,.65);
+        color: #261a0a;
+        background: linear-gradient(135deg, #f6d78b, #d7a444);
+      }
+      #explora .explora-card:hover,
+      #explora .explora-card:focus-visible {
+        transform: translateY(-6px);
+        border-color: #f3cd7a;
+        box-shadow: 0 16px 40px rgba(0,0,0,.48), 0 0 22px rgba(215,165,61,.18), inset 0 1px 0 rgba(255,236,191,.23);
+      }
+      #explora .explora-card:hover::before { opacity: .105; transform: translateY(-5px) rotate(-9deg); }
+      #explora .explora-card:hover .explora-card-icono { transform: scale(1.06); background: rgba(229,182,75,.20); }
+      #explora .explora-card:hover .explora-card-flecha { transform: translateX(3px); background: #e8bd65; color: #16100a; }
+      #explora .explora-card:focus-visible { outline: 2px solid #e8bd65; outline-offset: 3px; }
+      @media (max-width: 1120px) {
+        #explora .explora-card { padding: 21px 17px 26px; }
+        #explora .explora-card-etiqueta { padding: 6px; font-size: 8px; letter-spacing: .04em; }
+      }
+      @media (max-width: 760px) {
+        #explora.explora-home { padding-top: 34px; padding-bottom: 29px; }
+        #explora .explora-card { min-height: 222px; padding: 20px 19px 23px; }
+        #explora .explora-card h3 { font-size: 22px; }
+        #explora .explora-card p { font-size: 13px; }
+        #explora .explora-card-icono { width: 50px; height: 50px; font-size: 27px; }
+        #explora .explora-card-etiqueta { padding: 6px 8px; font-size: 9px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #explora .explora-card,
+        #explora .explora-card::before,
+        #explora .explora-card-icono,
+        #explora .explora-card-flecha { transition: none; }
+      }
+    </style>
+
 </head>
 
 <body>
@@ -327,7 +580,6 @@
     <a href="#categorias">Categorías</a>
     <a href="#marcas">Marcas</a>
     <a href="catalogo.html">Catálogo</a>
-    <a href="mayorista.html">Mayorista</a>
     <a href="#contacto">Contacto</a>
 
     <button class="boton-buscador" id="abrir-buscador" aria-label="Abrir buscador">
@@ -358,9 +610,9 @@
 
             <div class="hero-content">
 
-                <div class="hero-buttons">
-                    <a href="catalogo.html" class="btn btn-gold">Ver catálogo</a>
-                    <a href="mayorista.html" class="btn btn-outline">Quiero ser mayorista</a>
+                <div class="hero-buttons" aria-label="Elegí cómo querés comprar">
+                    <a href="catalogo.html?modo=minorista" class="btn btn-gold" data-mireka-modo="minorista">Compra minorista</a>
+                    <a href="catalogo.html?modo=mayorista" class="btn btn-outline" data-mireka-modo="mayorista">Compra mayorista</a>
                 </div>
             </div>
 
@@ -396,64 +648,76 @@
                     id="explora-carousel-track"
                 >
 
-                    <a
-                        class="explora-card"
-                        href="catalogo.html?coleccion=nuevos"
-                    >
-                        <div class="explora-card-icono">✦</div>
-                        <h3>Nuevos ingresos</h3>
-                        <p>Lo último que llegó a Mireka.</p>
-                        <span class="explora-card-flecha">→</span>
+                    <a class="explora-card explora-card--nuevos" href="catalogo.html?coleccion=nuevos" data-marca="✦">
+                        <div class="explora-card-superior">
+                            <div class="explora-card-icono" aria-hidden="true">✦</div>
+                            <span class="explora-card-etiqueta">RECIÉN LLEGADOS</span>
+                        </div>
+                        <div class="explora-card-contenido">
+                            <h3>Nuevos ingresos</h3>
+                            <p>Descubrí lo último que llegó a Mireka.</p>
+                        </div>
+                        <span class="explora-card-flecha" aria-hidden="true">→</span>
                     </a>
 
-                    <a
-                        class="explora-card"
-                        href="catalogo.html?coleccion=ofertas"
-                    >
-                        <div class="explora-card-icono">%</div>
-                        <h3>Ofertas</h3>
-                        <p>Productos disponibles con beneficios vigentes.</p>
-                        <span class="explora-card-flecha">→</span>
+                    <a class="explora-card explora-card--ofertas" href="catalogo.html?coleccion=ofertas" data-marca="%">
+                        <div class="explora-card-superior">
+                            <div class="explora-card-icono" aria-hidden="true">%</div>
+                            <span class="explora-card-etiqueta">OPORTUNIDADES</span>
+                        </div>
+                        <div class="explora-card-contenido">
+                            <h3>Ofertas</h3>
+                            <p>Encontrá oportunidades para elegir tu próxima fragancia.</p>
+                        </div>
+                        <span class="explora-card-flecha" aria-hidden="true">→</span>
                     </a>
 
-                    <a
-                        class="explora-card"
-                        href="catalogo.html?genero=woman"
-                    >
-                        <div class="explora-card-icono">♀</div>
-                        <h3>Para ellas</h3>
-                        <p>Perfumes femeninos para todos los estilos.</p>
-                        <span class="explora-card-flecha">→</span>
+                    <a class="explora-card explora-card--top" href="catalogo.html?coleccion=mas-vendidos" data-marca="★">
+                        <div class="explora-card-superior">
+                            <div class="explora-card-icono" aria-hidden="true">★</div>
+                            <span class="explora-card-etiqueta">LOS FAVORITOS</span>
+                        </div>
+                        <div class="explora-card-contenido">
+                            <h3>Más vendidos</h3>
+                            <p>Conocé los perfumes preferidos por nuestros clientes.</p>
+                        </div>
+                        <span class="explora-card-flecha" aria-hidden="true">→</span>
                     </a>
 
-                    <a
-                        class="explora-card"
-                        href="catalogo.html?genero=men"
-                    >
-                        <div class="explora-card-icono">♂</div>
-                        <h3>Para ellos</h3>
-                        <p>Fragancias masculinas con personalidad.</p>
-                        <span class="explora-card-flecha">→</span>
+                    <a class="explora-card explora-card--ellas" href="catalogo.html?genero=woman" data-marca="♀">
+                        <div class="explora-card-superior">
+                            <div class="explora-card-icono" aria-hidden="true">♀</div>
+                            <span class="explora-card-etiqueta">FRAGANCIAS</span>
+                        </div>
+                        <div class="explora-card-contenido">
+                            <h3>Para ellas</h3>
+                            <p>Aromas femeninos para cada estilo.</p>
+                        </div>
+                        <span class="explora-card-flecha" aria-hidden="true">→</span>
                     </a>
 
-                    <a
-                        class="explora-card"
-                        href="catalogo.html?genero=unisex"
-                    >
-                        <div class="explora-card-icono">∞</div>
-                        <h3>Unisex</h3>
-                        <p>Fragancias versátiles para disfrutar sin etiquetas.</p>
-                        <span class="explora-card-flecha">→</span>
+                    <a class="explora-card explora-card--ellos" href="catalogo.html?genero=men" data-marca="♂">
+                        <div class="explora-card-superior">
+                            <div class="explora-card-icono" aria-hidden="true">♂</div>
+                            <span class="explora-card-etiqueta">FRAGANCIAS</span>
+                        </div>
+                        <div class="explora-card-contenido">
+                            <h3>Para ellos</h3>
+                            <p>Perfumes masculinos con presencia y personalidad.</p>
+                        </div>
+                        <span class="explora-card-flecha" aria-hidden="true">→</span>
                     </a>
 
-                    <a
-                        class="explora-card"
-                        href="catalogo.html"
-                    >
-                        <div class="explora-card-icono">★</div>
-                        <h3>Más vendidos</h3>
-                        <p>Descubrí los perfumes que más eligen nuestros clientes.</p>
-                        <span class="explora-card-flecha">→</span>
+                    <a class="explora-card explora-card--unisex" href="catalogo.html?genero=unisex" data-marca="∞">
+                        <div class="explora-card-superior">
+                            <div class="explora-card-icono" aria-hidden="true">∞</div>
+                            <span class="explora-card-etiqueta">VERSÁTILES</span>
+                        </div>
+                        <div class="explora-card-contenido">
+                            <h3>Unisex</h3>
+                            <p>Fragancias para disfrutar sin etiquetas.</p>
+                        </div>
+                        <span class="explora-card-flecha" aria-hidden="true">→</span>
                     </a>
 
                 </div>
@@ -710,6 +974,9 @@ class="contacto-boton">
         </div>
     </div>
 </section>
+
+
+<!-- La modalidad se transmite por el enlace y se conserva en sessionStorage desde js/script.js. -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>

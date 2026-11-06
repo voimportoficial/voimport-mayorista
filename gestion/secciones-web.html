@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090909">
+<title>Secciones de la web | Gestión Mireka</title>
+<link rel="stylesheet" href="secciones-web.css">
+</head>
+<body>
+<header class="cabecera">
+ <div class="cabecera-interior">
+  <a class="regresar" href="index.html">← Volver a Gestión</a>
+  <div><span class="etiqueta">MIREKA PERFUMERÍA</span><h1>Secciones de la web</h1><p>Elegí qué perfumes aparecen en la web sin modificar el código.</p></div>
+ </div>
+</header>
+<main class="contenedor">
+ <div id="estado-general" class="aviso" role="status" aria-live="polite">Verificando sesión…</div>
+ <section id="area-admin" hidden>
+  <div class="explicacion">
+   <strong>¿Cómo funciona?</strong> Marcá Nuevos ingresos, Ofertas o Más vendidos en cada perfume. Elegí también su clasificación. Los cambios aparecen en la web cuando se actualiza el catálogo.
+   <p>En <strong>Ofertas</strong>, ingresá un precio especial de <strong>efectivo / transferencia</strong>, menor al precio normal. El precio de Mercado Pago se calculará como en el resto de la web; las listas mayoristas no se modifican.</p>
+  </div>
+  <div class="filtros">
+   <label>Buscar perfume o marca<input id="buscar" type="search" placeholder="Ej.: Afnan, Lattafa, Khamrah" autocomplete="off"></label>
+   <label>Mostrar<select id="filtro">
+    <option value="todos">Todos los productos</option>
+    <option value="nuevos">Nuevos ingresos</option>
+    <option value="ofertas">Ofertas</option>
+    <option value="mas-vendidos">Más vendidos</option>
+    <option value="sin-clasificar">Sin clasificación</option>
+   </select></label>
+  </div>
+  <p id="contador" class="contador"></p>
+  <div id="lista-productos" class="lista-productos"></div>
+  <button type="button" id="mas" class="mas" hidden>Mostrar más perfumes</button>
+ </section>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script src="secciones-web.js"></script>
+</body>
+</html>

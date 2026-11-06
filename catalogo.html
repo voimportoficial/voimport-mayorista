@@ -23,9 +23,36 @@
         <div class="container">
 
             <div class="catalogo-intro">
-                <h2>Catálogo Mireka Perfumería</h2>
+                <h2 id="mireka-catalogo-titulo">Catálogo de Mireka</h2>
                 <p>Elegí una categoría o buscá directamente el perfume que querés.</p>
             </div>
+
+            <!-- Solo visible en modo mayorista: precios y productos comparten página -->
+            <section class="mireka-mayorista-guia" aria-labelledby="mireka-mayorista-titulo">
+                <div class="mireka-mayorista-guia-cabecera">
+                    <span class="mireka-mayorista-guia-kicker">MIREKA PERFUMERÍA · PARA REVENDEDORES</span>
+                    <h2 id="mireka-mayorista-titulo">Comprá por mayor, todo en un solo lugar</h2>
+                    <p>Elegí tus perfumes, sumá unidades dentro de cada categoría y accedé automáticamente a mejores listas de precios.</p>
+                </div>
+                <div class="mireka-mayorista-escalas" aria-label="Escalas de listas mayoristas">
+                    <div class="mireka-mayorista-escala"><span>DESDE</span><strong>3</strong><b>Lista 1</b><small>unidades</small></div>
+                    <div class="mireka-mayorista-escala"><span>DESDE</span><strong>6</strong><b>Lista 2</b><small>unidades</small></div>
+                    <div class="mireka-mayorista-escala"><span>DESDE</span><strong>15</strong><b>Lista 3</b><small>unidades</small></div>
+                    <div class="mireka-mayorista-escala"><span>DESDE</span><strong>30</strong><b>Lista 4</b><small>unidades</small></div>
+                </div>
+                <details class="mireka-mayorista-detalles">
+                    <summary>¿Cómo funciona la compra mayorista? <span aria-hidden="true">+</span></summary>
+                    <div class="mireka-mayorista-detalles-contenido">
+                        <p><strong>Elegí y combiná productos:</strong> no necesitás llevar tres unidades iguales; podés surtir dentro de una misma categoría.</p>
+                        <p><strong>Las categorías se cuentan por separado:</strong> por ejemplo, 2 perfumes árabes y 1 Maison Alhambra 30 ml no completan una lista de 3.</p>
+                        <p><strong>Más unidades, mejor lista:</strong> las listas 1, 2, 3 y 4 corresponden a 3, 6, 15 y 30 unidades de la misma categoría. El carrito calcula el nivel aplicable.</p>
+                        <p><strong>Formas de pago:</strong> en compras mayoristas se trabaja con efectivo o transferencia. Mercado Pago está destinado a compras minoristas.</p>
+                        <p><strong>Envíos:</strong> realizamos envíos a todo el país. Los pedidos se coordinan al finalizar la compra.</p>
+                        <p class="mireka-mayorista-detalles-nota">Los precios mayoristas se aplican al alcanzar el mínimo y solo cuando exista una cotización válida para el producto. Las condiciones de los decants se muestran en su categoría.</p>
+                    </div>
+                </details>
+                <p class="mireka-mayorista-guia-pie">↓ Elegí una categoría o buscá tu perfume para empezar.</p>
+            </section>
 
             <div class="catalogo-buscador">
 
@@ -70,6 +97,8 @@
 
             <div class="catalogo-categorias">
 
+                <button type="button" class="catalogo-filtro" data-categoria="">Todos los productos</button>
+
                 <button
                     type="button"
                     class="catalogo-filtro activo"
@@ -96,6 +125,18 @@
                     Maison Alhambra 30 ml
                 </button>
 
+            </div>
+
+
+            <div class="catalogo-info-precios">
+                <h3>¿Cómo funcionan los precios?</h3>
+
+                <p id="texto-precios-catalogo">
+                    El precio de lista se muestra por unidad.
+                    En compras minoristas tenés 20% OFF abonando en efectivo o transferencia.
+                    Desde 3 perfumes surtidos dentro de la misma categoría,
+                    se aplica automáticamente el precio mayorista.
+                </p>
             </div>
 
 
@@ -200,6 +241,9 @@
     const botonesCatalogo =
         document.querySelectorAll(".catalogo-filtro");
 
+    const textoPreciosCatalogo =
+        document.getElementById("texto-precios-catalogo");
+
     const buscadorCatalogo =
         document.getElementById("buscador-catalogo");
 
@@ -216,7 +260,7 @@
             new URL(window.location.href);
 
 
-        if (categoria === "perfumes-grandes") {
+        if (!categoria || categoria === "perfumes-grandes") {
 
             url.searchParams.delete(
                 "categoria"
@@ -267,10 +311,16 @@
         );
 
 
-        // El bloque de ayuda anterior fue eliminado en el rediseño.
-        // Actualizamos únicamente el resumen visible si está presente.
-        if (typeof mirekaActualizarSelector === "function") {
-            mirekaActualizarSelector();
+        if (categoria === "decants") {
+
+            textoPreciosCatalogo.textContent =
+                "Los decants tienen precio de lista y 20% OFF abonando en efectivo o transferencia. No participan del mínimo mayorista.";
+
+        } else {
+
+            textoPreciosCatalogo.textContent =
+                "El precio de lista se muestra por unidad. En compras minoristas tenés 20% OFF abonando en efectivo o transferencia. Desde 3 perfumes surtidos dentro de la misma categoría, se aplica automáticamente el precio mayorista.";
+
         }
 
 
@@ -301,6 +351,31 @@
             "categoria"
         );
 
+    const titulosSeccionesMireka = {
+        'nuevos': 'Nuevos ingresos',
+        'ofertas': 'Ofertas',
+        'mas-vendidos': 'Más vendidos'
+    };
+    const titulosGeneroMireka = {
+        'woman': 'Para ellas', 'men': 'Para ellos', 'unisex': 'Unisex'
+    };
+    const nombreColeccion = titulosSeccionesMireka[parametrosCatalogo.get('coleccion')];
+    const nombreGenero = titulosGeneroMireka[parametrosCatalogo.get('genero')];
+    const nombreSeccion = nombreColeccion || nombreGenero;
+    if (nombreSeccion) {
+        document.getElementById('mireka-catalogo-titulo').textContent = nombreSeccion;
+        document.title = nombreSeccion + ' | Mireka Perfumería';
+    }
+
+
+
+    // Las colecciones y los géneros abarcan todas las categorías,
+    // salvo que el enlace indique una categoría específica.
+    if (!categoriaInicialCatalogo &&
+        (parametrosCatalogo.has('coleccion') || parametrosCatalogo.has('genero'))) {
+        document.body.dataset.categoria = '';
+        botonesCatalogo.forEach(boton => boton.classList.toggle('activo', boton.dataset.categoria === ''));
+    }
 
     const categoriasPermitidasCatalogo = [
         "perfumes-grandes",

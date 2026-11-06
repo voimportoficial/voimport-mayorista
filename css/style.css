@@ -363,7 +363,7 @@ h1 {
 .nav-container{
     max-width:1200px;
     margin:auto;
-    padding:11px 30px;
+    padding:8px 30px;
     display:flex;
     justify-content:space-between;
     align-items:center;
@@ -415,7 +415,7 @@ h1 {
 }
 
 .logo img{
-    height:172px;
+    height:108px;
     width:auto;
     max-width:100%;
     object-fit:contain;
@@ -7171,6 +7171,257 @@ body:has(.mobile-topbar) .carrito-panel {
    No altera portada móvil, navegación ni precios. */
 @media (min-width: 769px) {
     body:has(.navbar) .hero {
-        margin-top: 208px;
+        margin-top: 125px;
     }
 }
+
+/* MIREKA — Logo de escritorio más visible sin agrandar el encabezado.
+   La transformación visual no modifica la altura de la barra ni desplaza el banner. */
+@media (min-width: 769px) {
+    .navbar .logo img {
+        transform: scale(1.20);
+        transform-origin: center center;
+    }
+}
+
+
+/* MIREKA — Botones de portada PC debajo de la frase.
+   No cambia la imagen de fondo ni el header, y mantiene el móvil intacto. */
+@media (min-width: 769px) {
+    .hero .hero-buttons {
+        left: clamp(30px, 12vw, 195px) !important;
+        right: auto !important;
+        top: auto !important;
+        bottom: 5.5% !important;
+        transform: none !important;
+        display: flex !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        gap: 16px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    .hero .hero-buttons .btn {
+        min-width: 185px;
+        text-align: center;
+        white-space: nowrap;
+    }
+}
+@media (min-width: 769px) and (max-width: 1100px) {
+    .hero .hero-buttons { left: 6% !important; gap: 10px !important; }
+    .hero .hero-buttons .btn {
+        min-width: 0;
+        padding: 11px 16px;
+        font-size: 14px;
+    }
+}
+
+
+/* ============================================================
+   MIREKA | Mayorista integrado al catálogo (solo vista mayorista)
+   No modifica altura del encabezado ni banner de Inicio.
+   ============================================================ */
+.mireka-mayorista-guia { display: none; }
+body[data-mireka-modo="mayorista"] .mireka-mayorista-guia { display: block; }
+.mireka-mayorista-guia {
+    max-width: 1060px;
+    margin: 0 auto 30px;
+    color: #f4f1e9;
+}
+.mireka-mayorista-guia-cabecera {
+    text-align: center;
+    padding: 22px 15px 20px;
+    border-top: 1px solid rgba(215,173,47,.32);
+}
+.mireka-mayorista-guia-kicker {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .2em;
+    color: #d7ad2f;
+    margin-bottom: 9px;
+}
+.mireka-mayorista-guia-cabecera h2 {
+    font-size: clamp(23px, 3vw, 31px);
+    margin: 0 0 12px;
+    font-weight: 800;
+    line-height: 1.18;
+    color: #f8f3e7;
+}
+.mireka-mayorista-guia-cabecera p {
+    max-width: 700px;
+    color: #c8c6bf;
+    line-height: 1.55;
+    margin: 0 auto;
+    font-size: 14px;
+}
+.mireka-mayorista-escalas {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    margin: 7px 0 15px;
+}
+.mireka-mayorista-escala {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 8px;
+    min-height: 128px;
+    background: linear-gradient(150deg, #191712, #090909);
+    border: 1px solid rgba(215,173,47,.6);
+    border-radius: 13px;
+    text-align: center;
+}
+.mireka-mayorista-escala span {
+    font-weight: 700;
+    letter-spacing: .14em;
+    font-size: 10px;
+    color: #aba18e;
+}
+.mireka-mayorista-escala strong {
+    font-size: clamp(28px, 3.8vw, 38px);
+    font-weight: 900;
+    line-height: 1.12;
+    margin: 4px 0 1px;
+    color: #d7ad2f;
+}
+.mireka-mayorista-escala b { font-size: 14px; color: #f2ecdd; }
+.mireka-mayorista-escala small { font-size: 11px; color: #aca9a1; margin-top: 3px; }
+.mireka-mayorista-detalles {
+    background: #101010;
+    border: 1px solid rgba(215,173,47,.43);
+    border-radius: 13px;
+    overflow: hidden;
+}
+.mireka-mayorista-detalles summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    cursor: pointer;
+    list-style: none;
+    padding: 18px 20px;
+    font-size: 15px;
+    font-weight: 750;
+    color: #e5c064;
+}
+.mireka-mayorista-detalles summary::-webkit-details-marker { display: none; }
+.mireka-mayorista-detalles summary span {
+    font-size: 22px;
+    line-height: 1;
+    transition: transform .2s;
+}
+.mireka-mayorista-detalles[open] summary span { transform: rotate(45deg); }
+.mireka-mayorista-detalles-contenido {
+    border-top: 1px solid rgba(215,173,47,.2);
+    padding: 16px 21px 8px;
+}
+.mireka-mayorista-detalles-contenido p {
+    font-size: 13px;
+    line-height: 1.65;
+    color: #ded9cf;
+    margin: 0 0 12px;
+}
+.mireka-mayorista-detalles-contenido strong { color: #e8c56f; }
+.mireka-mayorista-detalles-contenido .mireka-mayorista-detalles-nota {
+    color: #aaa49a;
+    font-size: 12px;
+    font-style: italic;
+}
+.mireka-mayorista-guia-pie {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .03em;
+    color: #d7ad2f;
+    margin: 17px 5px 0;
+}
+@media (max-width: 700px) {
+    .mireka-mayorista-escalas { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+    .mireka-mayorista-escala { min-height: 99px; padding: 11px 7px; }
+    .mireka-mayorista-escala strong { font-size: 30px; }
+    .mireka-mayorista-guia-cabecera { padding: 16px 5px 19px; }
+    .mireka-mayorista-detalles summary { padding: 14px 12px; font-size: 13px; }
+    .mireka-mayorista-detalles-contenido { padding: 13px 13px 5px; }
+    .mireka-mayorista-guia { margin-bottom: 25px; }
+}
+
+
+/* MIREKA | Modalidad de compra sin interrupciones, PC y celular (oct 2026) */
+.mireka-resumen-eleccion.mireka-selector-compacto {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  max-width: 1100px;
+  margin: 18px auto 26px;
+  padding: 15px 18px;
+  background: linear-gradient(110deg, #16130e, #0e0e0e 62%);
+  border: 1px solid rgba(201, 162, 76, .38);
+  border-radius: 14px;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+.mireka-selector-descripcion {display:flex;flex-direction:column;gap:5px;min-width:0}
+.mireka-selector-descripcion strong {font-size:15px;color:#f5f0e5;line-height:1.3}
+.mireka-selector-descripcion small {font-size:12px;color:#b7b4ae;line-height:1.45;display:block}
+.mireka-selector-opciones {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  border: 1px solid rgba(201,162,76,.42);
+  border-radius: 10px;
+  padding: 3px;
+  background: #080808;
+  gap: 3px;
+}
+.mireka-selector-opciones button {
+  background: transparent;
+  color: #c5b89e;
+  border: 0;
+  border-radius: 7px;
+  min-width: 101px;
+  padding: 10px 13px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.2;
+  transition: background .15s ease, color .15s ease;
+}
+.mireka-selector-opciones button.mireka-switch-activo {
+  background: #c8a24d;
+  color: #111;
+}
+.mireka-selector-opciones button:not(.mireka-switch-activo):hover,
+.mireka-selector-opciones button:not(.mireka-switch-activo):focus-visible {
+  background: #272012;
+  color: #f4d990;
+}
+.mireka-selector-opciones button:focus-visible {outline:2px solid #f4d990;outline-offset:2px}
+.producto-detalle-info .mireka-resumen-eleccion.mireka-selector-compacto {
+  margin: 0 0 18px;
+  max-width: 540px;
+  flex-wrap: wrap;
+}
+@media(max-width:620px) {
+  .mireka-resumen-eleccion.mireka-selector-compacto {padding:12px;gap:12px;flex-direction:column;align-items:stretch;margin:15px auto 20px}
+  .mireka-selector-descripcion small {display:block;font-size:11px}
+  .mireka-selector-opciones {display:flex;width:100%;box-sizing:border-box}
+  .mireka-selector-opciones button {min-width:0;flex:1;padding:10px 7px;font-size:12px}
+}
+
+
+/* Mireka: etiquetas de precios promocionales administradas desde Gestión */
+.mireka-precio-anterior {display:block;color:#aaa;text-decoration:line-through;font-size:12px;margin-top:5px;margin-bottom:3px}
+
+.mireka-destacados-etiquetas{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 9px}
+.mireka-destacados-etiquetas span{border:1px solid #d2ae60;border-radius:6px;background:#20190e;color:#e8c879;font-size:10px;font-weight:800;letter-spacing:.03em;padding:3px 7px}

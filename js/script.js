@@ -27,26 +27,36 @@ const MIREKA_PRUEBA_SIN_CHECKOUT = true;
 const MIREKA_ESCALONES = [3, 6, 15, 30];
 let mirekaPreciosPorSlug = new Map();
 let mirekaCotizacionesCargadas = false;
-// La elección dura solo durante esta visita a la sección de compras.
-// Al volver al inicio se borra y al ingresar nuevamente se pregunta otra vez.
-// En la misma visita se mantiene al recorrer categorías, marcas y productos.
-const MIREKA_MODO_STORAGE = 'mireka-modo-compra-sesion-v3';
-function mirekaLeerModoElegido() {
+// Mireka: la modalidad se recuerda al navegar y al volver a Inicio.
+// Un visitante nuevo ve minorista por defecto; los botones de portada
+// siguen pudiendo imponer cualquiera de las dos modalidades mediante ?modo=.
+const MIREKA_MODO_STORAGE = 'mireka-modo-compra-elegido-v4';
+const MIREKA_MODOS_VALIDOS = ['minorista', 'mayorista'];
+function mirekaConsumirModoUrl() {
     try {
-        const guardado = sessionStorage.getItem(MIREKA_MODO_STORAGE);
-        return ['minorista', 'mayorista'].includes(guardado) ? guardado : null;
+        const url = new URL(window.location.href);
+        const modo = url.searchParams.get('modo');
+        if (!MIREKA_MODOS_VALIDOS.includes(modo)) return null;
+        url.searchParams.delete('modo');
+        window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+        return modo;
     } catch (_) { return null; }
 }
-let mirekaModoElegido = mirekaLeerModoElegido();
-let mirekaModoCompra = mirekaModoElegido || 'minorista';
-let mirekaDestinoPendiente = '';
-function mirekaFinalizarVisitaCompra() {
-    mirekaModoElegido = null;
-    mirekaModoCompra = 'minorista';
-    // Eliminamos también la elección persistente de la versión anterior.
-    try { sessionStorage.removeItem(MIREKA_MODO_STORAGE); } catch (_) {}
-    try { localStorage.removeItem('mireka-modo-compra-elegido-v2'); } catch (_) {}
+function mirekaGuardarModo(modo) {
+    if (!MIREKA_MODOS_VALIDOS.includes(modo)) return;
+    try { localStorage.setItem(MIREKA_MODO_STORAGE, modo); } catch (_) {}
 }
+function mirekaLeerModoElegido() {
+    try {
+        const guardado = localStorage.getItem(MIREKA_MODO_STORAGE)
+            || sessionStorage.getItem('mireka-modo-compra-sesion-v3');
+        return MIREKA_MODOS_VALIDOS.includes(guardado) ? guardado : null;
+    } catch (_) { return null; }
+}
+const mirekaModoDesdeUrl = mirekaConsumirModoUrl();
+if (mirekaModoDesdeUrl) mirekaGuardarModo(mirekaModoDesdeUrl);
+let mirekaModoCompra = mirekaModoDesdeUrl || mirekaLeerModoElegido() || 'minorista';
+// No se borra el modo al volver a la portada: navegar no es cambiar de compra.
 
 // Cada categoría usa sus propias cantidades para activar una lista.
 // Ej.: 2 árabes + 2 Maison + 2 decants NO forman una Lista 1.
@@ -100,14 +110,23 @@ async function mirekaCargarPreciosPublicos() {
     mirekaCotizacionesCargadas = true;
 }
 
+// Selector discreto y siempre disponible. Sin portal modal que interrumpa
+// cada ingreso a marcas, categorías, novedades, ofertas o fichas de producto.
 function mirekaActualizarSelector() {
-    const texto = document.getElementById('mireka-modo-elegido-texto');
-    if (texto) texto.textContent = mirekaModoCompra === 'mayorista' ? 'Compra mayorista' : 'Compra minorista';
     document.body.dataset.mirekaModo = mirekaModoCompra;
+    document.querySelectorAll('[data-mireka-cambiar-a]').forEach(boton => {
+        const activo = boton.dataset.mirekaCambiarA === mirekaModoCompra;
+        boton.classList.toggle('mireka-switch-activo', activo);
+        boton.setAttribute('aria-pressed', String(activo));
+    });
+    const ayudaModo = document.getElementById('mireka-selector-ayuda');
+    if (ayudaModo) ayudaModo.textContent = mirekaModoCompra === 'mayorista'
+        ? 'Listas mayoristas de 3, 6, 15 y 30 unidades. El precio final depende de la cantidad por categoría.'
+        : 'Precios por unidad. Podés pagar en efectivo, transferencia o Mercado Pago.';
     const ayuda = document.getElementById('texto-precios-catalogo');
     if (ayuda) {
         ayuda.textContent = mirekaModoCompra === 'mayorista'
-            ? 'Cada categoría se calcula por separado: árabes, Maison 30 ml y decants. Desde 3 de la misma categoría accedés a Lista 1; luego 6, 15 y 30.'
+            ? 'Cada categoría se calcula por separado: árabes, Maison 30 ml y decants. Desde 3 unidades de la misma categoría accedés a Lista 1; luego 6, 15 y 30.'
             : 'Precios minoristas por unidad. Efectivo / transferencia o Mercado Pago. Desde 3 unidades de la misma categoría el carrito aplica la lista mayorista.';
     }
 }
@@ -115,135 +134,49 @@ function mirekaCrearSelectorVisible() {
     const grid = document.getElementById('productos-grid');
     const ficha = document.querySelector('.producto-detalle-info');
     if ((!grid && !ficha) || document.getElementById('mireka-resumen-eleccion')) return;
-    const bloque = document.createElement('div');
+    const bloque = document.createElement('section');
     bloque.id = 'mireka-resumen-eleccion';
-    bloque.className = 'mireka-resumen-eleccion';
-    bloque.innerHTML = `<div class="mireka-vista-actual"><span class="mireka-punto-dorado"></span>
-        <strong id="mireka-modo-elegido-texto"></strong><small>Precios según tu elección</small></div>
-        <button type="button" class="mireka-cambiar-modo" id="mireka-cambiar-modo">Cambiar modalidad ↗</button>`;
+    bloque.className = 'mireka-resumen-eleccion mireka-selector-compacto';
+    bloque.setAttribute('aria-label', 'Modalidad de compra');
+    bloque.innerHTML = `<div class="mireka-selector-descripcion">
+          <strong>¿Cómo querés comprar?</strong>
+          <small id="mireka-selector-ayuda"></small>
+        </div>
+        <div class="mireka-selector-opciones" role="group" aria-label="Elegí una modalidad">
+          <button type="button" data-mireka-cambiar-a="minorista" aria-pressed="false">Minorista</button>
+          <button type="button" data-mireka-cambiar-a="mayorista" aria-pressed="false">Mayorista</button>
+        </div>`;
     if (grid) {
-        grid.parentElement.insertBefore(bloque, grid);
+        const introduccion = document.querySelector('.catalogo-intro');
+        if (introduccion) introduccion.insertAdjacentElement('afterend', bloque);
+        else grid.parentElement.insertBefore(bloque, grid);
     } else {
         const precioDetalle = document.getElementById('producto-precios-detalle');
         if (precioDetalle) ficha.insertBefore(bloque, precioDetalle);
         else ficha.prepend(bloque);
     }
-    bloque.querySelector('#mireka-cambiar-modo')?.addEventListener('click', () => mirekaMostrarEleccion(''));
-    mirekaActualizarSelector();
-}
-function mirekaCrearPortalModo() {
-    if (document.getElementById('mireka-portal-modo')) return;
-    const modal = document.createElement('div');
-    modal.className = 'mireka-portal-modo';
-    modal.id = 'mireka-portal-modo';
-    modal.hidden = true;
-    modal.innerHTML = `<div class="mireka-portal-contenido" role="dialog" aria-modal="true" aria-labelledby="mireka-portal-titulo">
-        <div class="mireka-portal-marca">MIREKA <span>PERFUMERÍA</span></div>
-        <span class="mireka-portal-eyebrow">BIENVENIDO A MIREKA</span>
-        <h2 id="mireka-portal-titulo">¿Cómo querés comprar?</h2>
-        <p class="mireka-portal-subtitulo">Elegí una opción para ver únicamente los precios que te interesan.</p>
-        <div class="mireka-portal-opciones">
-            <button type="button" class="mireka-portal-opcion" data-mireka-elegir="minorista">
-                <span class="mireka-portal-icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l1 13H4L5 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg></span>
-                <strong>Compra minorista</strong><span>Para vos o para regalar</span>
-                <small>Comprá 1 perfume o los que quieras. Pagá en efectivo, transferencia o Mercado Pago.</small>
-                <em>Ver precios minoristas →</em>
-            </button>
-            <button type="button" class="mireka-portal-opcion" data-mireka-elegir="mayorista">
-                <span class="mireka-portal-icono" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="M3 7v10l9 5 9-5V7"/><path d="M12 12v10"/></svg></span>
-                <strong>Compra mayorista</strong><span>Para revender</span>
-                <small>Precios especiales desde 3 unidades de la misma categoría. Árabes, Maison 30 ml y decants se cuentan por separado.</small>
-                <em>Ver precios mayoristas →</em>
-            </button>
-        </div>
-        <p class="mireka-portal-nota">Podés cambiar de modalidad cuando quieras.</p>
-        <button type="button" class="mireka-portal-volver" id="mireka-portal-volver">Volver al inicio</button>
-    </div>`;
-    document.body.appendChild(modal);
-    modal.querySelectorAll('[data-mireka-elegir]').forEach(boton => boton.addEventListener('click', () => {
-        mirekaElegirModalidad(boton.dataset.mirekaElegir);
-    }));
-    modal.querySelector('#mireka-portal-volver')?.addEventListener('click', () => {
-        mirekaDestinoPendiente = '';
-        modal.hidden = true;
-        document.body.classList.remove('mireka-portal-abierto');
-        if (document.getElementById('productos-grid') || document.querySelector('.producto-detalle-info')) window.location.href = 'index.html';
+    bloque.querySelectorAll('[data-mireka-cambiar-a]').forEach(boton => {
+        boton.addEventListener('click', () => mirekaElegirModalidad(boton.dataset.mirekaCambiarA));
     });
-}
-function mirekaMostrarEleccion(destino = '') {
-    mirekaCrearPortalModo();
-    mirekaDestinoPendiente = destino;
-    const portal = document.getElementById('mireka-portal-modo');
-    portal.hidden = false;
-    document.body.classList.add('mireka-portal-abierto');
-    portal.querySelector('[data-mireka-elegir="minorista"]')?.focus();
+    mirekaActualizarSelector();
 }
 function mirekaElegirModalidad(modo) {
-    if (!['minorista', 'mayorista'].includes(modo)) return;
+    if (!MIREKA_MODOS_VALIDOS.includes(modo)) return;
+    if (mirekaModoCompra === modo) return;
     mirekaModoCompra = modo;
-    mirekaModoElegido = modo;
-    try { sessionStorage.setItem(MIREKA_MODO_STORAGE, modo); } catch (_) {}
-    document.body.classList.remove('mireka-portal-abierto');
-    const modal = document.getElementById('mireka-portal-modo');
-    if (modal) modal.hidden = true;
-    const destino = mirekaDestinoPendiente;
-    mirekaDestinoPendiente = '';
+    mirekaGuardarModo(modo);
     mirekaActualizarSelector();
-    if (destino) {
-        window.location.href = destino;
-        return;
-    }
     generarCatalogo();
     actualizarFichaIndividual();
     actualizarCarrito();
 }
 function mirekaIniciarSelectorCompra() {
-    const enPaginaCompra = Boolean(document.getElementById('productos-grid') || document.querySelector('.producto-detalle-info'));
-    // Si el cliente volvió a Inicio, terminó la modalidad anterior.
-    // En BFCache (botón Atrás del navegador), pageshow vuelve a limpiar.
-    if (!enPaginaCompra) {
-        mirekaFinalizarVisitaCompra();
-        window.addEventListener('pageshow', () => mirekaFinalizarVisitaCompra());
-    } else {
-        // Si el navegador restaura una página de compras después de haber
-        // pasado por Inicio, se debe pedir la modalidad nuevamente.
-        window.addEventListener('pageshow', evento => {
-            if (!evento.persisted || mirekaLeerModoElegido()) return;
-            mirekaModoElegido = null;
-            mirekaModoCompra = 'minorista';
-            mirekaActualizarSelector();
-            mirekaMostrarEleccion('');
-        });
-    }
-    mirekaCrearPortalModo();
+    // El cliente puede navegar libremente por Inicio, marcas y categorías.
+    // La portada manda ?modo y los catálogos muestran el selector compacto.
     mirekaCrearSelectorVisible();
     mirekaActualizarSelector();
-    if (enPaginaCompra && !mirekaModoElegido) {
-        mirekaMostrarEleccion('');
-    }
-    // En Inicio, preguntar antes de navegar a catálogo, categorías o marcas.
-    // También cubre los divs de marcas y categorías con onclick en index.html.
-    if (!enPaginaCompra) {
-        document.addEventListener('click', evento => {
-            if (mirekaModoElegido || evento.defaultPrevented || evento.button !== 0 || evento.metaKey || evento.ctrlKey) return;
-            const enlace = evento.target.closest('a[href]');
-            const tarjeta = evento.target.closest('.categoria-card, .catalog-card');
-            const elemento = enlace || tarjeta;
-            if (!elemento) return;
-            let destino = enlace?.getAttribute('href') || '';
-            if (!destino && tarjeta) {
-                const codigo = tarjeta.getAttribute('onclick') || '';
-                const encontrado = codigo.match(/window\.location\.href=['"]([^'"]+)['"]/);
-                destino = encontrado?.[1] || '';
-            }
-            const seleccionable = /^(?:catalogo|categoria|producto|afnan|al-haramain|al-wataniah|armaf|asdaaf|bharara|french-avenue|lattafa|maison-alhambra|maison-30ml|rasasi|riiffs)\.html(?:[?#]|$)/i.test(destino)
-                || ['#categorias','#marcas'].includes(destino);
-            if (!seleccionable) return;
-            evento.preventDefault();
-            evento.stopImmediatePropagation();
-            mirekaMostrarEleccion(destino);
-        }, true);
-    }
+    // En navegaciones BFCache refrescamos las etiquetas sin abrir modales.
+    window.addEventListener('pageshow', () => mirekaActualizarSelector());
 }
 
 const CATEGORIA_PREDETERMINADA = "perfumes-grandes";
@@ -1978,12 +1911,23 @@ function usarPrecioListaMinorista() {
     );
 }
 
+// Precio promocional minorista: nunca modifica el precio base ni las 4 listas.
+function mirekaEfectivoVigente(producto) {
+    const base = Number(producto?.precioMinorista) || 0;
+    const promo = Number(producto?.precioOfertaMinorista);
+    const valida = producto?.destacadoOferta === true && Number.isFinite(promo) && promo > 0 && promo < base;
+    return mirekaModoCompra === 'minorista' && valida ? promo : base;
+}
+function mirekaOfertaVigente(producto) {
+    return mirekaModoCompra === 'minorista' && mirekaEfectivoVigente(producto) < Number(producto?.precioMinorista);
+}
+
 function obtenerPrecioUnitario(producto) {
     if (aplicaMayorista(producto)) {
         return mirekaPrecioDeNivel(producto, mirekaNivelCategoria(producto.categoria)) ?? producto.precioMinorista;
     }
-    if (usarPrecioListaMinorista()) return obtenerPrecioListaDesdeEfectivo(producto.precioMinorista, producto.categoria);
-    return producto.precioMinorista;
+    if (usarPrecioListaMinorista()) return obtenerPrecioListaDesdeEfectivo(mirekaEfectivoVigente(producto), producto.categoria);
+    return mirekaEfectivoVigente(producto);
 }
 function obtenerTipoPrecio(producto) {
     if (aplicaMayorista(producto)) return `Mayorista Lista ${mirekaNivelCategoria(producto.categoria)}`;
@@ -1992,7 +1936,7 @@ function obtenerTipoPrecio(producto) {
 }
 function obtenerPrecioCarritoBase(producto) {
     if (aplicaMayorista(producto)) return mirekaPrecioDeNivel(producto, mirekaNivelCategoria(producto.categoria)) ?? producto.precioMinorista;
-    return producto.precioMinorista;
+    return mirekaEfectivoVigente(producto);
 }
 
 function calcularSubtotalCarritoBase() {
@@ -2010,7 +1954,7 @@ function calcularTotalMercadoPagoMinorista() {
         (acumulado, producto) =>
             acumulado +
             obtenerPrecioListaDesdeEfectivo(
-                producto.precioMinorista,
+                mirekaEfectivoVigente(producto),
                 producto.categoria
             ) *
             producto.cantidad,
@@ -2048,6 +1992,8 @@ function cargarCarritoGuardado() {
                     CATEGORIA_PREDETERMINADA,
                 precioMinorista,
                 preciosListas: Array.isArray(producto.preciosListas) ? producto.preciosListas : [],
+                destacadoOferta: producto.destacadoOferta === true,
+                precioOfertaMinorista: Number(producto.precioOfertaMinorista) || null,
                 precioMayorista:
                     precioMayoristaIngresado !== null &&
                     precioMayoristaIngresado > 0
@@ -2146,7 +2092,12 @@ function combinarProductoConSupabase(productoLocal) {
                 numeroValido(productoLocal.stock) !== null
                     ? Math.max(0, Number(productoLocal.stock))
                     : null,
-            activo: productoLocal.activo !== false
+            activo: productoLocal.activo !== false,
+            destacadoNuevo: false,
+            destacadoOferta: false,
+            destacadoMasVendido: false,
+            generoWeb: null,
+            precioOfertaMinorista: null
         };
     }
 
@@ -2175,7 +2126,12 @@ function combinarProductoConSupabase(productoLocal) {
                 : 0,
         activo:
             remoto.activo !== false &&
-            remoto.retirado !== true
+            remoto.retirado !== true,
+        destacadoNuevo: remoto.destacado_nuevo === true,
+        destacadoOferta: remoto.destacado_oferta === true,
+        destacadoMasVendido: remoto.destacado_mas_vendido === true,
+        generoWeb: remoto.genero_web || null,
+        precioOfertaMinorista: Number(remoto.precio_oferta_minorista) || null
     };
 }
 
@@ -2236,6 +2192,11 @@ function crearProductoSoloSupabase(remoto) {
         activo:
             remoto.activo !== false &&
             remoto.retirado !== true,
+        destacadoNuevo: remoto.destacado_nuevo === true,
+        destacadoOferta: remoto.destacado_oferta === true,
+        destacadoMasVendido: remoto.destacado_mas_vendido === true,
+        generoWeb: remoto.genero_web || null,
+        precioOfertaMinorista: Number(remoto.precio_oferta_minorista) || null,
         creadoDesdeGestion: true
     };
 }
@@ -2293,6 +2254,8 @@ function sincronizarCarritoConCatalogo() {
                     CATEGORIA_PREDETERMINADA,
                 precioMinorista:
                     productoActual.precioMinorista,
+                destacadoOferta: productoActual.destacadoOferta === true,
+                precioOfertaMinorista: productoActual.precioOfertaMinorista || null,
                 precioMayorista:
                     productoActual.precioMayorista,
                 preciosListas: productoActual.preciosListas || [],
@@ -2336,15 +2299,18 @@ function crearTextoStock(producto) {
 function crearPrecioCatalogo(producto) {
     // Visual únicamente: se mantienen los mismos precios y reglas de compra.
     const tieneMayorista = obtenerReglaCategoria(producto.categoria).tieneMayorista;
-    const precioMP = obtenerPrecioListaDesdeEfectivo(producto.precioMinorista, producto.categoria);
+    const efectivoActual = mirekaEfectivoVigente(producto);
+    const esOferta = mirekaOfertaVigente(producto);
+    const precioMP = obtenerPrecioListaDesdeEfectivo(efectivoActual, producto.categoria);
     if (mirekaModoCompra !== 'mayorista' || !tieneMayorista) {
         return `<div class="mireka-precios-tarjeta mireka-precio-simple mireka-precios-premium">
             <div class="mireka-efectivo-panel">
                 <div class="mireka-precio-cabecera">
                     <span class="mireka-metodo-label">EFECTIVO / TRANSFERENCIA</span>
-                    <span class="mireka-beneficio-badge">${producto.categoria === 'decants' ? 'MEJOR PRECIO' : '20% OFF'}</span>
+                    <span class="mireka-beneficio-badge">${esOferta ? 'OFERTA' : producto.categoria === 'decants' ? 'MEJOR PRECIO' : '20% OFF'}</span>
                 </div>
-                <strong class="mireka-precio-principal">${formatearPrecio(producto.precioMinorista)}</strong>
+                ${esOferta ? `<small class="mireka-precio-anterior">Antes: ${formatearPrecio(producto.precioMinorista)} en efectivo</small>` : ''}
+                <strong class="mireka-precio-principal">${formatearPrecio(efectivoActual)}</strong>
                 <small class="mireka-precio-beneficio">Precio por unidad</small>
             </div>
             <div class="mireka-mp-panel">
@@ -2411,13 +2377,6 @@ function generarCatalogo() {
     const generoActual =
         parametrosCatalogo.get("genero") || "";
 
-    const nuevosIngresosNombres =
-        new Set([
-            "Afnan 9 PM Night Out",
-            "Lattafa Khamrah Waha",
-            "Riiffs Momento"
-        ]);
-
     const terminoBusqueda =
         document.getElementById("buscador-catalogo")
             ?.value
@@ -2449,49 +2408,29 @@ function generarCatalogo() {
                 !tipoActual ||
                 producto.tipo === tipoActual;
 
-            const presentacionNormalizada =
-                String(producto.presentacion || "")
-                    .toLowerCase();
+            // Clasificación editable en Gestión; si está en Automático, inferir
+            // de la presentación para conservar el catálogo existente.
+            const presentacionNormalizada = String(producto.presentacion || '').toLowerCase();
+            const generoConfigurado = String(producto.generoWeb || '').toLowerCase();
+            const generoInferido = presentacionNormalizada.includes('unisex') ? 'unisex'
+                : (presentacionNormalizada.includes('mujer') || presentacionNormalizada.includes('woman')
+                    || presentacionNormalizada.includes('women') || presentacionNormalizada.includes('femenin')) ? 'mujer'
+                : (presentacionNormalizada.includes('hombre') || /\bmen\b/.test(presentacionNormalizada)
+                    || presentacionNormalizada.includes('masculin')) ? 'hombre' : '';
+            const generoWeb = generoConfigurado || generoInferido;
+            const coincideGenero = !generoActual || (
+                (generoActual === 'woman' && generoWeb === 'mujer') ||
+                (generoActual === 'men' && generoWeb === 'hombre') ||
+                (generoActual === 'unisex' && generoWeb === 'unisex')
+            );
 
-            const coincideGenero =
-                !generoActual ||
-                (
-                    producto.categoria === "perfumes-grandes" &&
-                    (
-                        (generoActual === "woman" &&
-                            (
-                                presentacionNormalizada.includes("woman") ||
-                                presentacionNormalizada.includes("mujer")
-                            )
-                        ) ||
-                        (generoActual === "men" &&
-                            (
-                                presentacionNormalizada.includes(" men") ||
-                                presentacionNormalizada.includes("hombre")
-                            ) &&
-                            !presentacionNormalizada.includes("women")
-                        ) ||
-                        (generoActual === "unisex" &&
-                            presentacionNormalizada.includes("unisex")
-                        )
-                    )
-                );
-
-            const coincideColeccion =
-                !coleccionActual ||
-                (
-                    coleccionActual === "nuevos" &&
-                    producto.categoria === "perfumes-grandes" &&
-                    nuevosIngresosNombres.has(producto.nombre)
-                ) ||
-                (
-                    coleccionActual === "ofertas" &&
-                    producto.activo !== false &&
-                    (
-                        producto.stock === null ||
-                        Number(producto.stock) > 0
-                    )
-                );
+            // Todas las colecciones se editan desde Gestión en Supabase.
+            const coincideColeccion = !coleccionActual ||
+                (coleccionActual === 'nuevos' && producto.destacadoNuevo === true) ||
+                (coleccionActual === 'ofertas' && producto.destacadoOferta === true &&
+                    Number(producto.precioOfertaMinorista) > 0 &&
+                    Number(producto.precioOfertaMinorista) < Number(producto.precioMinorista)) ||
+                (coleccionActual === 'mas-vendidos' && producto.destacadoMasVendido === true);
 
             const nombreProducto =
                 String(producto.nombre || "")
@@ -2532,15 +2471,15 @@ function generarCatalogo() {
 
     if (orden === "precio-menor") {
         return (
-            Number(productoA.precioMinorista) -
-            Number(productoB.precioMinorista)
+            mirekaEfectivoVigente(productoA) -
+            mirekaEfectivoVigente(productoB)
         );
     }
 
     if (orden === "precio-mayor") {
         return (
-            Number(productoB.precioMinorista) -
-            Number(productoA.precioMinorista)
+            mirekaEfectivoVigente(productoB) -
+            mirekaEfectivoVigente(productoA)
         );
     }
 
@@ -2616,6 +2555,12 @@ const esMobile = window.matchMedia("(max-width: 768px)").matches;
 
 const nombreVisible = producto.nombre;
 
+const etiquetasDestacadas = [
+    producto.destacadoNuevo ? '<span>NUEVO</span>' : '',
+    mirekaOfertaVigente(producto) ? '<span>OFERTA</span>' : '',
+    producto.destacadoMasVendido ? '<span>MÁS VENDIDO</span>' : ''
+].filter(Boolean).join('');
+
 const tieneMayorista =
     obtenerReglaCategoria(producto.categoria).tieneMayorista;
 
@@ -2627,7 +2572,7 @@ return `
 
 
         ${etiquetaSuperior}
-
+        ${etiquetasDestacadas ? `<div class="mireka-destacados-etiquetas">${etiquetasDestacadas}</div>` : ''}
 
         <img
             src="${escaparHTML(producto.imagen)}"
@@ -3312,6 +3257,8 @@ function agregarProductoAlCarrito(boton) {
         productoExistente.precioMinorista =
             precioMinorista;
         productoExistente.precioMayorista = precioMayorista;
+        productoExistente.destacadoOferta = productoActual?.destacadoOferta === true;
+        productoExistente.precioOfertaMinorista = productoActual?.precioOfertaMinorista || null;
         productoExistente.preciosListas = productoActual?.preciosListas || [];
         productoExistente.stock = stock;
     } else {
@@ -3321,6 +3268,8 @@ function agregarProductoAlCarrito(boton) {
             categoria,
             precioMinorista,
             precioMayorista,
+            destacadoOferta: productoActual?.destacadoOferta === true,
+            precioOfertaMinorista: productoActual?.precioOfertaMinorista || null,
             preciosListas: productoActual?.preciosListas || [],
             imagen,
             cantidad,

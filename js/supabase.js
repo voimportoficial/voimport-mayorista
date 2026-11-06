@@ -24,7 +24,12 @@ async function obtenerDatosProductos() {
             precio_mayorista,
             stock,
             activo,
-            retirado
+            retirado,
+            destacado_nuevo,
+            destacado_oferta,
+            destacado_mas_vendido,
+            genero_web,
+            precio_oferta_minorista
         `);
 
     if (error) {
