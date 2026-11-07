@@ -27,7 +27,7 @@ self.addEventListener(
 
         const titulo =
             datos.title ||
-            "VO IMPORT";
+            "Mireka Perfumería";
 
         const opciones = {
             body:

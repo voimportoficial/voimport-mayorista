@@ -6520,7 +6520,7 @@ async function activarNotificacionesGestion() {
         !esModoAppGestion()
     ) {
         window.alert(
-            "En iPhone hacé esto:\n\n1. Abrí Gestión en Safari.\n2. Tocá Compartir.\n3. Elegí ‘Agregar a pantalla de inicio’.\n4. Abrí VO IMPORT desde el ícono nuevo.\n5. Volvé a tocar ‘Activar notificaciones’."
+            "En iPhone hacé esto:\n\n1. Abrí Gestión en Safari.\n2. Tocá Compartir.\n3. Elegí ‘Agregar a pantalla de inicio’.\n4. Abrí Mireka desde el ícono nuevo.\n5. Volvé a tocar ‘Activar notificaciones’."
         );
 
         return;
@@ -31982,7 +31982,7 @@ actualizarResumenGeneral =
                     );
 
                 gananciaTotalGeneradaGestion.title =
-                    "Ganancia neta de VO Import del mes + ganancias extra del mes. Los aportes personales no cuentan como ganancia.";
+                    "Ganancia neta de Mireka del mes + ganancias extra del mes. Los aportes personales no cuentan como ganancia.";
 
             }
 
@@ -32430,7 +32430,7 @@ function renderizarCierresMensualesGestion() {
                                 </div>
 
                                 <div>
-                                    <span>Ganancia VO Import</span>
+                                    <span>Ganancia Mireka</span>
                                     <strong>${
                                         gananciaVo === null
                                             ? "Costo pendiente"
@@ -33270,7 +33270,7 @@ function renderizarPreviewCierreGestion(
         </div>
 
         <div>
-            <span>Ganancia VO Import</span>
+            <span>Ganancia Mireka</span>
             <strong>${valorGanancia}</strong>
         </div>
 
@@ -34055,7 +34055,7 @@ function abrirVentanaComprobanteGestion({
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>${tituloDocumento} #${numeroTexto} · VO IMPORT</title>
+            <title>${tituloDocumento} #${numeroTexto} · MIREKA PERFUMERÍA</title>
 
             <style>
                 * {
@@ -34402,9 +34402,9 @@ function abrirVentanaComprobanteGestion({
                         <img
                             class="logo-comprobante"
                             src="${logoComprobanteUrl}"
-                            alt="VO Import"
+                            alt="Mireka Perfumería"
                         >
-                        <p><b>Razón social:</b> Vo Import</p>
+                        <p><b>Nombre comercial:</b> Mireka Perfumería</p>
                         <p><b>Domicilio comercial:</b> América 3249, Villa Luzuriaga, Buenos Aires, Argentina</p>
                     </div>
 
@@ -35247,8 +35247,8 @@ function obtenerEnlaceWhatsappPedidoWebGestion(
 
     const saludo =
         nombre
-            ? `Hola ${nombre}, te escribo de VO IMPORT por tu pedido ${codigo}.`
-            : `Hola, te escribo de VO IMPORT por tu pedido ${codigo}.`;
+            ? `Hola ${nombre}, te escribo de Mireka Perfumería por tu pedido ${codigo}.`
+            : `Hola, te escribo de Mireka Perfumería por tu pedido ${codigo}.`;
 
 
     return (

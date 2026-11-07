@@ -1,8 +1,8 @@
 {
   "id": "/gestion/",
-  "name": "VO IMPORT Gestión",
-  "short_name": "VO IMPORT",
-  "description": "Sistema de Gestión de VO IMPORT",
+  "name": "Mireka Perfumería - Gestión",
+  "short_name": "Mireka",
+  "description": "Sistema de Gestión de Mireka Perfumería",
   "start_url": "/gestion/",
   "scope": "/gestion/",
   "display": "standalone",
