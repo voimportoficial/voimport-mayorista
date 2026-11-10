@@ -7425,3 +7425,23 @@ body[data-mireka-modo="mayorista"] .mireka-mayorista-guia { display: block; }
 
 .mireka-destacados-etiquetas{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 9px}
 .mireka-destacados-etiquetas span{border:1px solid #d2ae60;border-radius:6px;background:#20190e;color:#e8c879;font-size:10px;font-weight:800;letter-spacing:.03em;padding:3px 7px}
+
+/* MIREKA: tarjetas compactas en colecciones */
+body.pagina-catalogo[data-categoria=""] .producto-card .producto-disenador {
+    display: none !important;
+}
+
+body.pagina-catalogo[data-categoria=""] .producto-card {
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+/* Conservar etiquetas sin alargar la tarjeta */
+body.pagina-catalogo[data-categoria=""] .mireka-destacados-etiquetas {
+    position: absolute;
+    top: 14px;
+    left: 12px;
+    right: 12px;
+    z-index: 2;
+    margin: 0;
+}
