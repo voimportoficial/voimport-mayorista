@@ -7472,3 +7472,91 @@ body.pagina-catalogo[data-categoria=""] .producto-card {
 .stock-producto-detalle[hidden] {
     display: none !important;
 }
+
+
+/* =============================================================
+   MIREKA | Categorías: foto cuadrada enmarcada, título por fuera.
+   El marco dorado rodea SOLO la foto; la tarjeta no tiene fondo.
+   El área completa sigue siendo clickeable como antes.
+   ============================================================= */
+#categorias .categorias-grid .categoria-card {
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Evitar el resplandor de las imágenes anteriores. */
+#categorias .categorias-grid .categoria-card::before {
+    display: none !important;
+}
+
+#categorias .categorias-grid .categoria-card img,
+#categorias .categorias-grid .categoria-card:nth-child(2) img {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 1 / 1 !important;
+    object-fit: cover !important;
+    object-position: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    border: 1px solid rgba(200, 162, 77, .55) !important;
+    border-radius: 18px !important;
+    box-sizing: border-box !important;
+    flex: 0 0 auto !important;
+}
+
+#categorias .categorias-grid .categoria-card:hover img {
+    border-color: #c8a24d !important;
+}
+
+#categorias .categorias-grid .categoria-card h3,
+#categorias .categorias-grid .categoria-card:nth-child(2) h3 {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 12px 5px 0 !important;
+    color: #c8a24d !important;
+    background: transparent !important;
+    border: 0 !important;
+    font-weight: 800 !important;
+    font-size: 17px !important;
+    line-height: 1.25 !important;
+    text-align: center !important;
+    display: block !important;
+    min-height: 0 !important;
+    flex: 0 0 auto !important;
+}
+
+@media (max-width: 768px) {
+    #categorias .categorias-grid .categoria-card img,
+    #categorias .categorias-grid .categoria-card:nth-child(2) img {
+        border-radius: 14px !important;
+    }
+
+    #categorias .categorias-grid .categoria-card h3,
+    #categorias .categorias-grid .categoria-card:nth-child(2) h3 {
+        padding: 10px 3px 0 !important;
+        font-size: 15px !important;
+        min-height: 0 !important;
+    }
+}
+
+
+/* MIREKA | Ajuste exclusivo del logo Rayhaan en el carrusel de marcas.
+   La imagen original tiene márgenes transparentes amplios, por eso
+   el logotipo se percibe más chico con el mismo tamaño de imagen. */
+#marcas .catalog-card.rayhaan img {
+    transform: scale(1.38) !important;
+    transform-origin: center center !important;
+}
