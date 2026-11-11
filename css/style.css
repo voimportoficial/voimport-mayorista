@@ -7446,3 +7446,29 @@ body.pagina-catalogo[data-categoria=""] .producto-card {
     z-index: 2;
     margin: 0;
 }
+
+/* MIREKA | Diferenciar stock SOLO por el fondo de toda la tarjeta.
+   Los productos CON stock usan un gris mas claro (#292929).
+   Los productos agotados vuelven al fondo normal (#111111),
+   manteniendo el texto "Agotado" en rojo abajo. */
+.producto-card .producto-stock.disponible {
+    visibility: hidden;
+}
+
+.producto-card:not(.mireka-sin-stock):has(> .producto-stock.disponible) {
+    background: #292929 !important;
+}
+
+.producto-card.mireka-sin-stock,
+.producto-card:has(> .producto-stock.agotado) {
+    background: #111111 !important;
+}
+
+.producto-card.mireka-sin-stock .producto-stock.agotado {
+    visibility: visible;
+    color: #f07b83;
+}
+
+.stock-producto-detalle[hidden] {
+    display: none !important;
+}

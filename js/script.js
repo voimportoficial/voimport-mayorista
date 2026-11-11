@@ -2289,11 +2289,9 @@ function crearTextoStock(producto) {
         `;
     }
 
-    return `
-        <p class="producto-stock disponible">
-            Stock: ${producto.stock}
-        </p>
-    `;
+    // Reservamos el mismo espacio para mantener todas las tarjetas alineadas,
+    // sin revelar cuantas unidades hay disponibles.
+    return `<p class="producto-stock disponible" aria-hidden="true">&nbsp;</p>`;
 }
 
 function crearPrecioCatalogo(producto) {
@@ -2566,7 +2564,7 @@ const tieneMayorista =
 
 return `
     <div
-        class="producto-card${tieneMayorista ? " producto-card-con-mayorista" : ""}"
+        class="producto-card${tieneMayorista ? " producto-card-con-mayorista" : ""}${agotado ? " mireka-sin-stock" : ""}"
         data-slug="${escaparHTML(producto.slug)}"
     >
 
@@ -2695,6 +2693,8 @@ function actualizarFichaIndividual() {
     if (imagen) {
         imagen.src = imagenProducto;
         imagen.alt = `Perfume ${producto.nombre}`;
+        imagen.closest(".producto-detalle-imagen")
+            ?.classList.toggle("mireka-sin-stock", producto.stock === 0);
     }
 
     const marca = document.getElementById(
@@ -2862,11 +2862,11 @@ function actualizarFichaIndividual() {
             stockDetalle.className =
                 "stock-producto-detalle pendiente";
         } else {
-            stockDetalle.textContent =
-                `Stock disponible: ${producto.stock}`;
-            stockDetalle.className =
-                "stock-producto-detalle disponible";
+            // El inventario se administra en Gestion: el cliente no ve numeros.
+            stockDetalle.textContent = "";
+            stockDetalle.className = "stock-producto-detalle disponible";
         }
+        stockDetalle.hidden = Boolean(producto.activo && producto.stock > 0);
     }
 
     const sinStock =
@@ -2993,14 +2993,8 @@ function actualizarCarrito() {
                     const cotizacionMayoristaPendiente = esMayoristaProducto &&
                         mirekaPrecioDeNivel(producto, mirekaNivelCategoria(producto.categoria)) === null;
 
-                    const puedeSumar =
-                        producto.stock === null ||
-                        producto.cantidad < producto.stock;
-
-                    const textoStock =
-                        producto.stock === null
-                            ? "Stock a confirmar"
-                            : `Stock: ${producto.stock}`;
+                    // El control de stock sigue activo aunque no se muestre
+                    // la existencia exacta en el carrito.
 
                     return `
                         <div class="carrito-item">
@@ -3027,10 +3021,6 @@ function actualizarCarrito() {
                                     }
                                 </p>
 
-                                <small class="carrito-stock">
-                                    ${textoStock}
-                                </small>
-
                                 <div class="carrito-item-acciones">
                                     <div class="carrito-cantidad">
                                         <button
@@ -3051,7 +3041,7 @@ function actualizarCarrito() {
                                             data-accion="sumar"
                                             data-indice="${indice}"
                                             aria-label="Sumar una unidad"
-                                            ${puedeSumar ? "" : "disabled"}
+                                            title="Sumar una unidad"
                                         >
                                             +
                                         </button>
@@ -3170,6 +3160,21 @@ function obtenerCantidadElegida(boton) {
     );
 }
 
+function mostrarAvisoLimiteStock(nombre, stock, cantidadEnCarrito = 0) {
+    const total = Math.max(0, Math.floor(Number(stock) || 0));
+    const enCarrito = Math.max(0, Math.floor(Number(cantidadEnCarrito) || 0));
+    const restantes = Math.max(0, total - enCarrito);
+    const singular = total === 1;
+    let mensaje = `Solo ${singular ? "queda" : "quedan"} ${total} unidad${singular ? "" : "es"} disponible${singular ? "" : "s"} de ${nombre}.`;
+    if (enCarrito > 0) {
+        mensaje += ` Ya tenés ${enCarrito} en tu carrito.`;
+    }
+    mensaje += restantes > 0
+        ? ` Podés agregar ${restantes} más.`
+        : " No podés agregar más unidades.";
+    window.alert(mensaje);
+}
+
 function agregarProductoAlCarrito(boton) {
     const slug = boton.dataset.slug || "";
     const nombre = boton.dataset.nombre || "Producto";
@@ -3237,18 +3242,7 @@ function agregarProductoAlCarrito(boton) {
         stock !== null &&
         cantidadActual + cantidad > stock
     ) {
-        const disponibles = Math.max(
-            0,
-            stock - cantidadActual
-        );
-
-        alert(
-            disponibles > 0
-                ? `Solo podés agregar ${disponibles} unidad${
-                    disponibles === 1 ? "" : "es"
-                } más.`
-                : "Ya agregaste todo el stock disponible."
-        );
+        mostrarAvisoLimiteStock(nombre, stock, cantidadActual);
         return;
     }
 
@@ -3415,7 +3409,7 @@ carritoProductos?.addEventListener("click", (evento) => {
             producto.stock !== null &&
             producto.cantidad >= producto.stock
         ) {
-            alert("No hay más stock disponible.");
+            mostrarAvisoLimiteStock(producto.nombre, producto.stock, producto.cantidad);
             return;
         }
 
