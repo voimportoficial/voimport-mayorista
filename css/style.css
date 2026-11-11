@@ -7436,8 +7436,9 @@ body.pagina-catalogo[data-categoria=""] .producto-card {
     height: auto !important;
 }
 
-/* Conservar etiquetas sin alargar la tarjeta */
-body.pagina-catalogo[data-categoria=""] .mireka-destacados-etiquetas {
+/* Colocar etiquetas NUEVO / OFERTA / MÁS VENDIDO encima de la imagen,
+   sin desplazarla en ninguna categoría (PC ni móvil). */
+.producto-card > .mireka-destacados-etiquetas {
     position: absolute;
     top: 14px;
     left: 12px;
