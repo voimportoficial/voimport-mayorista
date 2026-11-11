@@ -20163,6 +20163,40 @@ formEditarProductoGestion?.addEventListener(
             editarProductoCostoGestion.value.trim();
 
 
+        // MIREKA: las cuatro listas se editan en otro módulo. Para productos
+        // nuevos, el margen mayorista antiguo puede estar vacío aunque ya
+        // se haya definido el precio de la Lista 1. Gestión lo exige para
+        // conservar compatibilidad con ventas y precios existentes.
+        // Tomamos la Lista 1 SOLO si falta ese margen; nunca pisamos uno
+        // ya configurado ni alteramos las otras tres listas.
+        if (
+            editarProductoMarkupMayoristaGestion.value.trim() === "" &&
+            costoTexto !== "" &&
+            Number.isFinite(Number(costoTexto)) &&
+            Number(costoTexto) > 0
+        ) {
+            const editorListas = document.getElementById("mireka-listas-editor-filas");
+            const camposLista = editorListas
+                ? Array.from(editorListas.querySelectorAll('input[type="number"]'))
+                : [];
+            // En cada ficha de lista el primer campo es el porcentaje y
+            // el segundo, el precio calculado o editado manualmente.
+            const campoPrecioListaUno = camposLista[1];
+            const precioListaUno = campoPrecioListaUno?.value.trim() === ""
+                ? NaN
+                : Number(campoPrecioListaUno?.value);
+            if (Number.isFinite(precioListaUno) && precioListaUno > 0) {
+                const margen = (precioListaUno / Number(costoTexto) - 1) * 100;
+                if (Number.isFinite(margen) && margen >= 0) {
+                    editarProductoMarkupMayoristaGestion.value =
+                        String(Number(margen.toFixed(6)));
+                    editarProductoMayoristaGestion.value =
+                        String(precioListaUno);
+                }
+            }
+        }
+
+
         const markupMayoristaTexto =
             editarProductoMarkupMayoristaGestion.value.trim();
 
