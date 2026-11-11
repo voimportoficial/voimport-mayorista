@@ -7560,3 +7560,96 @@ body.pagina-catalogo[data-categoria=""] .producto-card {
     transform: scale(1.38) !important;
     transform-origin: center center !important;
 }
+/* ============================================================
+   MIREKA | SALE: precio original / oferta en tarjetas y fichas
+   Agregar al FINAL del css/style.css actual.
+   Solo estilos; no cambia precios ni porcentajes reales.
+   ============================================================ */
+
+/* Etiqueta SALE roja, sin alterar NUEVO ni MÃS VENDIDO. */
+.mireka-destacados-etiquetas .mireka-sale-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #b62538;
+  border: 1px solid #d54755;
+  color: #ffffff;
+  font-weight: 900;
+  letter-spacing: .08em;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, .2);
+}
+
+/* La tarjeta solo resalta el precio cuando hay una oferta vÃ¡lida.
+   El diseÃ±o de todas las tarjetas normales queda intacto. */
+.mireka-precios-premium.mireka-es-oferta .mireka-beneficio-oferta {
+  background: #b62538;
+  color: #fff;
+  border: 1px solid #d54755;
+  font-weight: 900;
+}
+.mireka-precios-premium.mireka-es-oferta .mireka-efectivo-panel {
+  gap: 5px;
+}
+.mireka-precios-premium .mireka-precio-antes-fila,
+.mireka-precios-premium .mireka-precio-ahora-fila {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 8px;
+  row-gap: 2px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.mireka-precios-premium .mireka-precio-antes-fila {
+  font-size: 12px;
+  line-height: 1.3;
+  color: #aaa;
+  margin-top: 2px;
+}
+.mireka-precios-premium .mireka-precio-antes-fila span {
+  color: #bdb6a9;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-decoration: none;
+}
+.mireka-precios-premium .mireka-precio-antes-fila del {
+  color: #b5aea7;
+  text-decoration: line-through;
+  text-decoration-thickness: 1.5px;
+  text-decoration-color: #d56b70;
+  font-size: 14px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.mireka-precios-premium .mireka-precio-ahora-fila span {
+  color: #dfba74;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .07em;
+}
+.mireka-precios-premium.mireka-es-oferta .mireka-precio-ahora-fila .mireka-precio-principal {
+  color: #fff;
+  margin: 0;
+  min-width: 0;
+}
+@media (max-width: 768px) {
+  .producto-card .mireka-precios-premium .mireka-precio-antes-fila,
+  .producto-card .mireka-precios-premium .mireka-precio-ahora-fila { gap: 5px; }
+  .producto-card .mireka-precios-premium .mireka-precio-antes-fila del {font-size: 12px;}
+  .producto-card .mireka-precios-premium .mireka-precio-ahora-fila span,
+  .producto-card .mireka-precios-premium .mireka-precio-antes-fila span {font-size: 9px;}
+  .producto-card .mireka-precios-premium.mireka-es-oferta .mireka-precio-ahora-fila .mireka-precio-principal {
+    font-size: clamp(18px, 4vw, 24px);
+  }
+}
+@media (max-width: 380px) {
+  .producto-card .mireka-precios-premium .mireka-precio-antes-fila,
+  .producto-card .mireka-precios-premium .mireka-precio-ahora-fila {
+    flex-wrap: wrap;
+  }
+  .producto-card .mireka-precios-premium.mireka-es-oferta .mireka-precio-ahora-fila .mireka-precio-principal {
+    font-size: 18px;
+  }
+}

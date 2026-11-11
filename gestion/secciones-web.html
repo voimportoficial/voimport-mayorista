@@ -19,7 +19,7 @@
  <section id="area-admin" hidden>
   <div class="explicacion">
    <strong>¿Cómo funciona?</strong> Marcá Nuevos ingresos, Ofertas o Más vendidos en cada perfume. Elegí también su clasificación. Los cambios aparecen en la web cuando se actualiza el catálogo.
-   <p>En <strong>Ofertas</strong>, ingresá un precio especial de <strong>efectivo / transferencia</strong>, menor al precio normal. El precio de Mercado Pago se calculará como en el resto de la web; las listas mayoristas no se modifican.</p>
+   <p>En <strong>Ofertas</strong>, podés destacar el <strong>20% de descuento real por efectivo o transferencia</strong> frente al precio de lista, manteniendo tu precio minorista y tu markup. También podés calcular un <strong>descuento adicional</strong> y comprobar su ganancia antes de aplicarlo. Las cuatro listas mayoristas no se modifican.</p>
   </div>
   <div class="filtros">
    <label>Buscar perfume o marca<input id="buscar" type="search" placeholder="Ej.: Afnan, Lattafa, Khamrah" autocomplete="off"></label>
@@ -38,6 +38,18 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
+<script src="../js/productos.js"></script>
+<script>
+  // Las fotos son las mismas del catálogo público; la gestión sigue consultando
+  // precios, costos, stock y ofertas en Supabase.
+  window.mirekaFotosCatalogo = (typeof productos !== 'undefined' && Array.isArray(productos))
+    ? productos.map(p => ({
+        id: String(p.id || p.slug || '').trim().toLowerCase(),
+        clave: [p.nombre, p.marca, p.categoria].map(v => String(v || '').trim().toLowerCase()).join('|'),
+        imagen: String(p.imagen || '')
+      }))
+    : [];
+</script>
 <script src="secciones-web.js"></script>
 </body>
 </html>

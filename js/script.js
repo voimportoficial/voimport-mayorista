@@ -1918,8 +1918,16 @@ function mirekaEfectivoVigente(producto) {
     const valida = producto?.destacadoOferta === true && Number.isFinite(promo) && promo > 0 && promo < base;
     return mirekaModoCompra === 'minorista' && valida ? promo : base;
 }
+// Dos tipos de oferta: rebaja adicional o descuento real por medio de pago.
+// La segunda no altera el precio de efectivo ni aplica una rebaja doble.
+function mirekaDescuentoPagoVigente(producto) {
+    return mirekaModoCompra === 'minorista' && producto?.destacadoOferta === true &&
+        producto?.precioOfertaMinorista == null && Number(producto?.precioMinorista) > 0;
+}
 function mirekaOfertaVigente(producto) {
-    return mirekaModoCompra === 'minorista' && mirekaEfectivoVigente(producto) < Number(producto?.precioMinorista);
+    return mirekaModoCompra === 'minorista' && producto?.destacadoOferta === true &&
+        (mirekaDescuentoPagoVigente(producto) ||
+        mirekaEfectivoVigente(producto) < Number(producto?.precioMinorista));
 }
 
 function obtenerPrecioUnitario(producto) {
@@ -2299,17 +2307,24 @@ function crearPrecioCatalogo(producto) {
     const tieneMayorista = obtenerReglaCategoria(producto.categoria).tieneMayorista;
     const efectivoActual = mirekaEfectivoVigente(producto);
     const esOferta = mirekaOfertaVigente(producto);
+    const ofertaMedioPago = mirekaDescuentoPagoVigente(producto);
+    const porcentajeOferta = ofertaMedioPago ? 20 : esOferta
+        ? Math.round((1 - efectivoActual / Number(producto.precioMinorista)) * 100)
+        : 0;
     const precioMP = obtenerPrecioListaDesdeEfectivo(efectivoActual, producto.categoria);
     if (mirekaModoCompra !== 'mayorista' || !tieneMayorista) {
-        return `<div class="mireka-precios-tarjeta mireka-precio-simple mireka-precios-premium">
+        return `<div class="mireka-precios-tarjeta mireka-precio-simple mireka-precios-premium${esOferta ? ' mireka-es-oferta' : ''}">
             <div class="mireka-efectivo-panel">
                 <div class="mireka-precio-cabecera">
                     <span class="mireka-metodo-label">EFECTIVO / TRANSFERENCIA</span>
-                    <span class="mireka-beneficio-badge">${esOferta ? 'OFERTA' : producto.categoria === 'decants' ? 'MEJOR PRECIO' : '20% OFF'}</span>
+                    <span class="mireka-beneficio-badge${esOferta ? ' mireka-beneficio-oferta' : ''}">${esOferta ? (porcentajeOferta >= 1 ? `-${porcentajeOferta}%` : 'SALE') : producto.categoria === 'decants' ? 'MEJOR PRECIO' : '20% OFF'}</span>
                 </div>
-                ${esOferta ? `<small class="mireka-precio-anterior">Antes: ${formatearPrecio(producto.precioMinorista)} en efectivo</small>` : ''}
-                <strong class="mireka-precio-principal">${formatearPrecio(efectivoActual)}</strong>
-                <small class="mireka-precio-beneficio">Precio por unidad</small>
+                ${esOferta
+                    ? `<div class="mireka-precio-antes-fila"><span>${ofertaMedioPago ? 'LISTA' : 'ANTES'}</span><del>${formatearPrecio(ofertaMedioPago ? obtenerPrecioListaDesdeEfectivo(producto.precioMinorista, producto.categoria) : producto.precioMinorista)}</del></div>
+                       <div class="mireka-precio-ahora-fila"><span>AHORA</span><strong class="mireka-precio-principal">${formatearPrecio(efectivoActual)}</strong></div>
+                       <small class="mireka-precio-beneficio">${ofertaMedioPago ? '* 20% de descuento sobre precio de lista, pagando en efectivo o transferencia.' : '* Oferta v&aacute;lida solo en efectivo o transferencia.'}</small>`
+                    : `<strong class="mireka-precio-principal">${formatearPrecio(efectivoActual)}</strong>
+                       <small class="mireka-precio-beneficio">Precio por unidad</small>`}
             </div>
             <div class="mireka-mp-panel">
                 <div class="mireka-mp-titulo">
@@ -2426,8 +2441,9 @@ function generarCatalogo() {
             const coincideColeccion = !coleccionActual ||
                 (coleccionActual === 'nuevos' && producto.destacadoNuevo === true) ||
                 (coleccionActual === 'ofertas' && producto.destacadoOferta === true &&
-                    Number(producto.precioOfertaMinorista) > 0 &&
-                    Number(producto.precioOfertaMinorista) < Number(producto.precioMinorista)) ||
+                    (producto.precioOfertaMinorista == null ||
+                        (Number(producto.precioOfertaMinorista) > 0 &&
+                         Number(producto.precioOfertaMinorista) < Number(producto.precioMinorista)))) ||
                 (coleccionActual === 'mas-vendidos' && producto.destacadoMasVendido === true);
 
             const nombreProducto =
@@ -2555,7 +2571,7 @@ const nombreVisible = producto.nombre;
 
 const etiquetasDestacadas = [
     producto.destacadoNuevo ? '<span>NUEVO</span>' : '',
-    mirekaOfertaVigente(producto) ? '<span>OFERTA</span>' : '',
+    mirekaOfertaVigente(producto) ? '<span class="mireka-sale-tag">SALE</span>' : '',
     producto.destacadoMasVendido ? '<span>MÁS VENDIDO</span>' : ''
 ].filter(Boolean).join('');
 
