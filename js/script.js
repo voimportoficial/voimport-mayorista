@@ -415,7 +415,7 @@ if (
                 <span>Alias</span>
 
                 <div class="carrito-alias-fila">
-                    <strong>voimport.lemon</strong>
+                    <strong>mireka.perfumeria</strong>
 
                     <button
                         type="button"
@@ -530,7 +530,7 @@ const botonCopiarAlias = document.getElementById("copiar-alias");
 
 botonCopiarAlias?.addEventListener("click", async () => {
     try {
-        await navigator.clipboard.writeText("voimport.lemon");
+        await navigator.clipboard.writeText("mireka.perfumeria");
 
         botonCopiarAlias.textContent = "Copiado ✓";
 
@@ -539,7 +539,7 @@ botonCopiarAlias?.addEventListener("click", async () => {
         }, 1500);
 
     } catch (error) {
-        alert("Alias: voimport.lemon");
+        alert("Alias: mireka.perfumeria");
     }
 });
 // =============================
@@ -4097,7 +4097,7 @@ function renderizarDetallePagoCheckoutMayorista(
             <div>
                 <span>Alias</span>
                 <span class="checkout-alias-linea">
-                    <strong>voimport.lemon</strong>
+                    <strong>mireka.perfumeria</strong>
                     <button
                         type="button"
                         id="checkout-copiar-alias"
@@ -4137,7 +4137,7 @@ function renderizarDetallePagoCheckoutMayorista(
 
                 try {
                     await navigator.clipboard.writeText(
-                        "voimport.lemon"
+                        "mireka.perfumeria"
                     );
                     boton.textContent = "Copiado ✓";
                     setTimeout(
@@ -4147,7 +4147,7 @@ function renderizarDetallePagoCheckoutMayorista(
                         1500
                     );
                 } catch (_) {
-                    alert("Alias: voimport.lemon");
+                    alert("Alias: mireka.perfumeria");
                 }
             }
         );
@@ -4416,7 +4416,7 @@ function renderizarDetallePagoCheckout(
                 <div>
                     <span>Alias</span>
                     <span class="checkout-alias-linea">
-                        <strong>voimport.lemon</strong>
+                        <strong>mireka.perfumeria</strong>
                         <button
                             type="button"
                             id="checkout-copiar-alias"
@@ -4457,7 +4457,7 @@ function renderizarDetallePagoCheckout(
 
                     try {
                         await navigator.clipboard.writeText(
-                            "voimport.lemon"
+                            "mireka.perfumeria"
                         );
                         boton.textContent = "Copiado ✓";
                         setTimeout(
@@ -4467,7 +4467,7 @@ function renderizarDetallePagoCheckout(
                             1500
                         );
                     } catch (_) {
-                        alert("Alias: voimport.lemon");
+                        alert("Alias: mireka.perfumeria");
                     }
                 }
             );
