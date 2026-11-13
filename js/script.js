@@ -3728,7 +3728,8 @@ async function registrarPedidoWebPendiente(
     const items =
         carrito.map((producto) => ({
             slug: producto.slug || "",
-            cantidad: Number(producto.cantidad) || 0
+            cantidad: Number(producto.cantidad) || 0,
+            modo: mirekaModoCompra
         }));
 
     const { data, error } =
@@ -4552,11 +4553,15 @@ function mirekaMotivoCheckoutNoVerificado() {
         return 'Las compras se encuentran temporalmente pausadas.';
     }
     if (carrito.length === 0) return 'Tu carrito está vacío.';
-    if (mirekaModoCompra !== 'minorista') {
-        return 'Las compras mayoristas se están actualizando. Consultanos por WhatsApp para coordinar el pedido.';
+    // Las listas se calculan por categoría, sin mezclar mínimos de mayorista.
+    if (mirekaModoCompra === 'mayorista' &&
+        carrito.some(p => mirekaCantidadCategoria(p.categoria) < 3)) {
+        return 'Para comprar por mayor necesitás al menos 3 unidades de cada categoría elegida.';
     }
-    if (carritoTieneMayorista()) {
-        return 'Las listas mayoristas de 3, 6, 15 y 30 unidades todavía no están habilitadas para finalizar online. Consultanos por WhatsApp.';
+    // No enviar pedidos con listas faltantes o todavía sin sincronizar.
+    if (carritoTieneMayorista() &&
+        (!mirekaCotizacionesCargadas || mirekaFaltanCotizaciones())) {
+        return 'No se pudieron confirmar las listas mayoristas. Actualizá la página e intentá nuevamente.';
     }
     if (carrito.some(p => !['perfumes-grandes', 'maison-30ml'].includes(p.categoria))) {
         return 'La compra online de decants todavía está en revisión. Consultanos por WhatsApp.';
