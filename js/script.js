@@ -22,8 +22,10 @@ const REGLAS_CATEGORIAS = {
     }
 };
 
-// MIREKA | Vista de prueba. Los pedidos no se finalizan hasta sincronizar el backend.
-const MIREKA_PRUEBA_SIN_CHECKOUT = true;
+// MIREKA | Recuperación acotada del checkout anterior.
+// Solo se habilitan pedidos minoristas SIN ofertas y sin listas mayoristas.
+// El backend antiguo no coincide todavía con las 4 listas ni los decants redondeados.
+const MIREKA_PRUEBA_SIN_CHECKOUT = false;
 const MIREKA_ESCALONES = [3, 6, 15, 30];
 let mirekaPreciosPorSlug = new Map();
 let mirekaCotizacionesCargadas = false;
@@ -572,6 +574,7 @@ botonEnviarComprobante?.addEventListener(
 async function procesarEnvioComprobanteWeb(
     cliente
 ) {
+    if (!mirekaComprobarCheckoutTemporal()) return;
 
     const ventanaWhatsApp =
         window.open("", "_blank");
@@ -764,6 +767,7 @@ botonPagarMercadoPago?.addEventListener(
 async function procesarPagoMercadoPagoWeb(
     cliente
 ) {
+    if (!mirekaComprobarCheckoutTemporal()) return;
 
     if (
         typeof crearPreferenciaMercadoPago !==
@@ -3678,6 +3682,11 @@ async function registrarPedidoWebPendiente(
     origen = "web",
     cliente = null
 ) {
+    // Defensa en profundidad: ningún flujo alternativo debe escribir pedidos
+    // mayoristas, con ofertas o decants, hasta corregir y probar el SQL.
+    const motivoCheckout = mirekaMotivoCheckoutNoVerificado();
+    if (motivoCheckout) throw new Error(motivoCheckout);
+    const totalEsperado = calcularSubtotalCarritoBase();
 
     if (!cliente) {
         throw new Error(
@@ -3697,7 +3706,9 @@ async function registrarPedidoWebPendiente(
                 pedidoTemporal
             );
 
-        if (siguePendiente) {
+        if (siguePendiente &&
+            Number.isFinite(Number(pedidoTemporal.total)) &&
+            Math.abs(Number(pedidoTemporal.total) - totalEsperado) < 0.01) {
             return pedidoTemporal;
         }
 
@@ -3753,10 +3764,17 @@ async function registrarPedidoWebPendiente(
         );
     }
 
+    const totalServidor = Number(resultado.total);
+    if (!Number.isFinite(totalServidor) ||
+        Math.abs(totalServidor - totalEsperado) >= 0.01) {
+        // Ya puede existir un pedido pendiente; NO se confirma ni se envía a pagar.
+        // Se debe revisar y cancelar desde Gestión si fue una compra de prueba.
+        throw new Error('El precio del servidor no coincide con el carrito. No se realizó ningún cobro. Revisá el pedido pendiente en Gestión.');
+    }
     const pedido = {
         pedidoId: resultado.pedido_id,
         codigo: resultado.codigo,
-        total: Number(resultado.total) || 0
+        total: totalServidor
     };
 
     guardarClienteWebRecordado(
@@ -4527,13 +4545,44 @@ function renderizarDetallePagoCheckout(
 }
 
 
+// Recuperación temporal: permite únicamente el segmento de precios que coincide
+// con la función original de Supabase. NO habilitar listas/ofertas/decants aquí.
+function mirekaMotivoCheckoutNoVerificado() {
+    if (MIREKA_PRUEBA_SIN_CHECKOUT) {
+        return 'Las compras se encuentran temporalmente pausadas.';
+    }
+    if (carrito.length === 0) return 'Tu carrito está vacío.';
+    if (mirekaModoCompra !== 'minorista') {
+        return 'Las compras mayoristas se están actualizando. Consultanos por WhatsApp para coordinar el pedido.';
+    }
+    if (carritoTieneMayorista()) {
+        return 'Las listas mayoristas de 3, 6, 15 y 30 unidades todavía no están habilitadas para finalizar online. Consultanos por WhatsApp.';
+    }
+    if (carrito.some(p => !['perfumes-grandes', 'maison-30ml'].includes(p.categoria))) {
+        return 'La compra online de decants todavía está en revisión. Consultanos por WhatsApp.';
+    }
+    if (carrito.some(p => p.destacadoOferta === true ||
+        (Number(p.precioOfertaMinorista) > 0))) {
+        return 'Las ofertas todavía están en revisión para los pedidos web. Consultanos por WhatsApp.';
+    }
+    if (carrito.some(p => !p.slug || !Number.isFinite(Number(p.precioMinorista)) ||
+        Number(p.precioMinorista) <= 0 || !Number.isInteger(Number(p.cantidad)) ||
+        Number(p.cantidad) <= 0 || !Number.isFinite(Number(p.stock)) ||
+        Number(p.stock) < Number(p.cantidad))) {
+        return 'Hay productos sin precio o stock confirmado. Actualizá la página e intentá nuevamente.';
+    }
+    return null;
+}
+function mirekaComprobarCheckoutTemporal() {
+    const motivo = mirekaMotivoCheckoutNoVerificado();
+    if (motivo) { alert(motivo); return false; }
+    return true;
+}
+
 botonFinalizarPedido?.addEventListener(
     "click",
     () => {
-        if (MIREKA_PRUEBA_SIN_CHECKOUT) {
-            alert('Esta es una prueba local del nuevo carrito. La finalización está pausada hasta conectar los precios de las 4 listas con el registro de pedidos en Supabase.');
-            return;
-        }
+        if (!mirekaComprobarCheckoutTemporal()) return;
         if (mirekaFaltanCotizaciones()) {
             alert('Falta sincronizar los precios mayoristas. No se puede finalizar con precios sin confirmar.');
             return;
@@ -4577,6 +4626,7 @@ botonFinalizarPedido?.addEventListener(
 async function procesarFinalizacionPedidoWeb(
     cliente
 ) {
+    if (!mirekaComprobarCheckoutTemporal()) return;
 
     const ventanaWhatsApp =
         window.open("", "_blank");
