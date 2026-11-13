@@ -97,8 +97,6 @@
 
             <div class="catalogo-categorias">
 
-                <button type="button" class="catalogo-filtro" data-categoria="">Todos los productos</button>
-
                 <button
                     type="button"
                     class="catalogo-filtro activo"
@@ -369,34 +367,21 @@
 
 
 
-    // Las colecciones y los géneros abarcan todas las categorías,
-    // salvo que el enlace indique una categoría específica.
-    if (!categoriaInicialCatalogo &&
-        (parametrosCatalogo.has('coleccion') || parametrosCatalogo.has('genero'))) {
-        document.body.dataset.categoria = '';
-        botonesCatalogo.forEach(boton => boton.classList.toggle('activo', boton.dataset.categoria === ''));
-    }
-
+    // Mireka: iniciar siempre en una categoría válida.
+    // Incluso en Nuevos ingresos, Ofertas, Más vendidos y filtros de género,
+    // la primera categoría visible es Perfumes árabes. Se puede cambiar
+    // a Decants 5 ml o Maison Alhambra 30 ml sin perder los filtros.
     const categoriasPermitidasCatalogo = [
         "perfumes-grandes",
         "decants",
         "maison-30ml"
     ];
 
+    const categoriaSeleccionadaCatalogo = categoriasPermitidasCatalogo.includes(
+        categoriaInicialCatalogo
+    ) ? categoriaInicialCatalogo : "perfumes-grandes";
 
-    if (
-        categoriaInicialCatalogo &&
-        categoriasPermitidasCatalogo.includes(
-            categoriaInicialCatalogo
-        )
-    ) {
-
-        aplicarCategoriaCatalogo(
-            categoriaInicialCatalogo,
-            false
-        );
-
-    }
+    aplicarCategoriaCatalogo(categoriaSeleccionadaCatalogo, false);
 
 
     // =====================================================
