@@ -7653,3 +7653,9 @@ body.pagina-catalogo[data-categoria=""] .producto-card {
     font-size: 18px;
   }
 }
+/* MIREKA - Separación de portada y secciones en celular */
+@media (max-width: 768px) {
+    .hero {
+        margin-bottom: 90px !important;
+    }
+}
