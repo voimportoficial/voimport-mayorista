@@ -7659,3 +7659,58 @@ body.pagina-catalogo[data-categoria=""] .producto-card {
         margin-bottom: 90px !important;
     }
 }
+/* ==========================================================
+   MIREKA | Ajustes para celular - noviembre 2026
+   1. Etiquetas NUEVO / SALE / MAS VENDIDO mas discretas
+   2. Guia mayorista cerrada sin texto suelto debajo
+   Pegar al FINAL de css/style.css de la WEB PUBLICA.
+   ========================================================== */
+@media (max-width: 768px) {
+    /* Reservar una franja pequeÃ±a solo si la tarjeta tiene etiquetas. */
+    .producto-card:has(> .mireka-destacados-etiquetas) {
+        padding-top: 30px !important;
+    }
+
+    /* Esquina superior izquierda, fuera del centro de la foto. */
+    .producto-card > .mireka-destacados-etiquetas {
+        position: absolute !important;
+        top: 6px !important;
+        left: 6px !important;
+        right: auto !important;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 3px;
+        width: max-content;
+        max-width: calc(100% - 12px);
+        margin: 0 !important;
+        z-index: 12;
+        pointer-events: none;
+    }
+
+    .producto-card > .mireka-destacados-etiquetas > span {
+        display: inline-flex;
+        align-items: center;
+        font-size: 8px !important;
+        line-height: 1 !important;
+        letter-spacing: 0 !important;
+        padding: 3px 5px !important;
+        border-radius: 4px !important;
+        white-space: nowrap;
+    }
+
+    /* Impedir que se vea texto interno antes de tocar el +. */
+    .mireka-mayorista-detalles:not([open]) > .mireka-mayorista-detalles-contenido {
+        display: none !important;
+    }
+
+    /* La frase dorada esta FUERA del <details> en catalogo.html. */
+    .mireka-mayorista-guia > .mireka-mayorista-guia-pie {
+        display: none !important;
+    }
+    .mireka-mayorista-guia > .mireka-mayorista-detalles[open] + .mireka-mayorista-guia-pie {
+        display: block !important;
+        margin-top: 12px !important;
+    }
+}
