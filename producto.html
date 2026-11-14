@@ -9,6 +9,37 @@
     <title>Producto | Mireka Perfumería</title>
 
     <link rel="stylesheet" href="css/style.css">
+    <!-- MIREKA | Distinciones del producto en su ficha grande -->
+    <style>
+      .pagina-producto .producto-detalle-imagen { position: relative; }
+      .pagina-producto .mireka-detalle-etiquetas {
+        position: absolute; top: 16px; right: 16px; z-index: 20;
+        display: flex; flex-direction: column; align-items: flex-end;
+        gap: 6px; max-width: calc(100% - 105px); pointer-events: none;
+      }
+      .pagina-producto .mireka-detalle-etiquetas:empty { display: none; }
+      .pagina-producto .mireka-detalle-etiquetas span {
+        display: inline-block; padding: 6px 10px;
+        border: 1px solid rgba(224,185,100,.85); border-radius: 6px;
+        background: rgba(12,12,12,.94); color: #e8c36b;
+        font-size: 11px; line-height: 1.15; font-weight: 800;
+        letter-spacing: .04em; text-align: center;
+        box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      }
+      .pagina-producto .mireka-detalle-etiquetas .mireka-sale-tag {
+        background: #cba552; color: #101010;
+      }
+      @media (max-width: 768px) {
+        .pagina-producto .mireka-detalle-etiquetas {
+          top: 12px; right: 12px; gap: 5px;
+          max-width: calc(100% - 95px);
+        }
+        .pagina-producto .mireka-detalle-etiquetas span {
+          font-size: 9px; padding: 5px 7px; letter-spacing: 0;
+        }
+      }
+    </style>
+
 </head>
 
 
@@ -29,6 +60,8 @@
     <div class="producto-detalle-contenido">
 
         <div class="producto-detalle-imagen">
+            <!-- Etiquetas de colecciones; no reemplazan la cinta 20% OFF -->
+            <div id="mireka-detalle-etiquetas" class="mireka-detalle-etiquetas" aria-label="Distinciones del producto"></div>
 
             <img
                 id="producto-imagen"
@@ -311,6 +344,54 @@ document.getElementById(
 <script src="js/supabase.js"></script>
 
 <script src="js/script.js"></script>
+
+<!-- MIREKA | Usa los mismos estados de Supabase ya sincronizados por script.js. -->
+<script>
+(function () {
+    "use strict";
+
+    function actualizarEtiquetasDetalle() {
+        const contenedor = document.getElementById("mireka-detalle-etiquetas");
+        if (!contenedor) return;
+
+        const slug = new URLSearchParams(window.location.search).get("slug") || "";
+        const productoActual = typeof buscarProductoActual === "function"
+            ? buscarProductoActual({ slug })
+            : null;
+
+        contenedor.replaceChildren();
+        if (!productoActual) return;
+
+        const etiquetas = [
+            [productoActual.destacadoNuevo === true, "NUEVO", ""],
+            [typeof mirekaOfertaVigente === "function"
+                ? mirekaOfertaVigente(productoActual)
+                : productoActual.destacadoOferta === true, "SALE", "mireka-sale-tag"],
+            [productoActual.destacadoMasVendido === true, "MÁS VENDIDO", ""]
+        ];
+
+        for (const [visible, texto, clase] of etiquetas) {
+            if (!visible) continue;
+            const etiqueta = document.createElement("span");
+            etiqueta.textContent = texto;
+            if (clase) etiqueta.className = clase;
+            contenedor.appendChild(etiqueta);
+        }
+    }
+
+    // Mantiene etiquetas al cargar Supabase o al alternar minorista/mayorista.
+    if (typeof actualizarFichaIndividual === "function") {
+        const original = actualizarFichaIndividual;
+        actualizarFichaIndividual = function (...args) {
+            const resultado = original.apply(this, args);
+            actualizarEtiquetasDetalle();
+            return resultado;
+        };
+    }
+    actualizarEtiquetasDetalle();
+})();
+</script>
+
 
 </body>
 

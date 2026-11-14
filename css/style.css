@@ -7721,3 +7721,23 @@ body.pagina-catalogo[data-categoria=""] .producto-card {
         scroll-padding-top: 245px !important;
     }
 }
+
+/* MIREKA - Centrar Maison 30ml en catálogo móvil */
+@media (max-width: 768px) {
+    .catalogo-categorias {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 12px !important;
+    }
+
+    .catalogo-categorias > .catalogo-filtro {
+        width: 100% !important;
+        box-sizing: border-box;
+    }
+
+    .catalogo-categorias > .catalogo-filtro[data-categoria="maison-30ml"] {
+        grid-column: 1 / -1 !important;
+        justify-self: center !important;
+        width: calc((100% - 12px) / 2) !important;
+    }
+}
