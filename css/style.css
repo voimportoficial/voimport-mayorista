@@ -7714,3 +7714,10 @@ body.pagina-catalogo[data-categoria=""] .producto-card {
         margin-top: 12px !important;
     }
 }
+
+/* MIREKA - Corregir desplazamiento del menú móvil */
+@media (max-width: 768px) {
+    html {
+        scroll-padding-top: 245px !important;
+    }
+}
