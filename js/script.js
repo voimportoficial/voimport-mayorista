@@ -34,6 +34,14 @@ let mirekaCotizacionesCargadas = false;
 // siguen pudiendo imponer cualquiera de las dos modalidades mediante ?modo=.
 const MIREKA_MODO_STORAGE = 'mireka-modo-compra-elegido-v4';
 const MIREKA_MODOS_VALIDOS = ['minorista', 'mayorista'];
+// La colección Ofertas pertenece exclusivamente a la compra minorista.
+// Al visitar Ofertas no cambiamos la preferencia de compra guardada.
+function mirekaEsPaginaOfertas() {
+    return new URLSearchParams(window.location.search).get('coleccion') === 'ofertas';
+}
+function mirekaVieneDeOfertas() {
+    return new URLSearchParams(window.location.search).get('desde') === 'ofertas';
+}
 function mirekaConsumirModoUrl() {
     try {
         const url = new URL(window.location.href);
@@ -56,8 +64,10 @@ function mirekaLeerModoElegido() {
     } catch (_) { return null; }
 }
 const mirekaModoDesdeUrl = mirekaConsumirModoUrl();
-if (mirekaModoDesdeUrl) mirekaGuardarModo(mirekaModoDesdeUrl);
-let mirekaModoCompra = mirekaModoDesdeUrl || mirekaLeerModoElegido() || 'minorista';
+if (mirekaModoDesdeUrl && !mirekaEsPaginaOfertas()) mirekaGuardarModo(mirekaModoDesdeUrl);
+let mirekaModoCompra = (mirekaEsPaginaOfertas() || mirekaVieneDeOfertas())
+    ? 'minorista'
+    : (mirekaModoDesdeUrl || mirekaLeerModoElegido() || 'minorista');
 // No se borra el modo al volver a la portada: navegar no es cambiar de compra.
 
 // Cada categoría usa sus propias cantidades para activar una lista.
@@ -115,21 +125,31 @@ async function mirekaCargarPreciosPublicos() {
 // Selector discreto y siempre disponible. Sin portal modal que interrumpa
 // cada ingreso a marcas, categorías, novedades, ofertas o fichas de producto.
 function mirekaActualizarSelector() {
+    const enOfertas = mirekaEsPaginaOfertas();
+    if (enOfertas) mirekaModoCompra = 'minorista';
     document.body.dataset.mirekaModo = mirekaModoCompra;
     document.querySelectorAll('[data-mireka-cambiar-a]').forEach(boton => {
+        const esMayorista = boton.dataset.mirekaCambiarA === 'mayorista';
+        // Seguridad adicional: ocultar cualquier otro selector mayorista de la página.
+        boton.hidden = enOfertas && esMayorista;
+        boton.style.display = enOfertas && esMayorista ? 'none' : '';
         const activo = boton.dataset.mirekaCambiarA === mirekaModoCompra;
         boton.classList.toggle('mireka-switch-activo', activo);
         boton.setAttribute('aria-pressed', String(activo));
     });
     const ayudaModo = document.getElementById('mireka-selector-ayuda');
-    if (ayudaModo) ayudaModo.textContent = mirekaModoCompra === 'mayorista'
-        ? 'Listas mayoristas de 3, 6, 15 y 30 unidades. El precio final depende de la cantidad por categoría.'
-        : 'Precios por unidad. Podés pagar en efectivo, transferencia o Mercado Pago.';
+    if (ayudaModo) ayudaModo.textContent = enOfertas
+        ? 'Promociones exclusivas de compra minorista.'
+        : mirekaModoCompra === 'mayorista'
+            ? 'Listas mayoristas de 3, 6, 15 y 30 unidades. El precio final depende de la cantidad por categoría.'
+            : 'Precios por unidad. Podés pagar en efectivo, transferencia o Mercado Pago.';
     const ayuda = document.getElementById('texto-precios-catalogo');
     if (ayuda) {
-        ayuda.textContent = mirekaModoCompra === 'mayorista'
-            ? 'Cada categoría se calcula por separado: árabes, Maison 30 ml y decants. Desde 3 unidades de la misma categoría accedés a Lista 1; luego 6, 15 y 30.'
-            : 'Precios minoristas por unidad. Efectivo / transferencia o Mercado Pago. Desde 3 unidades de la misma categoría el carrito aplica la lista mayorista.';
+        ayuda.textContent = enOfertas
+            ? 'Las ofertas de esta sección son exclusivamente minoristas.'
+            : mirekaModoCompra === 'mayorista'
+                ? 'Cada categoría se calcula por separado: árabes, Maison 30 ml y decants. Desde 3 unidades de la misma categoría accedés a Lista 1; luego 6, 15 y 30.'
+                : 'Precios minoristas por unidad. Efectivo / transferencia o Mercado Pago. Desde 3 unidades de la misma categoría el carrito aplica la lista mayorista.';
     }
 }
 function mirekaCrearSelectorVisible() {
@@ -140,13 +160,14 @@ function mirekaCrearSelectorVisible() {
     bloque.id = 'mireka-resumen-eleccion';
     bloque.className = 'mireka-resumen-eleccion mireka-selector-compacto';
     bloque.setAttribute('aria-label', 'Modalidad de compra');
+    const enOfertas = mirekaEsPaginaOfertas();
     bloque.innerHTML = `<div class="mireka-selector-descripcion">
-          <strong>¿Cómo querés comprar?</strong>
+          <strong>${enOfertas ? 'Ofertas exclusivas minoristas' : '¿Cómo querés comprar?'}</strong>
           <small id="mireka-selector-ayuda"></small>
         </div>
         <div class="mireka-selector-opciones" role="group" aria-label="Elegí una modalidad">
           <button type="button" data-mireka-cambiar-a="minorista" aria-pressed="false">Minorista</button>
-          <button type="button" data-mireka-cambiar-a="mayorista" aria-pressed="false">Mayorista</button>
+          ${enOfertas ? '' : '<button type="button" data-mireka-cambiar-a="mayorista" aria-pressed="false">Mayorista</button>'}
         </div>`;
     if (grid) {
         const introduccion = document.querySelector('.catalogo-intro');
@@ -164,7 +185,15 @@ function mirekaCrearSelectorVisible() {
 }
 function mirekaElegirModalidad(modo) {
     if (!MIREKA_MODOS_VALIDOS.includes(modo)) return;
+    if (mirekaEsPaginaOfertas() && modo !== 'minorista') return;
     if (mirekaModoCompra === modo) return;
+    // En una ficha abierta desde Ofertas, permitir cambiar de modalidad
+    // normalmente y evitar que el parámetro de origen fuerce Minorista al recargar.
+    if (mirekaVieneDeOfertas()) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('desde');
+        window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash);
+    }
     mirekaModoCompra = modo;
     mirekaGuardarModo(modo);
     mirekaActualizarSelector();
@@ -2610,7 +2639,7 @@ return `
 
 
         <a
-            href="producto.html?slug=${encodeURIComponent(producto.slug)}"
+            href="producto.html?slug=${encodeURIComponent(producto.slug)}${coleccionActual === 'ofertas' ? '&desde=ofertas' : ''}"
             class="boton-producto"
         >
             Ver producto
