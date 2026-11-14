@@ -6,6 +6,17 @@
 <meta name="theme-color" content="#090909">
 <title>Secciones de la web | Gestión Mireka</title>
 <link rel="stylesheet" href="secciones-web.css">
+
+<style>
+/* MIREKA - Solo la pantalla Gestion > Secciones de la web */
+.mireka-grupos { display:flex; flex-wrap:wrap; gap:10px; margin:19px 0 8px; }
+.mireka-grupos button { appearance:none; border:1px solid #876f3c; color:#ead19a; background:#131313; border-radius:11px; cursor:pointer; padding:12px 17px; font:inherit; font-weight:750; line-height:1.35; }
+.mireka-grupos button[aria-pressed="true"] { background:#c9a459; color:#0c0a06; border-color:#dfbc6e; }
+.mireka-grupos button:focus-visible { outline:2px solid #f7d789; outline-offset:3px; }
+.mireka-grupo-estado { color:#b9ad91; margin:4px 0 14px; font-size:13px; }
+#lista-productos .tarjeta[hidden] { display:none !important; }
+@media(max-width:650px) { .mireka-grupos { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .mireka-grupos button { padding:12px 8px; font-size:13px; } }
+</style>
 </head>
 <body>
 <header class="cabecera">
@@ -19,7 +30,7 @@
  <section id="area-admin" hidden>
   <div class="explicacion">
    <strong>¿Cómo funciona?</strong> Marcá Nuevos ingresos, Ofertas o Más vendidos en cada perfume. Elegí también su clasificación. Los cambios aparecen en la web cuando se actualiza el catálogo.
-   <p>En <strong>Ofertas</strong>, podés destacar el <strong>20% de descuento real por efectivo o transferencia</strong> frente al precio de lista, manteniendo tu precio minorista y tu markup. También podés calcular un <strong>descuento adicional</strong> y comprobar su ganancia antes de aplicarlo. Las cuatro listas mayoristas no se modifican.</p>
+   <p>En <strong>Ofertas</strong>, ingresá un precio especial de <strong>efectivo / transferencia</strong>, menor al precio normal. El precio de Mercado Pago se calculará como en el resto de la web; las listas mayoristas no se modifican.</p>
   </div>
   <div class="filtros">
    <label>Buscar perfume o marca<input id="buscar" type="search" placeholder="Ej.: Afnan, Lattafa, Khamrah" autocomplete="off"></label>
@@ -31,6 +42,15 @@
     <option value="sin-clasificar">Sin clasificación</option>
    </select></label>
   </div>
+
+  <!-- Separacion visual por categoria, independiente del filtro de destacados. -->
+  <div class="mireka-grupos" role="group" aria-label="Categoria de los perfumes">
+   <button type="button" data-mireka-grupo="perfumes-grandes" aria-pressed="true">Perfumes árabes</button>
+   <button type="button" data-mireka-grupo="decants" aria-pressed="false">Decants 5 ml</button>
+   <button type="button" data-mireka-grupo="maison-30ml" aria-pressed="false">Maison 30 ml</button>
+   <button type="button" data-mireka-grupo="todos" aria-pressed="false">Todos</button>
+  </div>
+  <p id="mireka-grupo-estado" class="mireka-grupo-estado" role="status" aria-live="polite"></p>
   <p id="contador" class="contador"></p>
   <div id="lista-productos" class="lista-productos"></div>
   <button type="button" id="mas" class="mas" hidden>Mostrar más perfumes</button>
@@ -38,18 +58,70 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
-<script src="../js/productos.js"></script>
-<script>
-  // Las fotos son las mismas del catálogo público; la gestión sigue consultando
-  // precios, costos, stock y ofertas en Supabase.
-  window.mirekaFotosCatalogo = (typeof productos !== 'undefined' && Array.isArray(productos))
-    ? productos.map(p => ({
-        id: String(p.id || p.slug || '').trim().toLowerCase(),
-        clave: [p.nombre, p.marca, p.categoria].map(v => String(v || '').trim().toLowerCase()).join('|'),
-        imagen: String(p.imagen || '')
-      }))
-    : [];
-</script>
 <script src="secciones-web.js"></script>
+<script>
+/* MIREKA: vista separada por categoria sin alterar el guardado en Supabase.
+   Se aplica a las tarjetas que carga el script existente, incluso tras buscar
+   o utilizar Mostrar mas. */
+(() => {
+  const lista = document.getElementById('lista-productos');
+  const botones = Array.from(document.querySelectorAll('[data-mireka-grupo]'));
+  const estado = document.getElementById('mireka-grupo-estado');
+  if (!lista || !botones.length || !estado) return;
+
+  let seleccionado = 'perfumes-grandes';
+  let programado = false;
+
+  const limpiar = (valor) => String(valor || '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+
+  function categoriaDe(tarjeta) {
+    // El codigo original muestra la categoria junto a la marca en .meta.
+    const meta = tarjeta.querySelector('.meta');
+    const texto = limpiar([tarjeta.dataset.categoria, meta?.textContent].join(' '));
+    if (/\bdecants?\b/.test(texto)) return 'decants';
+    if (/maison[\s-]*30\s*ml|maison-30ml|30\s*ml/.test(texto)) return 'maison-30ml';
+    if (/perfumes-grandes|perfumes grandes|perfumes arabes|perfume grande/.test(texto)) return 'perfumes-grandes';
+    return 'otros';
+  }
+
+  function aplicar() {
+    programado = false;
+    const tarjetas = Array.from(lista.children).filter(el => el.classList.contains('tarjeta'));
+    let visibles = 0;
+    for (const tarjeta of tarjetas) {
+      const visible = seleccionado === 'todos' || categoriaDe(tarjeta) === seleccionado;
+      if (tarjeta.hidden === visible) tarjeta.hidden = !visible;
+      if (visible) visibles++;
+    }
+    const nombres = { 'perfumes-grandes':'Perfumes árabes', 'decants':'Decants 5 ml', 'maison-30ml':'Maison 30 ml', 'todos':'Todos los productos' };
+    estado.textContent = tarjetas.length === 0
+      ? 'No hay productos cargados para mostrar.'
+      : `${nombres[seleccionado]}: ${visibles} de ${tarjetas.length} productos cargados. El boton Mostrar mas conserva el filtro elegido.`;
+  }
+
+  function programar() {
+    if (programado) return;
+    programado = true;
+    requestAnimationFrame(aplicar);
+  }
+
+  botones.forEach(boton => boton.addEventListener('click', () => {
+    seleccionado = boton.dataset.mirekaGrupo;
+    botones.forEach(b => b.setAttribute('aria-pressed', String(b === boton)));
+    programar();
+  }));
+
+  // No depende de las funciones internas del gestor, por lo que los checks,
+  // el buscador, el filtro de Nuevos/Ofertas/Mas vendidos y Guardar siguen igual.
+  const observador = new MutationObserver(programar);
+  observador.observe(lista, { childList:true, subtree:true });
+  document.getElementById('area-admin')?.addEventListener('click', (e) => {
+    if (e.target.closest('#mas')) programar();
+  });
+  programar();
+})();
+</script>
+
 </body>
 </html>
