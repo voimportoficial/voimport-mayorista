@@ -2576,7 +2576,7 @@ const nombreVisible = producto.nombre;
 const etiquetasDestacadas = [
     producto.destacadoNuevo ? '<span>NUEVO</span>' : '',
     mirekaOfertaVigente(producto) ? '<span class="mireka-sale-tag">SALE</span>' : '',
-    producto.destacadoMasVendido ? '<span>MÁS VENDIDO</span>' : ''
+    producto.destacadoMasVendido ? '<span class="mireka-estrella-mas-vendido" title="Más vendido" aria-label="Más vendido" style="display:inline-flex;align-items:center;justify-content:center;border:0 !important;background:transparent !important;box-shadow:none !important;color:#e6c268 !important;font-size:19px !important;line-height:1 !important;letter-spacing:0 !important;padding:0 2px !important;">&#9733;</span>' : ''
 ].filter(Boolean).join('');
 
 const tieneMayorista =
