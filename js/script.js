@@ -149,7 +149,7 @@ function mirekaActualizarSelector() {
         ayuda.textContent = enOfertas
             ? 'Las ofertas de esta sección son exclusivamente minoristas.'
             : mirekaModoCompra === 'mayorista'
-                ? 'Cada categoría se calcula por separado: árabes, Maison 30 ml y decants. Desde 3 unidades de la misma categoría accedés a Lista 1; luego 6, 15 y 30.'
+                ? 'Cada categoría se calcula por separado: árabes, Maison 30 ml y decants. Desde 3 unidades de la misma categoría accedés a Lista mayorista 1; luego a las listas 2, 3 y 4 (con 6, 15 y 30 unidades).'
                 : 'Precios minoristas por unidad. Efectivo / transferencia o Mercado Pago. Desde 3 unidades de la misma categoría el carrito aplica la lista mayorista.';
     }
 }
@@ -3009,22 +3009,33 @@ function crearMensajeMayorista() {
         const cantidad = mirekaCantidadCategoria(categoria);
         const nivel = mirekaNivelCategoria(categoria);
         const nombre = obtenerReglaCategoria(categoria).nombre;
-        if (nivel === 4) return `${nombre}: Lista 4 activa.`;
+        if (nivel === 4) return `${nombre}: Lista mayorista 4 activa.`;
         const faltan = MIREKA_ESCALONES[nivel] - cantidad;
-        return `${nombre}: ${nivel ? `Lista ${nivel} activa; ` : ''}faltan ${faltan} para Lista ${nivel + 1}.`;
+        return `${nombre}: ${nivel ? `Lista mayorista ${nivel} activa; ` : ''}faltan ${faltan} para Lista mayorista ${nivel + 1}.`;
     }).join(' · ');
 }
 function mirekaCalcularAhorroSiguienteLista(categoria) {
     const nivel = mirekaNivelCategoria(categoria);
     if (nivel >= 4) return 0;
-    let ahorro = 0;
+    let totalActual = 0;
+    let totalSiguiente = 0;
     for (const p of carrito.filter(item => item.categoria === categoria)) {
-        const actual = nivel ? mirekaPrecioDeNivel(p, nivel) : p.precioMinorista;
+        // Usar el mismo importe que ve el cliente en su carrito: si hay
+        // oferta vigente, comparar la promo contra la próxima lista mayorista.
+        // Con una lista activa, el carrito ya utiliza su precio mayorista.
+        const actual = obtenerPrecioCarritoBase(p);
         const siguiente = mirekaPrecioDeNivel(p, nivel + 1);
-        if (actual === null || siguiente === null) return null;
-        ahorro += (actual - siguiente) * Number(p.cantidad);
+        const cantidad = Number(p.cantidad);
+        if (!Number.isFinite(actual) || actual <= 0 ||
+            siguiente === null || !Number.isFinite(cantidad) || cantidad <= 0) {
+            return null;
+        }
+        totalActual += actual * cantidad;
+        totalSiguiente += siguiente * cantidad;
     }
-    return Math.max(0, ahorro);
+    // Se calcula SOLO sobre las unidades que ya están en el carrito.
+    // No se proyecta el coste de productos futuros que aún no se eligieron.
+    return Math.max(0, totalActual - totalSiguiente);
 }
 function mirekaActualizarProgreso() {
     let bloque = document.getElementById('mireka-progreso-carrito');
@@ -3046,15 +3057,15 @@ function mirekaActualizarProgreso() {
         const siguiente = MIREKA_ESCALONES[nivel];
         const previo = nivel > 0 ? MIREKA_ESCALONES[nivel-1] : 0;
         const progreso = siguiente ? Math.max(0, Math.min(100,100*(q-previo)/(siguiente-previo))) : 100;
-        const mensaje = nivel === 4 ? '¡Llegaste a la Lista 4!' :
-            `Faltan ${siguiente-q} unidades de esta categoría para Lista ${nivel+1}`;
+        const mensaje = nivel === 4 ? '¡Llegaste a la Lista mayorista 4!' :
+            `Faltan ${siguiente-q} unidades de esta categoría para Lista mayorista ${nivel+1}`;
         const ahorro = mirekaCalcularAhorroSiguienteLista(categoria);
-        const ahorroTexto = nivel === 4 ? 'Ya tenés el mejor precio mayorista.' :
-            ahorro === null ? 'El ahorro se mostrará cuando estén los precios de Supabase.' :
-            ahorro > 0 ? `Ahorrás ${formatearPrecio(ahorro)} en estos productos al pasar a la próxima lista.` :
-            'Sumá más unidades de esta categoría para mejorar el precio.';
+        const ahorroTexto = nivel === 4 ? 'Ya tenés la Lista mayorista 4, la de mayor descuento.' :
+            ahorro === null ? 'El ahorro estimado se mostrará cuando estén los precios mayoristas de Supabase.' :
+            ahorro > 0 ? `Ahorro estimado de ${formatearPrecio(ahorro)} sobre los productos que ya tenés al llegar a Lista mayorista ${nivel+1} (sin contar las unidades que agregues).` :
+            `Con los precios actuales, estos productos no generan un ahorro adicional al llegar a Lista mayorista ${nivel+1}.`;
         return `<div class="mireka-progreso-grupo">
-            <div class="mireka-progreso-cabecera"><strong>${nombre}</strong><span>${q} unid. · ${nivel ? `Lista ${nivel}` : 'Minorista'}</span></div>
+            <div class="mireka-progreso-cabecera"><strong>${nombre}</strong><span>${q} unid. · ${nivel ? `Lista mayorista ${nivel}` : 'Minorista'}</span></div>
             <div class="mireka-progreso-meta">${mensaje}</div>
             <div class="mireka-progreso-barra" role="progressbar" aria-label="Progreso mayorista ${nombre}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(progreso)}"><span style="width:${progreso}%"></span></div>
             <p class="mireka-ahorro">${ahorroTexto}</p>
