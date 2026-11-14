@@ -7743,91 +7743,73 @@ body.pagina-catalogo[data-categoria=""] .producto-card {
 }
 
 /* ============================================================
-   MIREKA - Etiquetas uniformes en tarjetas de producto
-   NUEVO / SALE / estrella: verticales en la esquina izquierda.
-   La zona superior es igual para 0, 1, 2 o 3 etiquetas.
-   No afecta precios, descuentos ni la ficha individual.
+   MIREKA | Etiquetas compactas sobre la foto (sin hueco superior)
+   NUEVO / SALE / estrella: apiladas sobre la esquina izquierda.
+   No ocupan altura extra: las fotos, nombres y precios conservan
+   su posicion original en todas las tarjetas.
    ============================================================ */
 
-/* Todas las tarjetas reservan exactamente el mismo lugar arriba. */
+/* El bloque anterior de etiquetas reservaba 74-86px y estiraba
+   innecesariamente la tarjeta. Restauramos el padding original. */
 body .productos-grid > .producto-card,
-body .productos-grid > .producto-card:has(> .mireka-destacados-etiquetas),
-body .productos-grid > .producto-card:has(.agregar-carrito[data-categoria="decants"]) {
+body .productos-grid > .producto-card:has(> .mireka-destacados-etiquetas) {
     position: relative !important;
-    padding-top: 86px !important;
+    padding-top: 16px !important;
 }
 
-/* Las etiquetas no participan del flujo: no mueven imagen ni nombre. */
+/* Respetar el diseno compacto previo de los decants. */
+@media (max-width: 768px) {
+    body .productos-grid > .producto-card:has(.agregar-carrito[data-categoria="decants"]) {
+        padding-top: 20px !important;
+    }
+}
+
+/* Las etiquetas se superponen EN LA ESQUINA, no empujan la foto. */
 body .productos-grid > .producto-card > .mireka-destacados-etiquetas {
     position: absolute !important;
-    top: 10px !important;
-    left: 12px !important;
+    top: 9px !important;
+    left: 9px !important;
     right: auto !important;
     bottom: auto !important;
     display: flex !important;
     flex-direction: column !important;
     flex-wrap: nowrap !important;
-    justify-content: flex-start !important;
     align-items: flex-start !important;
+    justify-content: flex-start !important;
     align-content: flex-start !important;
     width: max-content !important;
-    max-width: calc(100% - 24px) !important;
+    max-width: calc(100% - 18px) !important;
     min-height: 0 !important;
-    padding: 0 !important;
+    height: auto !important;
     margin: 0 !important;
-    gap: 5px !important;
+    padding: 0 !important;
+    gap: 4px !important;
     z-index: 12 !important;
     pointer-events: none !important;
 }
-
 body .productos-grid > .producto-card > .mireka-destacados-etiquetas > span {
     display: inline-flex !important;
     flex: none !important;
     align-self: flex-start !important;
-    max-width: 100% !important;
-    white-space: nowrap !important;
     box-sizing: border-box !important;
-    line-height: 1.1 !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
 }
-
-/* La estrella sigue suelta, dorada, sin recuadro. */
+/* Solo la estrella dorada, sin recuadro. Mantener reglas del script. */
 body .productos-grid > .producto-card > .mireka-destacados-etiquetas > .mireka-estrella-mas-vendido {
-    align-self: flex-start !important;
     margin-left: 3px !important;
+    align-self: flex-start !important;
 }
-
-/* Fotos y nombres comienzan siempre a la misma altura. */
-body .productos-grid > .producto-card > img {
-    display: block !important;
-    margin-top: 0 !important;
-    flex-shrink: 0;
-}
-body .productos-grid > .producto-card > h3 {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    min-height: 2.4em !important;
-    overflow-wrap: anywhere;
-}
-
 @media (max-width: 768px) {
-    body .productos-grid > .producto-card,
-    body .productos-grid > .producto-card:has(> .mireka-destacados-etiquetas),
-    body .productos-grid > .producto-card:has(.agregar-carrito[data-categoria="decants"]) {
-        padding-top: 74px !important;
-    }
     body .productos-grid > .producto-card > .mireka-destacados-etiquetas {
-        top: 7px !important;
-        left: 7px !important;
-        max-width: calc(100% - 14px) !important;
-        gap: 4px !important;
+        top: 6px !important;
+        left: 6px !important;
+        gap: 3px !important;
+        max-width: calc(100% - 12px) !important;
     }
     body .productos-grid > .producto-card > .mireka-destacados-etiquetas > span:not(.mireka-estrella-mas-vendido) {
         font-size: 8px !important;
         padding: 3px 5px !important;
-    }
-    body .productos-grid > .producto-card > h3 {
-        min-height: 3.5em !important;
+        border-radius: 4px !important;
     }
 }
