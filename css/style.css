@@ -7741,3 +7741,57 @@ body.pagina-catalogo[data-categoria=""] .producto-card {
         width: calc((100% - 12px) / 2) !important;
     }
 }
+
+
+/* ==========================================================
+   MIREKA | Etiquetas de productos: 1, 2 o 3 juntas
+   NUEVO / SALE / estrella dorada (Mas vendido).
+   Se ubican en su propia fila, separadas de la foto.
+   Solo afecta las tarjetas del catalogo; no cambia precios.
+   ========================================================== */
+.producto-card > .mireka-destacados-etiquetas {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    align-content: flex-start !important;
+    column-gap: 9px !important;
+    row-gap: 6px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 22px;
+    margin: 0 0 20px 0 !important;
+    z-index: 2 !important;
+    box-sizing: border-box !important;
+    pointer-events: none;
+}
+.producto-card > .mireka-destacados-etiquetas > span {
+    flex: 0 0 auto !important;
+    white-space: nowrap !important;
+}
+/* La estrella dorada se mantiene sin cartel ni texto visible. */
+.producto-card > .mireka-destacados-etiquetas > .mireka-estrella-mas-vendido {
+    flex: 0 0 auto !important;
+    align-self: center !important;
+}
+@media (max-width: 768px) {
+    /* Quitar el espacio reservado por el sistema anterior de etiquetas. */
+    .producto-card:has(> .mireka-destacados-etiquetas) {
+        padding-top: 12px !important;
+    }
+    .producto-card > .mireka-destacados-etiquetas {
+        column-gap: 7px !important;
+        row-gap: 5px !important;
+        min-height: 20px;
+        margin-bottom: 24px !important;
+    }
+    .producto-card > .mireka-destacados-etiquetas > span:not(.mireka-estrella-mas-vendido) {
+        font-size: 8px !important;
+        padding: 3px 5px !important;
+        line-height: 1 !important;
+    }
+}
