@@ -553,6 +553,45 @@
       }
     </style>
 
+
+    <style>
+        /* ============================================================
+           MIREKA | Navegación por secciones únicamente en celulares
+           Inicio conserva la portada; el resto muestra una sección sola.
+           No modifica el diseño ni la navegación de escritorio.
+           ============================================================ */
+        @media (max-width: 768px) {
+            html.mireka-modo-secciones {
+                scroll-padding-top: 0 !important;
+                scroll-behavior: auto !important;
+            }
+
+            body.mireka-vista-individual > #inicio,
+            body.mireka-vista-individual > #explora,
+            body.mireka-vista-individual > #categorias,
+            body.mireka-vista-individual > #marcas,
+            body.mireka-vista-individual > #contacto {
+                display: none !important;
+            }
+
+            body.mireka-vista-individual[data-mireka-vista="categorias"] > #categorias,
+            body.mireka-vista-individual[data-mireka-vista="marcas"] > #marcas,
+            body.mireka-vista-individual[data-mireka-vista="contacto"] > #contacto {
+                display: block !important;
+            }
+
+            body.mireka-vista-individual > #categorias,
+            body.mireka-vista-individual > #marcas,
+            body.mireka-vista-individual > #contacto {
+                box-sizing: border-box;
+                min-height: 70dvh;
+                margin-top: 0 !important;
+                padding-top: var(--mireka-vista-padding-top, 28px) !important;
+                padding-bottom: 32px !important;
+            }
+        }
+    </style>
+
 </head>
 
 <body>
@@ -947,6 +986,8 @@
             </button>
 
         </div>
+    </div>
+</section>
 
 <section class="contacto" id="contacto">
     <div class="container">
@@ -1406,6 +1447,102 @@ document.addEventListener("keydown", (e) => {
     );
 
     actualizarFlechas();
+})();
+</script>
+
+
+<script>
+/* MIREKA: mostrar únicamente la sección elegida desde el menú del celular. */
+(() => {
+    const mediaMovil = window.matchMedia('(max-width: 768px)');
+    const secciones = new Set(['categorias', 'marcas', 'contacto']);
+    const basePadding = 28;
+    let ticket = 0;
+
+    function destinoActual() {
+        const hash = window.location.hash.replace(/^#/, '').toLowerCase();
+        return secciones.has(hash) ? hash : 'inicio';
+    }
+
+    function posicionarTitulo(nombre, actual) {
+        const seccion = document.getElementById(nombre);
+        if (!seccion || !actual) return;
+
+        // Primero recuperar el inicio de página sin el scroll heredado del ancla.
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        seccion.style.removeProperty('--mireka-vista-padding-top');
+
+        requestAnimationFrame(() => {
+            if (actual !== ticket || !mediaMovil.matches) return;
+
+            const titulo = seccion.querySelector('h2');
+            const cabecera = document.querySelector('.navbar');
+            const barra = document.querySelector('.mobile-topbar');
+            const bordeInferior = Math.max(
+                0,
+                cabecera ? cabecera.getBoundingClientRect().bottom : 0,
+                barra ? barra.getBoundingClientRect().bottom : 0
+            );
+            const posicionTitulo = titulo
+                ? titulo.getBoundingClientRect().top
+                : seccion.getBoundingClientRect().top;
+            const ajuste = Math.max(0, bordeInferior + 22 - posicionTitulo);
+
+            // El espacio extra se calcula con la altura REAL del encabezado.
+            // Así no queda tapado el título aunque cambie de tamaño la pantalla.
+            seccion.style.setProperty(
+                '--mireka-vista-padding-top', `${basePadding + ajuste}px`
+            );
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        });
+    }
+
+    function actualizarVista() {
+        const actual = ++ticket;
+        if (!mediaMovil.matches) {
+            document.documentElement.classList.remove('mireka-modo-secciones');
+            document.body.classList.remove('mireka-vista-individual');
+            document.body.removeAttribute('data-mireka-vista');
+            ['categorias', 'marcas', 'contacto'].forEach((id) => {
+                document.getElementById(id)?.style.removeProperty('--mireka-vista-padding-top');
+            });
+            return;
+        }
+
+        const vista = destinoActual();
+        const individual = vista !== 'inicio';
+        document.documentElement.classList.toggle('mireka-modo-secciones', individual);
+        document.body.classList.toggle('mireka-vista-individual', individual);
+        if (individual) {
+            document.body.setAttribute('data-mireka-vista', vista);
+            posicionarTitulo(vista, actual);
+        } else {
+            document.body.removeAttribute('data-mireka-vista');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+    }
+
+    // Mantiene la lógica existente del menú y también resuelve clics repetidos
+    // sobre la misma opción (cuando no se dispara hashchange).
+    document.addEventListener('click', (evento) => {
+        const enlace = evento.target.closest('a[href^="#"]');
+        if (!enlace || !mediaMovil.matches) return;
+        const href = enlace.getAttribute('href');
+        if (!['#', '#inicio', '#categorias', '#marcas', '#contacto'].includes(href)) return;
+        setTimeout(actualizarVista, 0);
+    });
+
+    window.addEventListener('hashchange', actualizarVista);
+    window.addEventListener('popstate', actualizarVista);
+    let ultimoAncho = window.innerWidth;
+    window.addEventListener('resize', () => {
+        // Ignorar el cambio de alto de la barra de Safari al desplazarse.
+        if (Math.abs(window.innerWidth - ultimoAncho) < 8) return;
+        ultimoAncho = window.innerWidth;
+        actualizarVista();
+    });
+    actualizarVista();
+    window.addEventListener('load', actualizarVista, { once: true });
 })();
 </script>
 
