@@ -546,6 +546,11 @@ opcionesMedioPagoCarrito.forEach((opcion) => {
 
     opcion.addEventListener("change", () => {
         if (!opcion.checked) return;
+        if (opcion.value === 'mercado_pago' && mirekaCarritoTieneOfertas()) {
+            medioPagoCarrito = 'transferencia';
+            actualizarCarrito();
+            return;
+        }
 
         medioPagoCarrito = opcion.value;
         guardarMedioPagoCarrito();
@@ -768,6 +773,11 @@ botonPagarMercadoPago?.addEventListener(
             return;
         }
 
+        if (mirekaCarritoTieneOfertas()) {
+            alert('Las ofertas solo se pueden abonar en efectivo o transferencia.');
+            return;
+        }
+
         const esMayorista =
             carritoTieneMayorista();
 
@@ -796,6 +806,12 @@ botonPagarMercadoPago?.addEventListener(
 async function procesarPagoMercadoPagoWeb(
     cliente
 ) {
+    // Protección también en el último paso: nunca iniciar preferencia de MP
+    // si el carrito contiene alguna oferta.
+    if (mirekaCarritoTieneOfertas()) {
+        alert('Las ofertas solo se pueden abonar en efectivo o transferencia.');
+        return;
+    }
     if (!mirekaComprobarCheckoutTemporal()) return;
 
     if (
@@ -1940,6 +1956,7 @@ function usarPrecioListaMinorista() {
     return (
         carrito.length > 0 &&
         !carritoTieneMayorista() &&
+        !mirekaCarritoTieneOfertas() &&
         medioPagoCarrito === "mercado_pago"
     );
 }
@@ -1961,6 +1978,24 @@ function mirekaOfertaVigente(producto) {
     return mirekaModoCompra === 'minorista' && producto?.destacadoOferta === true &&
         (mirekaDescuentoPagoVigente(producto) ||
         mirekaEfectivoVigente(producto) < Number(producto?.precioMinorista));
+}
+
+// Orden de Ofertas: se compara el descuento porcentual real, no el importe en pesos.
+// Las promociones que usan el descuento de efectivo/transferencia equivalen al 20%.
+function mirekaPorcentajeDescuentoOferta(producto) {
+    if (producto?.destacadoOferta !== true) return 0;
+    const precioNormal = Number(producto?.precioMinorista);
+    if (!Number.isFinite(precioNormal) || precioNormal <= 0) return 0;
+    if (producto?.precioOfertaMinorista == null) return 20;
+    const precioOferta = Number(producto.precioOfertaMinorista);
+    if (!Number.isFinite(precioOferta) || precioOferta <= 0 || precioOferta >= precioNormal) return 0;
+    return (1 - precioOferta / precioNormal) * 100;
+}
+
+// Una oferta activa solo admite efectivo o transferencia, incluso si el
+// cliente llega a ella por otra colección o conserva un carrito anterior.
+function mirekaCarritoTieneOfertas() {
+    return carrito.some(producto => mirekaPorcentajeDescuentoOferta(producto) > 0);
 }
 
 function obtenerPrecioUnitario(producto) {
@@ -2359,14 +2394,14 @@ function crearPrecioCatalogo(producto) {
                     : `<strong class="mireka-precio-principal">${formatearPrecio(efectivoActual)}</strong>
                        <small class="mireka-precio-beneficio">Precio por unidad</small>`}
             </div>
-            <div class="mireka-mp-panel">
+            ${esOferta ? '' : `<div class="mireka-mp-panel">
                 <div class="mireka-mp-titulo">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3 10h18"/></svg>
                     <span>MERCADO PAGO</span>
                 </div>
                 <strong class="mireka-mp-monto">${formatearPrecio(precioMP)}</strong>
                 <span class="mireka-cuotas-label">3 CUOTAS SIN INTERÉS</span>
-            </div>
+            </div>`}
         </div>`;
     }
     const nivelActual = mirekaNivelCategoria(producto.categoria);
@@ -2433,6 +2468,19 @@ function generarCatalogo() {
         document.getElementById("solo-disponibles")
             ?.checked || false;
 
+    // Solo en Ofertas, elegir por defecto el mayor descuento primero.
+    // El visitante puede seguir ordenando por precio o nombre si así lo desea.
+    const selectorOrden = document.getElementById("orden-catalogo");
+    if (coleccionActual === 'ofertas' && selectorOrden &&
+        !selectorOrden.querySelector('option[value="descuento-mayor"]')) {
+        const opcionDescuento = document.createElement('option');
+        opcionDescuento.value = 'descuento-mayor';
+        opcionDescuento.textContent = 'Mayor descuento';
+        selectorOrden.prepend(opcionDescuento);
+        selectorOrden.value = 'descuento-mayor';
+    }
+    const ordenActual = selectorOrden?.value ||
+        (coleccionActual === 'ofertas' ? 'descuento-mayor' : 'nombre');
 
     const productosDeLaMarca = catalogoActualizado
         .filter((producto) => {
@@ -2512,18 +2560,23 @@ function generarCatalogo() {
 
         .sort((productoA, productoB) => {
 
-    const orden =
-        document.getElementById("orden-catalogo")
-            ?.value || "nombre";
+    if (coleccionActual === 'ofertas' && ordenActual === 'descuento-mayor') {
+        const diferencia = mirekaPorcentajeDescuentoOferta(productoB) -
+            mirekaPorcentajeDescuentoOferta(productoA);
+        if (Math.abs(diferencia) > 0.0000001) return diferencia;
+        return String(productoA.nombre || '').localeCompare(String(productoB.nombre || ''), 'es', {
+            numeric: true, sensitivity: 'base'
+        });
+    }
 
-    if (orden === "precio-menor") {
+    if (ordenActual === "precio-menor") {
         return (
             mirekaEfectivoVigente(productoA) -
             mirekaEfectivoVigente(productoB)
         );
     }
 
-    if (orden === "precio-mayor") {
+    if (ordenActual === "precio-mayor") {
         return (
             mirekaEfectivoVigente(productoB) -
             mirekaEfectivoVigente(productoA)
@@ -3013,6 +3066,18 @@ function mirekaActualizarProgreso() {
 // =============================
 
 function actualizarCarrito() {
+    // Si había quedado Mercado Pago elegido, una oferta obliga a volver a
+    // transferencia. Así el importe mostrado nunca corresponde a cuotas.
+    if (mirekaCarritoTieneOfertas() && medioPagoCarrito === 'mercado_pago') {
+        medioPagoCarrito = 'transferencia';
+        guardarMedioPagoCarrito();
+    }
+    const opcionMP = document.querySelector('input[name="carrito-medio-pago"][value="mercado_pago"]');
+    if (opcionMP) {
+        opcionMP.disabled = mirekaCarritoTieneOfertas();
+        const filaMP = opcionMP.closest('label');
+        if (filaMP) filaMP.hidden = opcionMP.disabled;
+    }
     const cantidadTotal = obtenerCantidadTotal();
 
     if (contadorCarrito) {
@@ -4253,6 +4318,7 @@ function abrirPasoPagoCheckout(cliente) {
 
     const totalMercadoPago =
         calcularTotalMercadoPagoMinorista();
+    const tieneOfertas = mirekaCarritoTieneOfertas();
 
     cuerpo.innerHTML = `
         <div class="modal-cliente-web-encabezado checkout-pago-encabezado">
@@ -4265,7 +4331,9 @@ function abrirPasoPagoCheckout(cliente) {
             </h3>
 
             <p>
-                Elegí una opción para ver el total y finalizar tu pedido.
+                ${tieneOfertas
+                    ? 'Las ofertas son exclusivas para efectivo o transferencia.'
+                    : 'Elegí una opción para ver el total y finalizar tu pedido.'}
             </p>
         </div>
 
@@ -4277,7 +4345,7 @@ function abrirPasoPagoCheckout(cliente) {
             >
                 <span class="checkout-metodo-info">
                     <strong>Efectivo</strong>
-                    <small>20% OFF</small>
+                    <small>${tieneOfertas ? 'Precio de oferta' : '20% OFF'}</small>
                 </span>
                 <span class="checkout-metodo-precio">
                     ${formatearPrecio(subtotalEfectivo)}
@@ -4291,14 +4359,14 @@ function abrirPasoPagoCheckout(cliente) {
             >
                 <span class="checkout-metodo-info">
                     <strong>Transferencia</strong>
-                    <small>20% OFF</small>
+                    <small>${tieneOfertas ? 'Precio de oferta' : '20% OFF'}</small>
                 </span>
                 <span class="checkout-metodo-precio">
                     ${formatearPrecio(subtotalEfectivo)}
                 </span>
             </button>
 
-            <button
+            ${tieneOfertas ? '' : `<button
                 type="button"
                 class="checkout-metodo-pago checkout-metodo-mp"
                 data-checkout-medio="mercado_pago"
@@ -4316,7 +4384,7 @@ function abrirPasoPagoCheckout(cliente) {
                 <span class="checkout-metodo-precio">
                     ${formatearPrecio(totalMercadoPago)}
                 </span>
-            </button>
+            </button>`}
         </div>
 
         <div
@@ -4382,6 +4450,12 @@ function renderizarDetallePagoCheckout(
             "mercado_pago"
         ].includes(medio)
     ) {
+        return;
+    }
+
+    // No ofrecer cuotas si el carrito contiene un producto de oferta.
+    if (medio === 'mercado_pago' && mirekaCarritoTieneOfertas()) {
+        alert('Las ofertas solo se pueden abonar en efectivo o transferencia.');
         return;
     }
 
