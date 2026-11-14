@@ -22,9 +22,10 @@ const REGLAS_CATEGORIAS = {
     }
 };
 
-// MIREKA | Recuperación acotada del checkout anterior.
-// Solo se habilitan pedidos minoristas SIN ofertas y sin listas mayoristas.
-// El backend antiguo no coincide todavía con las 4 listas ni los decants redondeados.
+// MIREKA | Checkout con verificación del total en Supabase.
+// Las ofertas minoristas pueden finalizarse en efectivo o transferencia:
+// el servidor vuelve a calcular el precio promocional y el stock.
+// Los decants aún mantienen la restricción temporal de compra online.
 const MIREKA_PRUEBA_SIN_CHECKOUT = false;
 const MIREKA_ESCALONES = [3, 6, 15, 30];
 let mirekaPreciosPorSlug = new Map();
@@ -3776,8 +3777,8 @@ async function registrarPedidoWebPendiente(
     origen = "web",
     cliente = null
 ) {
-    // Defensa en profundidad: ningún flujo alternativo debe escribir pedidos
-    // mayoristas, con ofertas o decants, hasta corregir y probar el SQL.
+    // Defensa en profundidad: validar productos, cantidades y total antes de
+    // registrar el pedido. Los precios de oferta los recalcula Supabase.
     const motivoCheckout = mirekaMotivoCheckoutNoVerificado();
     if (motivoCheckout) throw new Error(motivoCheckout);
     const totalEsperado = calcularSubtotalCarritoBase();
@@ -4649,8 +4650,8 @@ function renderizarDetallePagoCheckout(
 }
 
 
-// Recuperación temporal: permite únicamente el segmento de precios que coincide
-// con la función original de Supabase. NO habilitar listas/ofertas/decants aquí.
+// Validaciones previas a registrar el pedido. Las ofertas ya están contempladas
+// en crear_pedido_web de Supabase; se mantienen restricciones para decants.
 function mirekaMotivoCheckoutNoVerificado() {
     if (MIREKA_PRUEBA_SIN_CHECKOUT) {
         return 'Las compras se encuentran temporalmente pausadas.';
@@ -4668,10 +4669,6 @@ function mirekaMotivoCheckoutNoVerificado() {
     }
     if (carrito.some(p => !['perfumes-grandes', 'maison-30ml'].includes(p.categoria))) {
         return 'La compra online de decants todavía está en revisión. Consultanos por WhatsApp.';
-    }
-    if (carrito.some(p => p.destacadoOferta === true ||
-        (Number(p.precioOfertaMinorista) > 0))) {
-        return 'Las ofertas todavía están en revisión para los pedidos web. Consultanos por WhatsApp.';
     }
     if (carrito.some(p => !p.slug || !Number.isFinite(Number(p.precioMinorista)) ||
         Number(p.precioMinorista) <= 0 || !Number.isInteger(Number(p.cantidad)) ||
