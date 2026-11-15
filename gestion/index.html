@@ -400,6 +400,8 @@
                             Retiros e ingresos
                         </button>
 
+                        <button type="button" class="gestion-menu-accion" id="ver-estadisticas-ganancias">Estadísticas y ganancias</button>
+
                         <button
                             type="button"
                             class="gestion-menu-accion"
@@ -476,9 +478,28 @@
 
 </div>
 
+                <article class="mireka-ganancia-hoy-inicio" id="mireka-ganancia-hoy-inicio">
+                  <div><span>Ganancia neta de hoy</span><strong id="mireka-ganancia-hoy-importe">Cargando...</strong><small id="mireka-ganancia-hoy-ayuda">Consultando ventas y gastos...</small></div>
+                  <button type="button" id="mireka-ir-ganancias">Ver estadísticas y ganancias</button>
+                </article>
             </section>
 
-
+            <section id="seccion-estadisticas-ganancias" class="oculto mireka-ganancias-seccion">
+              <div class="mireka-ganancias-cabecera">
+                <div><h2>Estadísticas y ganancias</h2><p>Revisá la rentabilidad de hoy, de cualquier fecha anterior, del mes y del año.</p></div>
+                <button type="button" id="mireka-cerrar-ganancias">Cerrar</button>
+              </div>
+              <div class="mireka-ganancias-filtros">
+                <label>Consultar día <input type="date" id="mireka-ganancias-fecha"></label>
+                <label>Mes para análisis <input type="month" id="mireka-ganancias-mes"></label>
+                <button type="button" id="mireka-ganancias-recargar">Actualizar datos</button>
+              </div>
+              <p class="mireka-ganancias-estado" id="mireka-ganancias-estado">Cargando estadísticas...</p>
+              <div id="mireka-ganancias-resumen"></div>
+              <div class="mireka-ganancias-bloque"><h3>Ganancia diaria del mes</h3><div id="mireka-ganancias-grafico"></div></div>
+              <div class="mireka-ganancias-bloque"><h3>Historial y balance por día</h3><div id="mireka-ganancias-detalle"></div></div>
+              <p class="mireka-ganancias-nota">Ganancia neta = total de ventas registradas − costo histórico de la mercadería vendida − gastos del negocio. Los ingresos extra se muestran por separado. Los retiros y aportes no son gastos ni ganancias. Los pedidos web se cuentan cuando se registran como venta, no mientras están pendientes.</p>
+            </section>
 
             <!-- ========================================
                  NOTIFICACIONES DE PEDIDOS

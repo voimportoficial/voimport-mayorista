@@ -37747,6 +37747,7 @@ const idsPantallasGestion = [
     "seccion-insumos",
     "seccion-dinero",
     "seccion-cierres-mensuales",
+    "seccion-estadisticas-ganancias",
     "seccion-listas-mireka"
 ];
 
@@ -40580,3 +40581,321 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
     if (modoOperacionMasivaMireka) modoOperacionMasivaMireka.value = 'dolar';
     actualizarInterfazMasivaMireka();
 });
+
+// =========================================================
+// MIREKA | ESTADÍSTICAS Y GANANCIAS
+// Solo lectura. Calcula resultados desde ventas, costos
+// históricos por ítem, gastos e ingresos extra registrados.
+// No incluye retiros, aportes, pedidos sin confirmar ni stock.
+// =========================================================
+(() => {
+    'use strict';
+    const TZ = 'America/Argentina/Buenos_Aires';
+    const vista = document.getElementById('seccion-estadisticas-ganancias');
+    const acceso = document.getElementById('ver-estadisticas-ganancias');
+    const inicio = document.getElementById('mireka-ganancia-hoy-inicio');
+    if (!vista || !acceso || !inicio) return;
+
+    const hoyClave = () => {
+        const piezas = new Intl.DateTimeFormat('en-US', {
+            timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit'
+        }).formatToParts(new Date());
+        const p = Object.fromEntries(piezas.map(x => [x.type, x.value]));
+        return `${p.year}-${p.month}-${p.day}`;
+    };
+    const fechaClave = valor => {
+        const fecha = new Date(valor);
+        if (!Number.isFinite(fecha.getTime())) return '';
+        const piezas = new Intl.DateTimeFormat('en-US', {
+            timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit'
+        }).formatToParts(fecha);
+        const p = Object.fromEntries(piezas.map(x => [x.type, x.value]));
+        return `${p.year}-${p.month}-${p.day}`;
+    };
+    const claveHoy = hoyClave();
+    const fechaElegida = document.getElementById('mireka-ganancias-fecha');
+    const mesElegido = document.getElementById('mireka-ganancias-mes');
+    const estado = document.getElementById('mireka-ganancias-estado');
+    const resumen = document.getElementById('mireka-ganancias-resumen');
+    const grafico = document.getElementById('mireka-ganancias-grafico');
+    const detalle = document.getElementById('mireka-ganancias-detalle');
+    const resumenInicio = document.getElementById('mireka-ganancia-hoy-importe');
+    const ayudaInicio = document.getElementById('mireka-ganancia-hoy-ayuda');
+    const f = n => formatearPrecio(n);
+    let periodo = claveHoy.slice(0,7);
+    let fecha = claveHoy;
+    let siguiendoHoy = true;
+    let refrescando = false;
+    let refrescarOtraVez = false;
+    const cache = new Map();
+
+    fechaElegida.value = fecha;
+    mesElegido.value = periodo;
+    const cantidadNumero = valor => Number.isFinite(Number(valor)) ? Number(valor) : 0;
+    const crearDia = clave => ({
+        fecha: clave, ventas: 0, facturacion: 0, costo: 0,
+        gastos: 0, extras: 0, costoPendiente: false
+    });
+    const neta = dia => dia.costoPendiente ? null : dia.facturacion - dia.costo - dia.gastos;
+    const inicioAnio = anio => `${anio}-01-01T00:00:00-03:00`;
+    const finAnio = anio => `${Number(anio)+1}-01-01T00:00:00-03:00`;
+    const anioActual = () => Number(hoyClave().slice(0,4));
+    const mensajePendiente = 'Costo pendiente';
+
+    async function leerPaginado(tabla, campos, fechaCampo, anio, filtro) {
+        const resultado = [];
+        for (let desde = 0; ; desde += 1000) {
+            let q = supabaseClient.from(tabla)
+                .select(campos)
+                .gte(fechaCampo, inicioAnio(anio))
+                .lt(fechaCampo, finAnio(anio))
+                .order(fechaCampo, {ascending: true})
+                .range(desde, desde + 999);
+            if (filtro) q = filtro(q);
+            const {data, error} = await q;
+            if (error) throw new Error(`No se pudieron consultar ${tabla}: ${error.message}`);
+            const filas = Array.isArray(data) ? data : [];
+            resultado.push(...filas);
+            if (filas.length < 1000) break;
+        }
+        return resultado;
+    }
+
+    async function leerItems(ids) {
+        const todos = [];
+        for (let i = 0; i < ids.length; i += 70) {
+            const bloque = ids.slice(i, i + 70);
+            for (let desde = 0; ; desde += 1000) {
+                const {data, error} = await supabaseClient.from('venta_items')
+                    .select('venta_id,cantidad,costo_unitario')
+                    .in('venta_id', bloque).order('venta_id', {ascending: true})
+                    .range(desde, desde + 999);
+                if (error) throw new Error(`No se pudieron consultar costos: ${error.message}`);
+                const filas = Array.isArray(data) ? data : [];
+                todos.push(...filas);
+                if (filas.length < 1000) break;
+            }
+        }
+        return todos;
+    }
+
+    async function cargarAnio(anio, forzar = false) {
+        const cacheado = cache.get(anio);
+        if (!forzar && cacheado && Date.now() - cacheado.cargado < 45000) return cacheado;
+        const [ventas, gastos, extras] = await Promise.all([
+            leerPaginado('ventas','id,total,fecha_emision,anulada','fecha_emision',anio,q => q.eq('anulada',false)),
+            leerPaginado('gastos','monto,fecha_gasto,anulado','fecha_gasto',anio,q => q.eq('anulado',false)),
+            leerPaginado('ingresos_adicionales','monto,fecha_ingreso,tipo,anulado','fecha_ingreso',anio,q => q.eq('anulado',false).eq('tipo','extra'))
+        ]);
+        const items = await leerItems(ventas.map(v => v.id));
+        const porVenta = new Map();
+        items.forEach(item => {
+            const id = Number(item.venta_id);
+            if (!porVenta.has(id)) porVenta.set(id, []);
+            porVenta.get(id).push(item);
+        });
+        const dias = new Map();
+        function obtenerDia(k) {
+            if (!dias.has(k)) dias.set(k, crearDia(k));
+            return dias.get(k);
+        }
+        ventas.forEach(venta => {
+            const k = fechaClave(venta.fecha_emision);
+            if (!k || !k.startsWith(String(anio))) return;
+            const d = obtenerDia(k);
+            d.ventas++;
+            d.facturacion += cantidadNumero(venta.total);
+            const lineas = porVenta.get(Number(venta.id)) || [];
+            const completos = lineas.length > 0 && lineas.every(item =>
+                item.costo_unitario !== null && item.costo_unitario !== undefined &&
+                item.costo_unitario !== '' && Number.isFinite(Number(item.costo_unitario)) &&
+                Number.isFinite(Number(item.cantidad)) && Number(item.cantidad) > 0);
+            if (!completos) d.costoPendiente = true;
+            else d.costo += lineas.reduce((t,item) => t + Number(item.cantidad)*Number(item.costo_unitario),0);
+        });
+        gastos.forEach(gasto => {
+            const k = fechaClave(gasto.fecha_gasto);
+            if (k.startsWith(String(anio))) obtenerDia(k).gastos += cantidadNumero(gasto.monto);
+        });
+        extras.forEach(extra => {
+            const k = fechaClave(extra.fecha_ingreso);
+            if (k.startsWith(String(anio))) obtenerDia(k).extras += cantidadNumero(extra.monto);
+        });
+        const respuesta = {anio,dias,cargado:Date.now()};
+        cache.set(anio,respuesta);
+        return respuesta;
+    }
+
+    function sumarDias(items) {
+        const datos = {ventas:0,facturacion:0,costo:0,gastos:0,extras:0,costoPendiente:false};
+        items.forEach(d => {
+            datos.ventas += d.ventas;
+            datos.facturacion += d.facturacion;
+            datos.costo += d.costo;
+            datos.gastos += d.gastos;
+            datos.extras += d.extras;
+            datos.costoPendiente ||= d.costoPendiente;
+        });
+        return datos;
+    }
+    const valorGanancia = d => neta(d) === null ? mensajePendiente : f(neta(d));
+    function mostrarInicio(anio) {
+        const dia = anio.dias.get(hoyClave()) || crearDia(hoyClave());
+        resumenInicio.textContent = valorGanancia(dia);
+        ayudaInicio.textContent = dia.costoPendiente
+            ? 'Falta el costo histórico de una o más ventas.'
+            : `${dia.ventas} ${dia.ventas === 1 ? 'venta' : 'ventas'} hoy · ${f(dia.facturacion)} facturados`;
+    }
+    function etiquetaDia(clave) {
+        const [y,m,d] = clave.split('-').map(Number);
+        return new Intl.DateTimeFormat('es-AR',{day:'numeric',month:'short',timeZone:TZ})
+            .format(new Date(Date.UTC(y,m-1,d,12)));
+    }
+    function fila(label,valor) {
+        return `<div class="mireka-ganancias-fila"><span>${label}</span><strong>${valor}</strong></div>`;
+    }
+    function renderizar(anio) {
+        const hoy = hoyClave();
+        const dia = anio.dias.get(fecha) || crearDia(fecha);
+        const diasMes = [...anio.dias.values()].filter(x => x.fecha.startsWith(periodo));
+        const totalMes = sumarDias(diasMes);
+        const totalAnio = sumarDias([...anio.dias.values()]);
+        const diasOperativos = diasMes.filter(d => d.ventas > 0 || d.gastos > 0);
+        const evaluables = diasOperativos.filter(d => neta(d) !== null);
+        const promedio = !totalMes.costoPendiente && evaluables.length > 1
+            ? evaluables.reduce((s,d) => s + neta(d),0) / evaluables.length : null;
+        const mejores = [...evaluables].filter(d => d.ventas > 0).sort((a,b) => neta(b)-neta(a));
+        const mejor = totalMes.costoPendiente ? null : mejores[0];
+        const buenos = promedio === null ? 0 : evaluables.filter(d => neta(d) >= promedio).length;
+        const flojos = promedio === null ? 0 : evaluables.filter(d => neta(d) < promedio).length;
+        const mesTxt = new Intl.DateTimeFormat('es-AR',{month:'long',year:'numeric',timeZone:TZ})
+            .format(new Date(`${periodo}-01T12:00:00-03:00`));
+        const nota = totalMes.costoPendiente || totalAnio.costoPendiente
+            ? '<p class="mireka-ganancias-advertencia">Hay ventas sin costo histórico. La ganancia de los períodos afectados se muestra como «Costo pendiente» para evitar cifras falsas.</p>'
+            : '';
+        resumen.innerHTML = `
+          <div class="mireka-ganancias-cards">
+            <article><span>Ganancia del ${fecha === hoy ? 'día de hoy' : etiquetaDia(fecha)}</span><strong>${valorGanancia(dia)}</strong><small>${dia.ventas} ventas · ${f(dia.facturacion)} facturados</small></article>
+            <article><span>Ganancia de ${mesTxt}</span><strong>${valorGanancia(totalMes)}</strong><small>${totalMes.ventas} ventas · ${f(totalMes.facturacion)} facturados</small></article>
+            <article><span>Ganancia del año ${anio.anio}</span><strong>${valorGanancia(totalAnio)}</strong><small>${totalAnio.ventas} ventas · ${f(totalAnio.facturacion)} facturados</small></article>
+          </div>${nota}
+          <div class="mireka-ganancias-paneles">
+            <article class="mireka-ganancias-panel"><h3>Detalle del ${etiquetaDia(fecha)}</h3>
+              ${fila('Facturación',f(dia.facturacion))}${fila('Costo de mercadería',dia.costoPendiente?mensajePendiente:f(dia.costo))}
+              ${fila('Gastos del día',f(dia.gastos))}${fila('Ganancia neta',valorGanancia(dia))}
+              ${fila('Ingresos extra (separados)',f(dia.extras))}
+            </article>
+            <article class="mireka-ganancias-panel"><h3>Balance de ${mesTxt}</h3>
+              ${fila('Mejor día con ventas',totalMes.costoPendiente ? mensajePendiente : mejor ? `${etiquetaDia(mejor.fecha)} · ${f(neta(mejor))}` : 'Sin datos suficientes')}
+              ${fila('Promedio por día con actividad',totalMes.costoPendiente ? mensajePendiente : promedio === null ? 'Se necesitan 2 días' : f(promedio))}
+              ${fila('Días sobre el promedio',promedio === null?'—':String(buenos))}
+              ${fila('Días bajo el promedio',promedio === null?'—':String(flojos))}
+              ${fila('Ingresos extra del mes',f(totalMes.extras))}
+              <small>Los días sin ventas ni gastos no se califican como malos. Los retiros y aportes personales no se consideran ganancias.</small>
+            </article>
+          </div>`;
+        const cantidadDias = new Date(Number(periodo.slice(0,4)),Number(periodo.slice(5,7)),0).getDate();
+        const barras = Array.from({length:cantidadDias},(_,i)=>{
+            const k = `${periodo}-${String(i+1).padStart(2,'0')}`;
+            return anio.dias.get(k) || crearDia(k);
+        });
+        const maximo = Math.max(1,...barras.map(d=>Math.abs(neta(d)??0)));
+        grafico.innerHTML = `<div class="mireka-ganancias-barras">${barras.map(d => {
+            const valor = neta(d);
+            const altura = valor === null ? 0 : Math.max(0,Math.round(Math.abs(valor)/maximo*100));
+            const clase = valor === null?'pendiente':valor<0?'negativo':d.ventas===0&&d.gastos===0?'inactivo':'positivo';
+            return `<div class="mireka-ganancias-columna" title="${etiquetaDia(d.fecha)}: ${valorGanancia(d)} · ${d.ventas} ventas">
+                <div class="mireka-ganancias-barra ${clase}" style="height:${altura}%"></div><span>${Number(d.fecha.slice(-2))}</span></div>`;
+        }).join('')}</div><small>Ganancia neta de cada día. Verde: resultado positivo · Rojo: resultado negativo · Gris: sin actividad o costo pendiente.</small>`;
+        const ordenados = diasOperativos.slice().sort((a,b)=>b.fecha.localeCompare(a.fecha));
+        detalle.innerHTML = ordenados.length
+            ? `<div class="mireka-ganancias-tabla-wrap"><table class="mireka-ganancias-tabla"><thead><tr><th>Fecha</th><th>Ventas</th><th>Facturación</th><th>Gastos</th><th>Ganancia neta</th><th>Balance</th></tr></thead><tbody>${ordenados.map(d => {
+                const valor = neta(d);
+                const balance = valor === null ? 'Costo pendiente' : promedio === null ? 'Sin comparación' : valor >= promedio ? 'Sobre el promedio' : 'Bajo el promedio';
+                return `<tr><td>${etiquetaDia(d.fecha)}</td><td>${d.ventas}</td><td>${f(d.facturacion)}</td><td>${f(d.gastos)}</td><td><strong>${valorGanancia(d)}</strong></td><td>${balance}</td></tr>`;
+            }).join('')}</tbody></table></div>`
+            : '<p class="mireka-ganancias-sin-datos">No hay ventas ni gastos registrados en este mes. Se mostrarán a medida que los cargues.</p>';
+        estado.textContent = `Datos del sistema · ${mesTxt}. Se actualizan después de registrar una operación y mientras tenés Gestión abierta.`;
+    }
+
+    async function refrescar(forzar = false) {
+        if (aplicacionGestion.classList.contains('oculto')) return;
+        if (siguiendoHoy && fecha !== hoyClave()) {
+            fecha = hoyClave();
+            periodo = fecha.slice(0,7);
+            fechaElegida.value = fecha;
+            mesElegido.value = periodo;
+        }
+        if (refrescando) {refrescarOtraVez = true;return;}
+        refrescando = true;
+        try {
+            const anioSel = Number(periodo.slice(0,4));
+            const [seleccionado,actual] = await Promise.all([
+                cargarAnio(anioSel,forzar),
+                anioSel === anioActual() ? Promise.resolve(null) : cargarAnio(anioActual(),forzar)
+            ]);
+            mostrarInicio(actual || seleccionado);
+            renderizar(seleccionado);
+        } catch(error) {
+            console.error('Mireka: error al leer estadísticas:',error);
+            estado.textContent = 'No se pudieron actualizar las estadísticas. Revisá la conexión y volvé a intentar.';
+            ayudaInicio.textContent = 'No se pudo consultar Supabase.';
+            resumenInicio.textContent = 'Sin datos';
+        } finally {
+            refrescando = false;
+            if (refrescarOtraVez) {
+                refrescarOtraVez = false;
+                void refrescar(true);
+            }
+        }
+    }
+    function abrir() {
+        cerrarSeccionesGestion();
+        ocultarSeccionesMenuGestion();
+        vista.classList.remove('oculto');
+        activarPantallaGestion('seccion-estadisticas-ganancias');
+        void refrescar(false);
+    }
+    acceso.addEventListener('click',abrir);
+    document.getElementById('mireka-ir-ganancias')?.addEventListener('click',abrir);
+    document.getElementById('mireka-cerrar-ganancias')?.addEventListener('click',() => {
+        vista.classList.add('oculto');
+        mostrarInicioGestion();
+    });
+    document.getElementById('mireka-ganancias-recargar')?.addEventListener('click',()=>void refrescar(true));
+    fechaElegida.addEventListener('change',() => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(fechaElegida.value)) return;
+        fecha = fechaElegida.value;
+        siguiendoHoy = fecha === hoyClave();
+        periodo = fecha.slice(0,7);
+        mesElegido.value = periodo;
+        void refrescar();
+    });
+    mesElegido.addEventListener('change',() => {
+        if (!/^\d{4}-\d{2}$/.test(mesElegido.value)) return;
+        periodo = mesElegido.value;
+        fecha = `${periodo}-01`;
+        siguiendoHoy = false;
+        fechaElegida.value = fecha;
+        void refrescar();
+    });
+    // Evita superponer Estadísticas con Ventas, Stock, Gastos u otras pantallas.
+    const cerrarPantallasOriginal = cerrarSeccionesGestion;
+    cerrarSeccionesGestion = function (...args) {
+        const resultado = cerrarPantallasOriginal.apply(this,args);
+        vista.classList.add('oculto');
+        return resultado;
+    };
+    // Se integra con la función existente: ventas, anulaciones y gastos.
+    const actualizarResumenOriginal = actualizarResumenGeneral;
+    actualizarResumenGeneral = async function (...args) {
+        const valor = await actualizarResumenOriginal.apply(this,args);
+        await refrescar(true);
+        return valor;
+    };
+    // El usuario puede vender desde otro dispositivo. Actualización periódica
+    // solo con una sesión de Gestión abierta.
+    setInterval(() => {
+        if (!aplicacionGestion.classList.contains('oculto')) void refrescar(true);
+    },60000);
+})();

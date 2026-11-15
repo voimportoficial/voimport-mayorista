@@ -9260,3 +9260,55 @@ header .cerrar-venta:hover {
 /* Acceso al panel de secciones del catálogo */
 .mireka-gestion-enlace-web{display:inline-flex;align-items:center;justify-content:center;padding:11px 14px;border-radius:10px;border:1px solid #b59650;color:#e2c578;text-decoration:none;font-weight:700;font-size:13px;background:#17140d;white-space:nowrap;}
 .mireka-gestion-enlace-web:hover{background:#292112;color:#fff}
+
+
+/* ========================================================
+   MIREKA | ESTADÍSTICAS Y GANANCIAS
+   ======================================================== */
+.mireka-ganancia-hoy-inicio { margin-top:18px; background:#fff; border:1px solid #dbe3ee;
+    border-left:5px solid #c99a32; border-radius:14px; padding:21px 24px;
+    display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.mireka-ganancia-hoy-inicio div {display:flex;flex-direction:column;gap:6px;}
+.mireka-ganancia-hoy-inicio span {font-size:14px;color:#64748b;}
+.mireka-ganancia-hoy-inicio strong {font-size:30px;color:#172033;}
+.mireka-ganancia-hoy-inicio small {font-size:12px;color:#64748b;}
+.mireka-ganancia-hoy-inicio button,.mireka-ganancias-filtros button,.mireka-ganancias-cabecera button {
+    padding:11px 17px; border-radius:9px; border:1px solid #c99a32;
+    background:#172033; color:#fff; font-size:13px; font-weight:700; cursor:pointer;}
+.mireka-ganancias-cabecera {display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px;}
+.mireka-ganancias-cabecera h2 {margin:0 0 5px;}
+.mireka-ganancias-cabecera p,.mireka-ganancias-estado,.mireka-ganancias-nota {color:#64748b;line-height:1.6;font-size:13px;}
+.mireka-ganancias-filtros {display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;background:#fff;border:1px solid #dbe3ee;padding:17px;border-radius:13px;margin-bottom:16px;}
+.mireka-ganancias-filtros label {display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:700;}
+.mireka-ganancias-filtros input {border:1px solid #dbe3ee;border-radius:8px;padding:11px;background:#fff;color:#172033;min-height:43px;}
+.mireka-ganancias-estado {margin:6px 0 16px;}
+.mireka-ganancias-cards {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-bottom:18px;}
+.mireka-ganancias-cards article,.mireka-ganancias-panel,.mireka-ganancias-bloque {background:#fff;border:1px solid #dbe3ee;border-radius:14px;padding:21px;}
+.mireka-ganancias-cards article {display:flex;flex-direction:column;gap:10px;}
+.mireka-ganancias-cards span,.mireka-ganancias-cards small {font-size:12px;color:#64748b;}
+.mireka-ganancias-cards strong {font-size:clamp(18px,2vw,27px);color:#172033;overflow-wrap:anywhere;}
+.mireka-ganancias-paneles {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:20px;}
+.mireka-ganancias-panel h3,.mireka-ganancias-bloque h3 {font-size:17px;margin:0 0 16px;}
+.mireka-ganancias-panel small,.mireka-ganancias-bloque small {display:block;color:#64748b;line-height:1.6;font-size:12px;margin-top:12px;}
+.mireka-ganancias-fila {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #edf2f6;font-size:13px;}
+.mireka-ganancias-fila:last-of-type {border-bottom:0;}
+.mireka-ganancias-fila span {color:#64748b;}
+.mireka-ganancias-fila strong {text-align:right;}
+.mireka-ganancias-bloque {margin-bottom:18px;}
+.mireka-ganancias-barras {min-height:185px;display:grid;grid-template-columns:repeat(31,minmax(10px,1fr));align-items:end;gap:4px;overflow-x:auto;padding:8px 1px 0;border-bottom:1px solid #dbe3ee;}
+.mireka-ganancias-columna {height:168px;display:flex;flex-direction:column;justify-content:end;align-items:center;gap:6px;font-size:10px;color:#64748b;min-width:10px;}
+.mireka-ganancias-barra {width:min(100%,28px);min-height:0;border-radius:5px 5px 0 0;}
+.mireka-ganancias-barra.positivo {background:#18834b;}
+.mireka-ganancias-barra.negativo {background:#d64b4b;}
+.mireka-ganancias-barra.inactivo,.mireka-ganancias-barra.pendiente {background:#dbe3ee;}
+.mireka-ganancias-tabla-wrap {width:100%;overflow-x:auto;}
+.mireka-ganancias-tabla {width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap;}
+.mireka-ganancias-tabla th,.mireka-ganancias-tabla td {padding:12px;text-align:left;border-bottom:1px solid #edf2f6;}
+.mireka-ganancias-tabla th {background:#f8fafc;color:#64748b;}
+.mireka-ganancias-advertencia {padding:13px;background:#fff7e7;border:1px solid #efcf8d;border-radius:10px;font-size:13px;margin:0 0 16px;color:#825514;}
+.mireka-ganancias-sin-datos {color:#64748b;font-size:13px;padding:12px 0;}
+.mireka-ganancias-nota {padding:10px 0 0;}
+@media(max-width:800px){.mireka-ganancias-cards{grid-template-columns:1fr;}.mireka-ganancias-paneles{grid-template-columns:1fr;}}
+@media(max-width:600px){.mireka-ganancia-hoy-inicio{flex-direction:column;align-items:stretch;padding:18px;}
+.mireka-ganancia-hoy-inicio button{width:100%;}.mireka-ganancias-cabecera{align-items:flex-start;}
+.mireka-ganancias-filtros{flex-direction:column;align-items:stretch;}.mireka-ganancias-filtros input{width:100%;}}
