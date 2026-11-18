@@ -9363,3 +9363,18 @@ header .cerrar-venta:hover {
 .mireka-etiquetas-alerta-inicio p{font-size:13px;margin-top:4px;line-height:1.5}
 .mireka-etiquetas-alerta-inicio button{min-width:fit-content;background:#b91c1c;color:#fff;padding:10px 14px;border:0;border-radius:9px;font-weight:700;cursor:pointer}
 @media(max-width:740px){.mireka-etiquetas-metricas{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.mireka-etiquetas-metrica{padding:10px}.mireka-etiquetas-metrica strong{font-size:22px}.mireka-etiquetas-metrica span{font-size:11px}.mireka-etiquetas-fila{grid-template-columns:minmax(0,1fr) 105px;gap:8px;padding:10px}.mireka-etiquetas-estado-stock{grid-column:2;justify-self:stretch}.mireka-etiquetas-nombre{grid-row:span 2}.mireka-etiquetas-cabecera{flex-wrap:wrap}.mireka-etiquetas-pie{padding:10px}.mireka-etiquetas-alerta-inicio{flex-wrap:wrap}.mireka-etiquetas-alerta-inicio button{width:100%}}
+
+
+/* MIREKA | Campos numéricos sin controles de subir y bajar.
+   Aplica globalmente a toda Gestión, incluidos modales y campos dinámicos. */
+input[type="number"] {
+    -moz-appearance: textfield;
+    -webkit-appearance: textfield;
+    appearance: textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}

@@ -40908,3 +40908,28 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
         if (!aplicacionGestion.classList.contains('oculto')) void refrescar(true);
     },60000);
 })();
+
+
+/* MIREKA | Protección global de los números en Gestión.
+   Evita cambios involuntarios al usar la ruedita o las flechas arriba/abajo.
+   La escritura manual y el desplazamiento de la página siguen disponibles. */
+(() => {
+    'use strict';
+    const esNumero = nodo => nodo?.matches?.('input[type="number"]') === true;
+
+    document.addEventListener('wheel', evento => {
+        const campo = evento.target;
+        if (esNumero(campo) && document.activeElement === campo) {
+            // La pérdida de foco antes de la acción predeterminada impide que
+            // el desplazamiento de la página modifique el importe o cantidad.
+            campo.blur();
+        }
+    }, {capture: true, passive: true});
+
+    document.addEventListener('keydown', evento => {
+        if ((evento.key === 'ArrowUp' || evento.key === 'ArrowDown') &&
+            esNumero(evento.target)) {
+            evento.preventDefault();
+        }
+    }, true);
+})();
