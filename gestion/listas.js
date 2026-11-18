@@ -3,12 +3,21 @@
 (() => {
     'use strict';
     const ESCALONES = [3, 6, 15, 30];
+    const CATEGORIAS = {
+        'perfumes-grandes': 'Perfumes grandes',
+        'decants': 'Decants 5 ml',
+        'maison-30ml': 'Maison Alhambra 30 ml'
+    };
+    let categoriaActiva = 'perfumes-grandes';
+    let configuraciones = new Map();
+    const configCategoria = categoria => configuraciones.get(categoria) || null;
+    const categoriaProducto = producto => producto?.categoria_mostrar || producto?.categoria;
+
     const CAMPO = i => `markup_lista_${i}`;
     const $ = id => document.getElementById(id);
     const panel = $('seccion-listas-mireka');
     if (!panel) return;
 
-    let configuracion = null;
     let excepciones = new Map();
     let ocupado = false;
     let listo = false;
@@ -24,7 +33,7 @@
         return Number.isFinite(n) && n >= 0 && n <= 1000 ? n : NaN;
     };
     const productosElegibles = () => (typeof productosGestion === 'undefined' ? [] : productosGestion)
-        .filter(p => p.retirado !== true && ['perfumes-grandes','maison-30ml'].includes(p.categoria_mostrar));
+        .filter(p => p.retirado !== true && Object.hasOwn(CATEGORIAS, categoriaProducto(p)));
     const coste = p => {
         const valor = p?.costo_actual;
         if (valor === null || valor === undefined || String(valor).trim() === '') return null;
@@ -43,7 +52,7 @@
     const obtenerOverride = id => excepciones.get(Number(id)) || {};
     const porcentaje = (p, i) => {
         const x = obtenerOverride(p.id)[CAMPO(i)];
-        return x !== undefined && x !== null ? Number(x) : numero(configuracion?.[CAMPO(i)]);
+        return x !== undefined && x !== null ? Number(x) : numero(configCategoria(categoriaProducto(p))?.[CAMPO(i)]);
     };
     const listaDescendente = valores => valores.every((v, j) => j === 0 || valores[j - 1] >= v);
     const validarPorcentajes = (valores, producto) => {
@@ -55,22 +64,45 @@
     };
     const valoresProducto = p => ESCALONES.map((_, k) => porcentaje(p, k + 1));
 
+    function mostrarCategoriaActiva() {
+        document.querySelectorAll('[data-mireka-categoria-listas]').forEach(boton => {
+            const activo = boton.dataset.mirekaCategoriaListas === categoriaActiva;
+            boton.classList.toggle('activo', activo);
+            boton.setAttribute('aria-selected', String(activo));
+        });
+        const titulo = $('mireka-listas-titulo-categoria');
+        if (titulo) titulo.textContent = 'Porcentajes generales · ' + CATEGORIAS[categoriaActiva];
+        const configuracion = configCategoria(categoriaActiva);
+        ESCALONES.forEach((_, k) => {
+            const nodo = $('listas-mireka-general-' + (k + 1));
+            if (nodo) nodo.value = configuracion?.[CAMPO(k + 1)] ?? '';
+        });
+    }
+    document.querySelectorAll('[data-mireka-categoria-listas]').forEach(boton => {
+        boton.addEventListener('click', () => {
+            if (ocupado) return;
+            categoriaActiva = boton.dataset.mirekaCategoriaListas;
+            mostrarCategoriaActiva();
+            estado('Editando solamente ' + CATEGORIAS[categoriaActiva] + '. Los cambios se guardan al tocar el botón.');
+        });
+    });
+
     async function cargarDatos() {
         const [r1, r2] = await Promise.all([
-            supabaseClient.from('mireka_configuracion_listas').select('*').eq('id', 1).maybeSingle(),
+            supabaseClient.from('mireka_configuracion_listas_categoria').select('*'),
             supabaseClient.from('mireka_markup_listas_producto').select('*')
         ]);
         if (r1.error || r2.error) {
             listo = false;
-            throw new Error('No se pudieron cargar las listas. Primero ejecutá el SQL incluido en el ZIP desde Supabase y revisá los permisos. ' + (r1.error?.message || r2.error?.message || ''));
+            throw new Error('No se pudieron cargar las listas por categoría desde Supabase. ' + (r1.error?.message || r2.error?.message || ''));
         }
-        configuracion = r1.data || {id: 1};
+        configuraciones = new Map((r1.data || []).map(row => [row.categoria, row]));
+        for (const categoria of Object.keys(CATEGORIAS)) {
+            if (!configuraciones.has(categoria)) throw new Error('Falta la configuración de ' + CATEGORIAS[categoria] + ' en Supabase.');
+        }
         excepciones = new Map((r2.data || []).map(row => [Number(row.producto_id), row]));
         listo = true;
-        ESCALONES.forEach((_, k) => {
-            const n = $('listas-mireka-general-' + (k + 1));
-            n.value = configuracion[CAMPO(k + 1)] ?? '';
-        });
+        mostrarCategoriaActiva();
     }
 
     async function abrir() {
@@ -98,17 +130,20 @@
             if (valores.some(v => v === null || Number.isNaN(v))) throw new Error('Completá los cuatro porcentajes generales (de 0% a 1000%).');
             validarPorcentajes(valores, 'la configuración general');
             // Evita inversiones entre listas en productos con excepciones.
-            productosElegibles().forEach(p => {
+            productosElegibles().filter(p => categoriaProducto(p) === categoriaActiva).forEach(p => {
                 const lista = valores.map((v,k) => obtenerOverride(p.id)[CAMPO(k+1)] ?? v);
                 validarPorcentajes(lista.map(Number), p.nombre_mostrar || p.nombre || 'un producto');
             });
-            if (!window.confirm('¿Guardar los cuatro porcentajes generales? Se recalcularán las listas de los perfumes sin porcentaje personalizado.')) return;
+            if (!window.confirm('¿Guardar los cuatro porcentajes de ' + CATEGORIAS[categoriaActiva] + '? No afecta a las otras categorías.')) return;
             ocupado = true;
-            const item = {id:1}; valores.forEach((v,k) => item[CAMPO(k+1)] = v);
-            const {error} = await supabaseClient.from('mireka_configuracion_listas').upsert(item, {onConflict:'id'});
+            const categoriaGuardada = categoriaActiva;
+            const item = {categoria: categoriaGuardada};
+            valores.forEach((v,k) => item[CAMPO(k+1)] = v);
+            const {data, error} = await supabaseClient.from('mireka_configuracion_listas_categoria')
+                .upsert(item, {onConflict:'categoria'}).select('*').single();
             if (error) throw error;
-            configuracion = item;
-            estado('Configuración general guardada. Precios calculados con redondeo hacia arriba de $500.');
+            configuraciones.set(categoriaGuardada, data);
+            estado('Guardados los porcentajes de ' + CATEGORIAS[categoriaGuardada] + '. No se modificaron las otras categorías.');
             actualizarPreciosModal();
         } catch(e) { estado(e.message || 'No se pudo guardar.', true); }
         finally { ocupado = false; }
@@ -125,7 +160,7 @@
     const modal = $('mireka-listas-editor-producto');
     const filasModal = $('mireka-listas-editor-filas');
     const estadoModal = $('mireka-listas-editor-estado');
-    const esElegible = p => p && ['perfumes-grandes','maison-30ml'].includes(p.categoria_mostrar);
+    const esElegible = p => p && Object.hasOwn(CATEGORIAS, categoriaProducto(p));
     const costoModal = () => {
         const campo = $('editar-producto-costo');
         if (!campo || campo.value.trim() === '') return null;
@@ -142,7 +177,7 @@
         const precioInput = $('mireka-editor-precio-' + n);
         const descripcion = $('mireka-editor-ayuda-' + n);
         if (!markupInput || !precioInput) return;
-        const general = numero(configuracion?.[CAMPO(n)]);
+        const general = numero(configCategoria(categoriaProducto(productosElegibles().find(p => Number(p.id) === modalEdicionId)))?.[CAMPO(n)]);
         const personalizado = numero(markupInput.value);
         const porc = personalizado === null ? general : personalizado;
         precioInput.value = porc === null || costoModal() === null || Number.isNaN(porc)
@@ -197,10 +232,10 @@
             filasModal.innerHTML = ESCALONES.map((umbral,k) => {
                 const n = k+1;
                 const valor = override[CAMPO(n)];
-                const general = numero(configuracion?.[CAMPO(n)]);
+                const general = numero(configCategoria(categoriaProducto(producto))?.[CAMPO(n)]);
                 const por = valor == null ? general : Number(valor);
                 const precio = costoModal() === null ? null : efectivo(costoModal(), por);
-                return `<div class="mireka-editor-lista"><strong>Lista ${n} · desde ${umbral} perfumes</strong>
+                return `<div class="mireka-editor-lista"><strong>Lista ${n} · desde ${umbral} unidades</strong>
                     <div class="mireka-editor-lista-campos">
                         <label>Markup (%)<input type="number" id="mireka-editor-markup-${n}" data-mireka-numero="${n}" data-mireka-tipo="markup" min="0" max="1000" step="any" value="${valor == null ? '' : Number(valor)}" placeholder="${general == null ? 'Sin configurar' : general + '% general'}"></label>
                         <label>Precio ($)<input type="number" id="mireka-editor-precio-${n}" data-mireka-numero="${n}" data-mireka-tipo="precio" min="0" step="500" value="${precio == null ? '' : precio}" placeholder="Sin precio"></label>
@@ -227,7 +262,7 @@
             if (Number.isNaN(x)) throw new Error('Revisá el markup de la Lista ' + n + '.');
             return x;
         });
-        const efectivos = valores.map((v,k) => v == null ? numero(configuracion?.[CAMPO(k+1)]) : v);
+        const efectivos = valores.map((v,k) => v == null ? numero(configCategoria(categoriaProducto(producto))?.[CAMPO(k+1)]) : v);
         validarPorcentajes(efectivos, producto.nombre_mostrar || producto.nombre || 'el perfume');
         if (valores.some(v=>v!==null) && costoModal()===null) throw new Error('Cargá el costo antes de personalizar las listas.');
         const cambio = valores.some((v,k)=>{
@@ -263,14 +298,14 @@
         ? [] : [...productosSeleccionadosMasivoGestion].map(Number).filter(Number.isSafeInteger);
     const productosMasivos = () => {
         const ids = new Set(idSeleccionados());
-        return productosElegibles().filter(p => ids.has(Number(p.id)) && p.categoria_mostrar === categoriaMasivo?.value);
+        return productosElegibles().filter(p => ids.has(Number(p.id)) && categoriaProducto(p) === categoriaMasivo?.value);
     };
     const modosMasivos = () => ESCALONES.map((_,k)=>$('mireka-stock-lista-modo-'+(k+1))?.value || '');
     const mensajeMasivo = (msj,error=false) => {
         const el=$('mireka-stock-lista-mensaje');
         if(el) { el.textContent=msj; el.classList.toggle('listas-mireka-error',error); }
     };
-    const categoriaAdmiteListas = () => ['perfumes-grandes','maison-30ml'].includes(categoriaMasivo?.value);
+    const categoriaAdmiteListas = () => Object.hasOwn(CATEGORIAS, categoriaMasivo?.value);
     const actualizarPanelMasivo = () => {
         const nodo=$('mireka-stock-listas-masivas');
         if(!nodo) return;
@@ -279,7 +314,7 @@
         if(!activo) return;
         const total=productosMasivos().length;
         const seleccion=$('mireka-stock-lista-cantidad');
-        if(seleccion) seleccion.textContent=`${total} perfume${total===1?'':'s'} seleccionado${total===1?'':'s'}`;
+        if(seleccion) seleccion.textContent=`${total} producto${total===1?'':'s'} seleccionado${total===1?'':'s'}`;
     };
     async function cargarListasMasivas() {
         if (cargaMasivoEnCurso) return;
@@ -300,7 +335,7 @@
     function planMasivo() {
         if (!listo || errorMasivo) throw new Error(errorMasivo || 'Esperá a que terminen de cargar las listas.');
         const productos=productosMasivos();
-        if (!productos.length) throw new Error('Seleccioná al menos un perfume de esta categoría.');
+        if (!productos.length) throw new Error('Seleccioná al menos un producto de esta categoría.');
         const modos=modosMasivos();
         if (!modos.some(Boolean)) throw new Error('Elegí una lista para modificar (las otras quedan igual).');
         const cambios=modos.map((modo,k)=>{
@@ -319,9 +354,10 @@
                 const n=k+1;
                 despues[CAMPO(n)]=cambios[k]===undefined?(antes[CAMPO(n)] ?? null):cambios[k];
             });
-            const efectivos=ESCALONES.map((_,k)=>despues[CAMPO(k+1)] ?? numero(configuracion?.[CAMPO(k+1)]));
-            validarPorcentajes(efectivos,p.nombre_mostrar || p.nombre || 'un perfume');
-            const previo=ESCALONES.map((_,k)=>antes[CAMPO(k+1)] ?? numero(configuracion?.[CAMPO(k+1)]));
+            const config = configCategoria(categoriaProducto(p));
+            const efectivos=ESCALONES.map((_,k)=>despues[CAMPO(k+1)] ?? numero(config?.[CAMPO(k+1)]));
+            validarPorcentajes(efectivos,p.nombre_mostrar || p.nombre || 'un producto');
+            const previo=ESCALONES.map((_,k)=>antes[CAMPO(k+1)] ?? numero(config?.[CAMPO(k+1)]));
             return {p,despues,previo,efectivos};
         });
         return plan;
@@ -342,7 +378,7 @@
                 }).join('');
                 return `<tr><td>${escapar(p.nombre_mostrar||p.nombre||'Perfume')}</td>${datos}</tr>`;
             }).join('');
-            previa.innerHTML=`<strong>Vista previa: ${plan.length} perfumes</strong><div class="mireka-tabla-masiva"><table><thead><tr><th>Producto</th><th>Lista 1</th><th>Lista 2</th><th>Lista 3</th><th>Lista 4</th></tr></thead><tbody>${muestra}</tbody></table></div>${plan.length>8?`<small>Mostrando los primeros 8 de ${plan.length} productos.</small>`:''}`;
+            previa.innerHTML=`<strong>Vista previa: ${plan.length} productos</strong><div class="mireka-tabla-masiva"><table><thead><tr><th>Producto</th><th>Lista 1</th><th>Lista 2</th><th>Lista 3</th><th>Lista 4</th></tr></thead><tbody>${muestra}</tbody></table></div>${plan.length>8?`<small>Mostrando los primeros 8 de ${plan.length} productos.</small>`:''}`;
             mensajeMasivo('Revisá los precios antes de confirmar. Solo se actualizarán los porcentajes de las listas que elijas.');
         } catch(e) { previa.textContent=''; mensajeMasivo(e.message,true); }
     }
@@ -397,7 +433,7 @@
             const btn=$('guardar-edicion-masiva');
             try {
                 const plan=planMasivo();
-                const mensaje=`¿Guardar las cuatro listas de ${plan.length} perfumes seleccionados? No cambiará su costo, stock ni precio minorista.`;
+                const mensaje=`¿Guardar las cuatro listas de ${plan.length} productos seleccionados? No cambiará su costo, stock ni precio minorista.`;
                 if(!window.confirm(mensaje)) return;
                 ocupadoMasivo=true;btn.disabled=true;
                 let guardados=0;
