@@ -302,6 +302,10 @@
                             Listas mayoristas
                         </button>
 
+                        <button type="button" class="gestion-menu-accion" id="abrir-etiquetas-decants">
+                            🏷️ Stock de etiquetas <span id="etiquetas-menu-alerta" class="mireka-etiquetas-menu-badge oculto"></span>
+                        </button>
+
                     </div>
 
                 </details>
@@ -477,6 +481,11 @@
     </article>
 
 </div>
+
+                <div id="mireka-etiquetas-alerta-inicio" class="mireka-etiquetas-alerta-inicio oculto" role="status" aria-live="polite">
+                    <div><strong>⚠️ Etiquetas de decants por reponer</strong><p id="mireka-etiquetas-alerta-texto"></p></div>
+                    <button type="button" id="mireka-etiquetas-alerta-ver">Ver stock de etiquetas</button>
+                </div>
 
                 <article class="mireka-ganancia-hoy-inicio" id="mireka-ganancia-hoy-inicio">
                   <div><span>Ganancia neta de hoy</span><strong id="mireka-ganancia-hoy-importe">Cargando...</strong><small id="mireka-ganancia-hoy-ayuda">Consultando ventas y gastos...</small></div>
@@ -2354,6 +2363,38 @@
             </section>
 
 
+            <!-- Control físico de etiquetas de decants. Descuentos al registrar una venta. -->
+            <section id="seccion-etiquetas-decants" class="oculto mireka-etiquetas-seccion">
+                <div class="mireka-etiquetas-cabecera">
+                    <div>
+                        <h2>Control de etiquetas de decants</h2>
+                        <p>Indicá cuántas etiquetas impresas tenés de cada perfume. Por cada decant vendido se descuenta una etiqueta automáticamente. Cuando quedan 4 o menos aparece la alerta.</p>
+                    </div>
+                    <button type="button" id="cerrar-etiquetas-decants" class="cerrar-stock">Cerrar</button>
+                </div>
+                <div id="mireka-etiquetas-metricas" class="mireka-etiquetas-metricas" aria-live="polite"></div>
+                <div class="mireka-etiquetas-busqueda">
+                    <label for="mireka-etiquetas-buscar">Buscar perfume
+                        <input type="search" id="mireka-etiquetas-buscar" placeholder="Nombre o marca..." autocomplete="off">
+                    </label>
+                    <label for="mireka-etiquetas-filtrar">Mostrar
+                        <select id="mireka-etiquetas-filtrar">
+                            <option value="todos">Todos los decants</option>
+                            <option value="bajos">Solo alerta (0 a 4)</option>
+                            <option value="sin-cargar">Sin cantidad cargada</option>
+                        </select>
+                    </label>
+                    <button type="button" id="mireka-etiquetas-actualizar" class="mireka-etiquetas-boton-secundario">Actualizar</button>
+                </div>
+                <div class="mireka-etiquetas-guia">Solo modificá las cantidades cuando imprimas etiquetas nuevas o necesites corregirlas. Las ventas descuentan automáticamente una por cada decant vendido. <strong>“Sin cargar” no equivale a cero.</strong></div>
+                <div id="mireka-etiquetas-estado" class="mireka-etiquetas-estado" role="status" aria-live="polite">Cargando etiquetas...</div>
+                <div class="mireka-etiquetas-listado" id="mireka-etiquetas-listado"></div>
+                <div class="mireka-etiquetas-pie">
+                    <span id="mireka-etiquetas-pendientes">No hay cambios pendientes.</span>
+                    <button type="button" id="mireka-etiquetas-guardar" class="mireka-etiquetas-boton-guardar" disabled>Guardar cantidades</button>
+                </div>
+            </section>
+
             <!-- Configuración general de cuatro listas mayoristas. Edición individual y masiva en Ver stock. -->
             <section id="seccion-listas-mireka" class="oculto listas-mireka-pantalla">
                 <div class="listas-mireka-cabecera">
@@ -2395,6 +2436,7 @@
     <script src="../js/productos.js"></script>
     <script src="script.js"></script>
     <script src="listas.js"></script>
+    <script src="etiquetas.js"></script>
 
 </body>
 

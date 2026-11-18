@@ -4268,6 +4268,11 @@ botonConfirmarVenta?.addEventListener(
             await actualizarResumenGeneral();
 
 
+            // El descuento de etiquetas ocurre en Supabase. Actualizá el aviso sin esperar al próximo sondeo.
+            if (typeof window.mirekaRefrescarEtiquetas === "function") {
+                window.mirekaRefrescarEtiquetas();
+            }
+
             let textoResultado =
                 `Venta #${data} registrada correctamente. Stock actualizado.`;
 
@@ -5901,6 +5906,7 @@ async function anularVenta(
 function cerrarSeccionesGestion() {
     // Ocultar la nueva pantalla de listas al navegar a cualquier otra sección.
     document.getElementById("seccion-listas-mireka")?.classList.add("oculto");
+    document.getElementById("seccion-etiquetas-decants")?.classList.add("oculto");
 
     seccionVenta?.classList.add(
         "oculto"
@@ -12004,6 +12010,7 @@ modalAgregarPago?.addEventListener(
 function cerrarSeccionesGestion() {
     // Ocultar la nueva pantalla de listas al navegar a cualquier otra sección.
     document.getElementById("seccion-listas-mireka")?.classList.add("oculto");
+    document.getElementById("seccion-etiquetas-decants")?.classList.add("oculto");
 
     seccionVenta?.classList.add(
         "oculto"
@@ -15184,6 +15191,7 @@ presupuestosListaGestion
 function cerrarSeccionesGestion() {
     // Ocultar la nueva pantalla de listas al navegar a cualquier otra sección.
     document.getElementById("seccion-listas-mireka")?.classList.add("oculto");
+    document.getElementById("seccion-etiquetas-decants")?.classList.add("oculto");
 
     seccionVenta?.classList.add(
         "oculto"
@@ -37748,7 +37756,8 @@ const idsPantallasGestion = [
     "seccion-dinero",
     "seccion-cierres-mensuales",
     "seccion-estadisticas-ganancias",
-    "seccion-listas-mireka"
+    "seccion-listas-mireka",
+    "seccion-etiquetas-decants"
 ];
 
 

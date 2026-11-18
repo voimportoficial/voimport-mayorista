@@ -9320,3 +9320,46 @@ header .cerrar-venta:hover {
 .mireka-categorias-listas button.activo,.mireka-categorias-listas button[aria-selected="true"] {background:#171717;color:#e8c56d;border-color:#bb9134;}
 .mireka-categorias-listas button:focus-visible {outline:3px solid #b38a36;outline-offset:3px;}
 @media(max-width:650px){.mireka-categorias-listas button{flex:1 1 100%;}}
+
+
+/* MIREKA · Control de stock de etiquetas de decants */
+.mireka-etiquetas-seccion{max-width:1200px;margin:0 auto;padding-bottom:30px}
+.mireka-etiquetas-cabecera{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:20px}
+.mireka-etiquetas-cabecera h2{margin:0 0 8px;font-size:24px;color:#192438}
+.mireka-etiquetas-cabecera p{font-size:14px;color:#64748b;line-height:1.55;max-width:850px}
+.mireka-etiquetas-menu-badge{display:inline-flex;min-width:20px;height:20px;padding:0 5px;border-radius:12px;align-items:center;justify-content:center;color:white;background:#b91c1c;font-size:11px;margin-left:7px}
+.mireka-etiquetas-metricas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.mireka-etiquetas-metrica{border:1px solid #dfdfdd;border-radius:12px;background:#fff;padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.mireka-etiquetas-metrica strong{font-size:25px;color:#1f2937}
+.mireka-etiquetas-metrica span{font-size:13px;color:#58667a}
+.mireka-etiquetas-metrica.bajo{background:#fff5f5;border-color:#fca5a5}
+.mireka-etiquetas-metrica.bajo strong{color:#b91c1c}
+.mireka-etiquetas-busqueda{display:flex;align-items:end;flex-wrap:wrap;gap:12px;margin:12px 0 14px}
+.mireka-etiquetas-busqueda label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:#334155;flex:1 1 240px}
+.mireka-etiquetas-busqueda input,.mireka-etiquetas-busqueda select{min-height:44px;width:100%;border:1px solid #cdd5df;border-radius:9px;padding:10px 12px;background:#fff;color:#172033;font-size:14px}
+.mireka-etiquetas-boton-secundario{min-height:44px;padding:9px 18px;border-radius:9px;background:#fff;color:#4b3920;border:1px solid #c3a35b;font-weight:700;cursor:pointer}
+.mireka-etiquetas-guia{border-left:4px solid #c9a24d;background:#fdfaf3;border-radius:6px;padding:12px 15px;color:#4b5563;font-size:13px;line-height:1.5;margin:8px 0 14px}
+.mireka-etiquetas-estado{font-size:13px;min-height:20px;margin-bottom:10px;color:#475569}
+.mireka-etiquetas-estado.error{color:#b91c1c}
+.mireka-etiquetas-listado{border:1px solid #e0e4e9;border-radius:12px;background:#fff;max-height:62vh;overflow-y:auto}
+.mireka-etiquetas-fila{display:grid;grid-template-columns:minmax(0,1fr) 170px 140px;gap:15px;padding:10px 16px;align-items:center;border-bottom:1px solid #eef0f3;min-height:66px}
+.mireka-etiquetas-fila:last-child{border-bottom:0}
+.mireka-etiquetas-fila.bajo{background:#fff3f2}
+.mireka-etiquetas-fila.pendiente{box-shadow:inset 3px 0 #b9943f}
+.mireka-etiquetas-nombre{font-size:14px;font-weight:700;color:#172033;line-height:1.3;overflow-wrap:anywhere}
+.mireka-etiquetas-nombre small{font-size:12px;color:#64748b;font-weight:400;display:block;margin-top:5px}
+.mireka-etiquetas-cantidad{display:flex;align-items:center;gap:8px}
+.mireka-etiquetas-cantidad input{width:100%;min-width:0;border:1px solid #cbd5e1;border-radius:9px;background:#fff;min-height:42px;padding:8px 10px;text-align:center;font-weight:700;font-size:16px;color:#172033}
+.mireka-etiquetas-cantidad input:focus{outline:2px solid #c8a24d;outline-offset:1px}
+.mireka-etiquetas-estado-stock{justify-self:end;text-align:center;padding:6px 9px;border-radius:8px;background:#eef2f6;color:#475569;font-size:12px;font-weight:700}
+.mireka-etiquetas-estado-stock.ok{color:#166534;background:#dcfce7}
+.mireka-etiquetas-estado-stock.bajo{color:#991b1b;background:#fecaca}
+.mireka-etiquetas-pie{position:sticky;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid #e2d4b8;padding:14px 18px;margin-top:12px;background:#fff;border-radius:12px;box-shadow:0 -3px 14px rgba(0,0,0,.04)}
+.mireka-etiquetas-pie span{font-size:13px;color:#64748b}
+.mireka-etiquetas-boton-guardar{border:0;border-radius:9px;background:#c8a24d;color:#131313;font-size:14px;font-weight:800;padding:13px 20px;cursor:pointer}
+.mireka-etiquetas-boton-guardar:disabled{cursor:not-allowed;opacity:.5}
+.mireka-etiquetas-alerta-inicio{margin:18px 0;border:1px solid #fca5a5;border-left:5px solid #b91c1c;border-radius:12px;background:#fff4f4;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:18px;color:#7f1d1d}
+.mireka-etiquetas-alerta-inicio strong{display:block;font-size:15px}
+.mireka-etiquetas-alerta-inicio p{font-size:13px;margin-top:4px;line-height:1.5}
+.mireka-etiquetas-alerta-inicio button{min-width:fit-content;background:#b91c1c;color:#fff;padding:10px 14px;border:0;border-radius:9px;font-weight:700;cursor:pointer}
+@media(max-width:740px){.mireka-etiquetas-metricas{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.mireka-etiquetas-metrica{padding:10px}.mireka-etiquetas-metrica strong{font-size:22px}.mireka-etiquetas-metrica span{font-size:11px}.mireka-etiquetas-fila{grid-template-columns:minmax(0,1fr) 105px;gap:8px;padding:10px}.mireka-etiquetas-estado-stock{grid-column:2;justify-self:stretch}.mireka-etiquetas-nombre{grid-row:span 2}.mireka-etiquetas-cabecera{flex-wrap:wrap}.mireka-etiquetas-pie{padding:10px}.mireka-etiquetas-alerta-inicio{flex-wrap:wrap}.mireka-etiquetas-alerta-inicio button{width:100%}}
