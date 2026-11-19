@@ -18585,7 +18585,7 @@ if (!modalEditarProductoGestion) {
                 <!-- Mireka: listas 1–4 en la misma edición que costo y minorista. -->
                 <section id="mireka-listas-editor-producto" class="mireka-listas-editor-producto oculto" aria-live="polite">
                     <h4>Listas mayoristas · desde 3, 6, 15 y 30 perfumes</h4>
-                    <p>Se calculan desde el costo de este perfume, con redondeo hacia arriba cada $500. Un campo vacío usa el porcentaje general.</p>
+                    <p>Se calculan desde el costo de este perfume, con redondeo hacia arriba cada $100. Un campo vacío usa el porcentaje general.</p>
                     <div id="mireka-listas-editor-filas" class="mireka-editor-listas-grid"></div>
                     <p id="mireka-listas-editor-estado" class="mireka-editor-aviso">Cargando precios...</p>
                     <small>La web actual continúa usando su precio mayorista anterior hasta que adaptemos el carrito. Guardar estas listas no reemplaza ese precio web.</small>
@@ -19593,9 +19593,9 @@ function calcularCostoUsdtProductoGestion() {
 
 const DESCUENTO_EFECTIVO_TRANSFERENCIA_GESTION = 20;
 
-// Perfumes grandes y Maison 30 ml: redondeo de venta en $500.
-// Los decants mantienen su redondeo especial configurable.
-const REDONDEO_PRECIO_CATEGORIAS_CIEN_GESTION = 500;
+// Precio de venta de todas las categorías: redondeo hacia arriba a $100.
+// El redondeo interno del COSTO del decant sigue siendo configurable.
+const REDONDEO_PRECIO_CATEGORIAS_CIEN_GESTION = 100;
 
 function redondearPrecioCategoriaCienGestion(
     precio
@@ -19621,6 +19621,23 @@ function redondearPrecioCategoriaCienGestion(
 
 }
 
+// Al salir de un precio editable, normalizamos a centenas sin tocar costos, cantidades ni insumos.
+// Solo se aplican a los campos de precios de venta identificados.
+document.addEventListener('change', (evento) => {
+    const campo = evento.target;
+    if (!campo || campo.type !== 'number') return;
+    const idsDePrecio = new Set([
+        'editar-producto-minorista', 'editar-producto-mayorista',
+        'nuevo-producto-precio-minorista', 'nuevo-producto-precio-mayorista',
+        'edicion-masiva-precio-minorista', 'edicion-masiva-precio-mayorista',
+        'editar-producto-lista'
+    ]);
+    if (!idsDePrecio.has(campo.id) || campo.value.trim() === '') return;
+    const valor = Number(campo.value);
+    if (!Number.isFinite(valor) || valor < 0) return;
+    campo.value = String(redondearPrecioCategoriaCienGestion(valor));
+}, true);
+
 function calcularPrecioListaDesdeEfectivoGestion(
     precioEfectivo
 ) {
@@ -19640,9 +19657,7 @@ function calcularPrecioListaDesdeEfectivoGestion(
         return 0;
     }
 
-    return Math.round(
-        precio / factor
-    );
+    return redondearPrecioCategoriaCienGestion(precio / factor);
 
 }
 
@@ -19806,15 +19821,7 @@ function calcularPreciosProductoGestion() {
 
 
         if (esDecant) {
-
-            return (
-                Math.ceil(
-                    precioSinRedondear /
-                    redondeoDecant
-                ) *
-                redondeoDecant
-            );
-
+            return redondearPrecioCategoriaCienGestion(precioSinRedondear);
         }
 
 
@@ -25681,15 +25688,8 @@ function calcularPreciosNuevoProductoGestion() {
     const categoria =
         String(nuevoProductoCategoriaGestion?.value || "");
 
-    const redondearPrecioCalculado =
-        (precio) =>
-            (
-                categoria === "maison-30ml"
-            )
-                ? redondearPrecioCategoriaCienGestion(
-                    precio
-                )
-                : Math.round(precio);
+    const redondearPrecioCalculado = (precio) =>
+        redondearPrecioCategoriaCienGestion(precio);
 
     const markupMayoristaTexto =
         nuevoProductoMarkupMayoristaGestion?.value.trim() || "";
@@ -38371,7 +38371,7 @@ if (!modalEdicionMasivaGestion) {
                             <input type="number" id="mireka-insumos-masivos-valor" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Ej: 2300">
                             <small>Reemplaza únicamente el costo de insumos por unidad de los decants marcados. Conserva el perfume base, sus ml, el tester y los márgenes configurados.</small>
                         </div>
-                        <div class="mireka-modo-aviso">Se recalculan el costo total y los precios minorista y mayorista, redondeados hacia arriba a $500. Las cuatro listas mayoristas se actualizan automáticamente desde el nuevo costo, sin cambiar sus porcentajes.</div>
+                        <div class="mireka-modo-aviso">Se recalculan el costo total y los precios minorista y mayorista, redondeados hacia arriba a $100. Las cuatro listas mayoristas se actualizan automáticamente desde el nuevo costo, sin cambiar sus porcentajes.</div>
                         <div id="mireka-insumos-masivos-vista" aria-live="polite" class="mireka-preview-dolar"></div>
                     </div>
 
@@ -39871,22 +39871,9 @@ function prepararPlanEdicionMasivaGestion() {
                         (1 + markup / 100);
 
 
-                    if (
-                        esDecant &&
-                        Number.isFinite(
-                            redondeoPrecioDecant
-                        ) &&
-                        redondeoPrecioDecant > 0
-                    ) {
 
-                        return (
-                            Math.ceil(
-                                precioSinRedondear /
-                                redondeoPrecioDecant
-                            ) *
-                            redondeoPrecioDecant
-                        );
-
+                    if (esDecant) {
+                        return redondearPrecioCategoriaCienGestion(precioSinRedondear);
                     }
 
 
@@ -40317,7 +40304,7 @@ function renderizarPreviewSoloDolarMireka() {
             `<tr><td>${escaparHTML(p.nombre)}</td><td>${p.proveedor} + ${p.recargo} USDT</td><td>${Number.isFinite(p.costoAnterior) ? formatearPrecio(p.costoAnterior) : 'Sin costo'}</td><td><strong>${formatearPrecio(p.costo)}</strong></td><td>${formatearPrecio(p.minorista)}</td></tr>`).join('');
         const omitidos = plan.omitidos.slice(0, 8).map(p => `<li>${escaparHTML(p.nombre)}: ${escaparHTML(p.motivo)}</li>`).join('');
         previewSoloDolarMireka.innerHTML = `<strong>Vista previa · ${plan.planes.length} productos listos</strong>
-            <p>Solo se cambia el dólar de costo a $${plan.nuevoDolar.toLocaleString('es-AR')}. Cada perfume conserva sus USDT de proveedor y recargo. Se actualizan costo y minorista con redondeo de $500; las cuatro listas se calculan desde el nuevo costo y sus porcentajes guardados.</p>
+            <p>Solo se cambia el dólar de costo a $${plan.nuevoDolar.toLocaleString('es-AR')}. Cada perfume conserva sus USDT de proveedor y recargo. Se actualizan costo y minorista con redondeo de $100; las cuatro listas se calculan desde el nuevo costo y sus porcentajes guardados.</p>
             <div class="mireka-preview-tabla"><table><thead><tr><th>Perfume</th><th>Proveedor + recargo</th><th>Costo anterior</th><th>Nuevo costo</th><th>Minorista nuevo</th></tr></thead><tbody>${muestra}</tbody></table></div>
             ${plan.planes.length > 10 ? `<small>Mostrando 10 de ${plan.planes.length} productos listos.</small>` : ''}
             ${plan.omitidos.length ? `<p class="mireka-error">${plan.omitidos.length} sin datos suficientes: se omitirán sin cambios.</p><ul>${omitidos}</ul>` : ''}`;
@@ -40603,7 +40590,7 @@ function construirPlanInsumosMasivosMireka() {
         };
         const minoristaMarkup = porcentaje('markup_minorista');
         const mayoristaMarkup = porcentaje('markup_mayorista');
-        const redondear = n => Math.ceil(n / 500) * 500;
+        const redondear = n => Math.ceil(n / 100) * 100;
         const minoristaNuevo = minoristaMarkup == null ? (p.precio_minorista ?? null)
             : redondear(costoNuevo * (1 + minoristaMarkup / 100));
         const mayoristaNuevo = mayoristaMarkup == null ? (p.precio_mayorista ?? null)

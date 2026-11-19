@@ -102,7 +102,7 @@ function mirekaFaltanCotizaciones() {
 // arriba a $500. Se aplica antes de cargar el carrito, NO solo en pantalla.
 function mirekaRedondearDecant(precio) {
     const n = Number(precio);
-    return Number.isFinite(n) && n > 0 ? Math.ceil(n / 500) * 500 : precio;
+    return Number.isFinite(n) && n > 0 ? Math.ceil(n / 100) * 100 : precio;
 }
 
 async function mirekaCargarPreciosPublicos() {
@@ -1943,8 +1943,8 @@ function obtenerPrecioListaDesdeEfectivo(precioEfectivo, categoria = '') {
     const precio = Number(precioEfectivo);
     if (!Number.isFinite(precio) || precio <= 0) return 0;
     const precioLista = precio / (1 - DESCUENTO_EFECTIVO_TRANSFERENCIA);
-    // Redondear el importe de Mercado Pago en decants también a $500.
-    return categoria === 'decants' ? Math.ceil(precioLista / 500) * 500 : Math.round(precioLista);
+    // Redondeo consistente con el checkout: todo precio de lista sube a la próxima centena.
+    return Math.ceil(precioLista / 100) * 100;
 }
 
 function carritoTieneMayorista() {
@@ -1967,7 +1967,7 @@ function mirekaEfectivoVigente(producto) {
     const base = Number(producto?.precioMinorista) || 0;
     const promo = Number(producto?.precioOfertaMinorista);
     const valida = producto?.destacadoOferta === true && Number.isFinite(promo) && promo > 0 && promo < base;
-    return mirekaModoCompra === 'minorista' && valida ? promo : base;
+    return mirekaRedondearDecant(mirekaModoCompra === 'minorista' && valida ? promo : base);
 }
 // Dos tipos de oferta: rebaja adicional o descuento real por medio de pago.
 // La segunda no altera el precio de efectivo ni aplica una rebaja doble.
@@ -4950,9 +4950,10 @@ async function iniciarAplicacion() {
         ...productosSoloSupabase
     ];
 
-    // Se calcula una sola vez, para que fichas, carrito y navegación coincidan.
+    // Se calcula una sola vez para todas las categorías y pantallas.
+    // Los precios de venta se redondean hacia arriba cada $100; las ofertas siguen con su valor guardado.
     catalogoActualizado.forEach(producto => {
-        if (producto.categoria === 'decants') {
+        if (['decants','maison-30ml','perfumes-grandes'].includes(producto.categoria)) {
             producto.precioMinorista = mirekaRedondearDecant(producto.precioMinorista);
         }
     });

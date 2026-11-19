@@ -42,7 +42,7 @@
     };
     const efectivo = (costo, markup) => {
         if (costo === null || markup === null || !Number.isFinite(costo) || !Number.isFinite(markup)) return null;
-        return Math.ceil((costo * (1 + markup / 100) - 1e-7) / 500) * 500;
+        return Math.ceil((costo * (1 + markup / 100) - 1e-7) / 100) * 100;
     };
     const estado = (msj, error = false) => {
         const nodo = $('listas-mireka-estado');
@@ -208,11 +208,11 @@
                     estadoModal.textContent = 'Para modificar el precio necesitás un costo mayor a cero y un precio no menor que el costo.';
                     return;
                 }
-                const precioRedondeado = Math.ceil(precio / 500) * 500;
+                const precioRedondeado = Math.ceil(precio / 100) * 100;
                 const markup = ((precioRedondeado / costo) - 1) * 100;
                 porcentajeCampo.value = Number(markup.toFixed(9));
                 campo.value = precioRedondeado;
-                estadoModal.textContent = 'Los precios de estas listas se redondean hacia arriba cada $500.';
+                estadoModal.textContent = 'Los precios de estas listas se redondean hacia arriba cada $100.';
             }
         });
     }
@@ -238,7 +238,7 @@
                 return `<div class="mireka-editor-lista"><strong>Lista ${n} · desde ${umbral} unidades</strong>
                     <div class="mireka-editor-lista-campos">
                         <label>Markup (%)<input type="number" id="mireka-editor-markup-${n}" data-mireka-numero="${n}" data-mireka-tipo="markup" min="0" max="1000" step="any" value="${valor == null ? '' : Number(valor)}" placeholder="${general == null ? 'Sin configurar' : general + '% general'}"></label>
-                        <label>Precio ($)<input type="number" id="mireka-editor-precio-${n}" data-mireka-numero="${n}" data-mireka-tipo="precio" min="0" step="500" value="${precio == null ? '' : precio}" placeholder="Sin precio"></label>
+                        <label>Precio ($)<input type="number" id="mireka-editor-precio-${n}" data-mireka-numero="${n}" data-mireka-tipo="precio" min="0" step="100" value="${precio == null ? '' : precio}" placeholder="Sin precio"></label>
                     </div><small id="mireka-editor-ayuda-${n}"></small></div>`;
             }).join('');
             modalEdicionLista = true;
