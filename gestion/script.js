@@ -38207,6 +38207,7 @@ if (!modalEdicionMasivaGestion) {
                             <option value="dolar">Cambiar cotización USDT</option>
                             <option value="listas">Modificar las cuatro listas mayoristas</option>
                             <option value="otros">Stock y precio minorista</option>
+                            <option value="insumos-decants">Actualizar insumos por unidad de decants</option>
                         </select>
                         <p id="mireka-modo-descripcion" class="mireka-modo-descripcion"></p>
                     </div>
@@ -38359,6 +38360,21 @@ if (!modalEdicionMasivaGestion) {
                         </div>
                     </div>
 
+                    <!-- Mireka: edición masiva aislada de insumos de decants. -->
+                    <div class="edicion-masiva-seccion edicion-masiva-seccion-costo oculto" id="mireka-insumos-masivos-bloque">
+                        <div class="edicion-masiva-seccion-titulo">
+                            <strong>Insumos por unidad · Decants 5 ml</strong>
+                            <span>Solo los decants seleccionados</span>
+                        </div>
+                        <div class="campo">
+                            <label for="mireka-insumos-masivos-valor">Nuevo costo de insumos por decant ($)</label>
+                            <input type="number" id="mireka-insumos-masivos-valor" min="0" max="1000000" step="0.01" inputmode="decimal" placeholder="Ej: 2300">
+                            <small>Reemplaza únicamente el costo de insumos por unidad de los decants marcados. Conserva el perfume base, sus ml, el tester y los márgenes configurados.</small>
+                        </div>
+                        <div class="mireka-modo-aviso">Se recalculan el costo total y los precios minorista y mayorista, redondeados hacia arriba a $500. Las cuatro listas mayoristas se actualizan automáticamente desde el nuevo costo, sin cambiar sus porcentajes.</div>
+                        <div id="mireka-insumos-masivos-vista" aria-live="polite" class="mireka-preview-dolar"></div>
+                    </div>
+
                     <div class="edicion-masiva-precios-separados">
 
                         <div class="edicion-masiva-seccion edicion-masiva-seccion-precio mireka-legacy-mayorista-masivo">
@@ -38509,6 +38525,10 @@ const costoUsdtBloqueEdicionMasivaGestion =
 
 const costoDecantBloqueEdicionMasivaGestion =
     document.getElementById("edicion-masiva-costo-decant-bloque");
+
+const bloqueInsumosMasivosMireka = document.getElementById("mireka-insumos-masivos-bloque");
+const campoInsumosMasivosMireka = document.getElementById("mireka-insumos-masivos-valor");
+const vistaInsumosMasivosMireka = document.getElementById("mireka-insumos-masivos-vista");
 
 const costoManualEdicionMasivaGestion =
     document.getElementById("edicion-masiva-costo-manual");
@@ -39211,6 +39231,7 @@ function limpiarCamposEdicionMasivaGestion() {
     [
         stockEdicionMasivaGestion,
         costoManualEdicionMasivaGestion,
+        campoInsumosMasivosMireka,
         proveedorUsdtEdicionMasivaGestion,
         recargoUsdtEdicionMasivaGestion,
         dolarCostoEdicionMasivaGestion,
@@ -40374,6 +40395,10 @@ formEdicionMasivaGestion?.addEventListener(
             await guardarSoloDolarMasivoMireka();
             return;
         }
+        if (operacion === 'insumos-decants') {
+            await guardarInsumosMasivosMireka();
+            return;
+        }
         if (operacion === 'listas') {
             if (!window.MirekaListasGestion?.guardarMasivo) {
                 mostrarMensaje(mensajeEdicionMasivaGestion, 'No se cargó el módulo de listas. Actualizá la página e intentá nuevamente.');
@@ -40536,19 +40561,136 @@ formEdicionMasivaGestion?.addEventListener(
 
 
 // =========================================================
+// MIREKA: INSUMOS DE DECANTS POR LOTE, SIN MEZCLAR STOCK NI PRECIOS MANUALES
+// =========================================================
+function construirPlanInsumosMasivosMireka() {
+    if (!categoriaMasivaEsDecantGestion()) {
+        throw new Error('Elegí la categoría Decants árabes.');
+    }
+    const texto = campoInsumosMasivosMireka?.value.trim() ?? '';
+    if (texto === '') throw new Error('Ingresá el costo nuevo de insumos por unidad.');
+    const insumos = Number(texto);
+    if (!Number.isFinite(insumos) || insumos < 0 || insumos > 1000000) {
+        throw new Error('El costo de insumos debe estar entre $0 y $1.000.000.');
+    }
+    const ids = [...productosSeleccionadosMasivoGestion];
+    if (!ids.length) throw new Error('Marcá al menos un decant.');
+    const porId = new Map(productosGestion.map(p => [Number(p.id), p]));
+    const productos = ids.map(id => porId.get(Number(id)));
+    if (productos.some(p => !p || p.retirado === true || p.categoria_mostrar !== 'decants')) {
+        throw new Error('La selección contiene productos que no son decants disponibles.');
+    }
+    const planes = productos.map(p => {
+        const base = porId.get(Number(p.producto_base_id));
+        const costoBase = base?.costo_actual == null ? NaN : Number(base.costo_actual);
+        const mlBase = Number(p.ml_perfume_base);
+        const mlTester = Number(p.ml_tester);
+        const mlDecant = Number(p.ml_decant);
+        const redondeo = Number(p.redondeo_costo_decant);
+        const vendibles = mlBase > mlTester && mlTester >= 0 && mlDecant > 0
+            ? Math.floor((mlBase - mlTester) / mlDecant) : 0;
+        const nombre = p.nombre_mostrar || p.nombre || p.slug || String(p.id);
+        if (!Number.isFinite(costoBase) || costoBase < 0 || vendibles <= 0 || !Number.isFinite(redondeo) || redondeo <= 0) {
+            throw new Error(nombre + ': falta costo del perfume base o datos válidos de ml y redondeo.');
+        }
+        const costoNuevo = Math.ceil((costoBase / vendibles + insumos) / redondeo) * redondeo;
+        const porcentaje = campo => {
+            const v = p[campo];
+            if (v === undefined || v === null || String(v).trim() === '') return null;
+            const n = Number(v);
+            if (!Number.isFinite(n) || n < 0) throw new Error(nombre + ': revisá el porcentaje configurado.');
+            return n;
+        };
+        const minoristaMarkup = porcentaje('markup_minorista');
+        const mayoristaMarkup = porcentaje('markup_mayorista');
+        const redondear = n => Math.ceil(n / 500) * 500;
+        const minoristaNuevo = minoristaMarkup == null ? (p.precio_minorista ?? null)
+            : redondear(costoNuevo * (1 + minoristaMarkup / 100));
+        const mayoristaNuevo = mayoristaMarkup == null ? (p.precio_mayorista ?? null)
+            : redondear(costoNuevo * (1 + mayoristaMarkup / 100));
+        return {id:Number(p.id), nombre, costoAnterior:p.costo_actual, costoNuevo,
+            insumosAnterior:p.costo_insumos_decant, insumos,
+            minoristaAnterior:p.precio_minorista, minoristaNuevo,
+            mayoristaNuevo, sinPrecios:minoristaMarkup === null || mayoristaMarkup === null};
+    });
+    return {ids, insumos, planes};
+}
+
+function renderizarVistaInsumosMasivosMireka() {
+    if (!vistaInsumosMasivosMireka || !modoOperacionMasivaMireka || modoOperacionMasivaMireka.value !== 'insumos-decants') return;
+    try {
+        const plan = construirPlanInsumosMasivosMireka();
+        const rows = plan.planes.slice(0, 8).map(p => `<tr>
+            <td>${escaparHTML(p.nombre)}</td>
+            <td>${p.insumosAnterior == null ? '—' : formatearPrecio(p.insumosAnterior)}</td>
+            <td>${p.costoAnterior == null ? '—' : formatearPrecio(p.costoAnterior)}</td>
+            <td><strong>${formatearPrecio(p.costoNuevo)}</strong></td>
+            <td>${p.minoristaNuevo == null ? 'Sin configurar' : formatearPrecio(p.minoristaNuevo)}</td>
+        </tr>`).join('');
+        const sinPrecio = plan.planes.filter(p => p.sinPrecios).length;
+        vistaInsumosMasivosMireka.innerHTML = `<strong>Vista previa · ${plan.planes.length} decants</strong>
+            <p>Insumos nuevos: <strong>${formatearPrecio(plan.insumos)} por decant</strong>. No modifica el stock ni las ofertas.</p>
+            <div class="mireka-preview-tabla"><table><thead><tr><th>Decant</th><th>Insumos anteriores</th><th>Costo anterior</th><th>Costo nuevo</th><th>Minorista nuevo</th></tr></thead><tbody>${rows}</tbody></table></div>
+            ${plan.planes.length > 8 ? `<small>Mostrando 8 de ${plan.planes.length} seleccionados.</small>` : ''}
+            ${sinPrecio ? `<p>${sinPrecio} decants sin margen configurado conservarán su precio sin crear uno nuevo.</p>` : ''}`;
+    } catch (error) {
+        vistaInsumosMasivosMireka.textContent = error.message;
+    }
+}
+
+async function guardarInsumosMasivosMireka() {
+    let plan;
+    try { plan = construirPlanInsumosMasivosMireka(); }
+    catch (error) { mostrarMensaje(mensajeEdicionMasivaGestion, error.message); return; }
+    const ejemplos = plan.planes.slice(0,4).map(p => `• ${p.nombre}: costo ${formatearPrecio(p.costoAnterior)} → ${formatearPrecio(p.costoNuevo)}`).join('\n');
+    const confirmado = window.confirm(`¿Actualizar los insumos de ${plan.planes.length} decants a ${formatearPrecio(plan.insumos)} por unidad?\n\n${ejemplos}\n\nSe recalcularán costo, minorista y mayorista con los márgenes de cada producto. No cambia el stock ni las ofertas.`);
+    if (!confirmado) return;
+    botonGuardarEdicionMasivaGestion.disabled = true;
+    botonGuardarEdicionMasivaGestion.textContent = 'Guardando los decants...';
+    try {
+        const {data, error} = await supabaseClient.rpc('mireka_actualizar_insumos_decants_masivo', {
+            p_producto_ids:plan.ids.map(Number), p_costo_insumos:plan.insumos
+        });
+        if (error) throw new Error(error.message || 'No se pudieron guardar los insumos.');
+        if (!Array.isArray(data) || data.length !== plan.ids.length) {
+            throw new Error('No se pudo comprobar la cantidad actualizada. Recargá antes de volver a guardar.');
+        }
+        await cargarProductosGestion();
+        renderizarStock();
+        cerrarEdicionMasivaGestion();
+        mostrarMensaje(mensajeStockGestion, `${data.length} decants actualizados: insumos ${formatearPrecio(plan.insumos)} por unidad. Costos y precios recalculados.`, 'exito');
+    } catch (error) {
+        try { await cargarProductosGestion(); renderizarStock(); } catch (_) {}
+        mostrarMensaje(mensajeEdicionMasivaGestion, `No se pudo completar la operación: ${error.message || 'error de conexión'}. Revisá el stock antes de intentar nuevamente.`);
+    } finally {
+        botonGuardarEdicionMasivaGestion.disabled = false;
+        botonGuardarEdicionMasivaGestion.textContent = 'Actualizar insumos de decants';
+    }
+}
+
+campoInsumosMasivosMireka?.addEventListener('input', renderizarVistaInsumosMasivosMireka);
+productosEdicionMasivaGestion?.addEventListener('change', () => setTimeout(renderizarVistaInsumosMasivosMireka, 0));
+botonMarcarTodosEdicionMasivaGestion?.addEventListener('click', () => setTimeout(renderizarVistaInsumosMasivosMireka, 0));
+botonDesmarcarTodosEdicionMasivaGestion?.addEventListener('click', () => setTimeout(renderizarVistaInsumosMasivosMireka, 0));
+
+// =========================================================
 // MIREKA: UNA SOLA OPERACIÓN POR EDICIÓN MASIVA
 // =========================================================
 const modoOperacionMasivaMireka = document.getElementById('mireka-modo-operacion');
 function actualizarInterfazMasivaMireka() {
     if (!modoOperacionMasivaMireka) return;
     const usaUsdt = categoriaMasivaUsaUsdtGestion();
-    const modo = usaUsdt ? modoOperacionMasivaMireka.value : 'otros';
-    if (!usaUsdt) modoOperacionMasivaMireka.value = 'otros';
+    const esDecant = categoriaMasivaEsDecantGestion();
+    if (!usaUsdt && !(esDecant && modoOperacionMasivaMireka.value === 'insumos-decants')) modoOperacionMasivaMireka.value = 'otros';
+    if (usaUsdt && modoOperacionMasivaMireka.value === 'insumos-decants') modoOperacionMasivaMireka.value = 'dolar';
+    const modo = modoOperacionMasivaMireka.value;
     for (const opt of modoOperacionMasivaMireka.options) {
         if (opt.value === 'dolar' || opt.value === 'listas') opt.disabled = !usaUsdt;
+        if (opt.value === 'insumos-decants') opt.disabled = !esDecant;
     }
     const esDolar = usaUsdt && modo === 'dolar';
     const esListas = usaUsdt && modo === 'listas';
+    const esInsumos = esDecant && modo === 'insumos-decants';
     const esOtros = modo === 'otros';
     if (soloDolarMasivoMireka) soloDolarMasivoMireka.checked = esDolar;
     cambiarModoSoloDolarMireka(esDolar);
@@ -40556,7 +40698,8 @@ function actualizarInterfazMasivaMireka() {
     toggle(document.querySelector('#edicion-masiva-datos-bloque .edicion-masiva-seccion-stock'), esOtros);
     toggle(costoUsdtBloqueEdicionMasivaGestion, esDolar);
     toggle(costoManualBloqueEdicionMasivaGestion, false);
-    toggle(costoDecantBloqueEdicionMasivaGestion, esOtros && categoriaMasivaEsDecantGestion());
+    toggle(costoDecantBloqueEdicionMasivaGestion, esOtros && esDecant);
+    toggle(bloqueInsumosMasivosMireka, esInsumos);
     toggle(document.querySelector('#edicion-masiva-datos-bloque .edicion-masiva-precios-separados'), esOtros);
     // Nunca mostrar el mayorista antiguo para perfumes con las cuatro listas.
     toggle(document.querySelector('.mireka-legacy-mayorista-masivo'), esOtros && !usaUsdt);
@@ -40570,20 +40713,25 @@ function actualizarInterfazMasivaMireka() {
         ? 'Ingresá una cotización nueva. Cada perfume conserva su costo de proveedor y recargo. Revisá la vista previa antes de guardar.'
         : esListas
             ? 'Editá solo los porcentajes de Lista 1, 2, 3 o 4 de los productos seleccionados. No cambia el stock ni el minorista.'
+            : esInsumos
+                ? 'Actualizá el insumo por unidad de los decants seleccionados. Se recalculan costos y precios conservando sus márgenes.'
             : usaUsdt
                 ? 'Cambiá el stock o el precio minorista. Para el costo de un perfume específico, usá «Editar» en Ver stock.'
                 : 'Cambiá el stock o los precios de los productos seleccionados. Los costos especiales de decants se conservan.';
     if (botonGuardarEdicionMasivaGestion && !botonGuardarEdicionMasivaGestion.disabled) {
         botonGuardarEdicionMasivaGestion.textContent = esDolar
             ? 'Actualizar dólar de los seleccionados'
-            : esListas ? 'Guardar listas de los seleccionados' : 'Aplicar a seleccionados';
+            : esListas ? 'Guardar listas de los seleccionados'
+            : esInsumos ? 'Actualizar insumos de decants'
+            : 'Aplicar a seleccionados';
     }
     // El módulo de listas se carga después de script.js; se actualiza desde su callback.
     window.MirekaListasGestion?.actualizarMasivo?.();
+    if (esInsumos) renderizarVistaInsumosMasivosMireka();
 }
 modoOperacionMasivaMireka?.addEventListener('change', actualizarInterfazMasivaMireka);
 categoriaEdicionMasivaGestion?.addEventListener('change', () => {
-    if (modoOperacionMasivaMireka) modoOperacionMasivaMireka.value = categoriaMasivaUsaUsdtGestion() ? 'dolar' : 'otros';
+    if (modoOperacionMasivaMireka) modoOperacionMasivaMireka.value = categoriaMasivaUsaUsdtGestion() ? 'dolar' : (categoriaMasivaEsDecantGestion() ? 'insumos-decants' : 'otros');
     actualizarInterfazMasivaMireka();
 });
 botonEdicionMasivaStockGestion?.addEventListener('click', () => {
