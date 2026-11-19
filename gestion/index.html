@@ -231,7 +231,7 @@
                 <a href="secciones-web.html" class="mireka-gestion-enlace-web">✦ Secciones de la web</a>
 
 
-                <details class="gestion-menu-item">
+                <details name="mireka-menu-principal" class="gestion-menu-item">
 
                     <summary>
                         Ventas
@@ -269,7 +269,7 @@
                 </details>
 
 
-                <details class="gestion-menu-item">
+                <details name="mireka-menu-principal" class="gestion-menu-item">
 
                     <summary>
                         Stock
@@ -311,7 +311,7 @@
                 </details>
 
 
-                <details class="gestion-menu-item">
+                <details name="mireka-menu-principal" class="gestion-menu-item">
 
                     <summary>
                         Presupuestos
@@ -341,7 +341,7 @@
                 </details>
 
 
-                <details class="gestion-menu-item">
+                <details name="mireka-menu-principal" class="gestion-menu-item">
 
                     <summary>
                         Clientes
@@ -371,7 +371,7 @@
                 </details>
 
 
-                <details class="gestion-menu-item">
+                <details name="mireka-menu-principal" class="gestion-menu-item">
 
                     <summary>
                         Finanzas
@@ -2437,6 +2437,26 @@
     <script src="script.js"></script>
     <script src="listas.js"></script>
     <script src="etiquetas.js"></script>
+
+
+    <!-- Solo un menú desplegable abierto a la vez. No modifica otras pantallas ni formularios. -->
+    <script>
+        (() => {
+            const menus = Array.from(
+                document.querySelectorAll('.gestion-menu-principal details.gestion-menu-item')
+            );
+            menus.forEach((menuActual) => {
+                menuActual.addEventListener('toggle', () => {
+                    if (!menuActual.open) return;
+                    menus.forEach((otroMenu) => {
+                        if (otroMenu !== menuActual && otroMenu.open) {
+                            otroMenu.open = false;
+                        }
+                    });
+                });
+            });
+        })();
+    </script>
 
 </body>
 
