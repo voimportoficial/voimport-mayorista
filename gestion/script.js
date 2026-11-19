@@ -940,10 +940,10 @@ const CATEGORIAS_STOCK = [
             "Decants árabes",
 
         minimoMayorista:
-            0,
+            3,
 
         tieneMayorista:
-            false,
+            true,
 
         coincide:
             (producto) =>
@@ -953,6 +953,76 @@ const CATEGORIAS_STOCK = [
 
 ];
 
+
+// ========================================
+// LISTAS MAYORISTAS OFICIALES DE LA WEB
+// Gestion aplica exactamente las Listas 1/2/3/4 de Supabase.
+// No usar productos.precio_mayorista: es otro precio.
+// ========================================
+const mirekaPreciosListasVentas = new Map();
+let mirekaListasVentasDisponibles = false;
+
+async function cargarListasMayoristasVentasGestion() {
+    try {
+        const { data, error } = await supabaseClient.rpc("mireka_precios_publicos");
+        if (error) throw error;
+        if (!Array.isArray(data)) throw new Error("La consulta no devolvio las listas mayoristas.");
+
+        const preciosNuevos = new Map();
+        data.forEach((fila) => {
+            if (!fila?.slug) return;
+            preciosNuevos.set(String(fila.slug), {
+                1: Number(fila.precio_lista_1),
+                2: Number(fila.precio_lista_2),
+                3: Number(fila.precio_lista_3),
+                4: Number(fila.precio_lista_4)
+            });
+        });
+        mirekaPreciosListasVentas.clear();
+        for (const [slug, precios] of preciosNuevos) {
+            mirekaPreciosListasVentas.set(slug, precios);
+        }
+        mirekaListasVentasDisponibles = true;
+        return true;
+    } catch (error) {
+        console.error("No se pudieron cargar las listas mayoristas de Gestion:", error);
+        mirekaListasVentasDisponibles = false;
+        mirekaPreciosListasVentas.clear();
+        return false;
+    }
+}
+
+function obtenerNivelMayoristaVentasGestion(cantidadCategoria) {
+    const cantidad = Number(cantidadCategoria) || 0;
+    if (cantidad >= 30) return 4;
+    if (cantidad >= 15) return 3;
+    if (cantidad >= 6) return 2;
+    if (cantidad >= 3) return 1;
+    return 0;
+}
+
+function obtenerPrecioListaMayoristaVentasGestion(producto, nivel) {
+    if (nivel <= 0) return Number(producto?.precio_minorista) || 0;
+    const lista = mirekaPreciosListasVentas.get(String(producto?.slug || ""));
+    const importe = Number(lista?.[nivel]);
+    return Number.isFinite(importe) && importe > 0 ? importe : null;
+}
+
+function verificarCotizacionMayoristaVentasGestion() {
+    for (const item of itemsVentaActual) {
+        if (item.tipo_precio === "personalizado") continue;
+        const categoria = obtenerCategoriaPorClave(item.categoria_clave);
+        if (!categoria?.tieneMayorista) continue;
+        const cantidad = obtenerCantidadCategoriaVenta(categoria.clave);
+        const nivel = obtenerNivelMayoristaVentasGestion(cantidad);
+        if (!nivel) continue;
+        const producto = productosGestion.find(p => Number(p.id) === Number(item.producto_id));
+        if (!producto || obtenerPrecioListaMayoristaVentasGestion(producto, nivel) === null) {
+            return `No se pudo cargar la Lista ${nivel} de ${categoria.nombre}. Recarga Gestion para evitar registrar precios incorrectos.`;
+        }
+    }
+    return null;
+}
 
 // ========================================
 // PRODUCTOS LOCALES
@@ -1889,64 +1959,20 @@ function obtenerCantidadCategoriaVenta(
 // PRECIO AUTOMÁTICO
 // ========================================
 
-function obtenerPrecioAutomaticoProducto(
-    producto,
-    cantidadExtra = 0
-) {
+function obtenerPrecioAutomaticoProducto(producto, cantidadExtra = 0) {
+    const categoria = obtenerCategoriaProducto(producto);
+    const minorista = Number(producto?.precio_minorista) || 0;
+    if (!categoria?.tieneMayorista) return minorista;
 
-    const categoria =
-        obtenerCategoriaProducto(
-            producto
-        );
+    const cantidadFinal = obtenerCantidadCategoriaVenta(categoria.clave) +
+        (Number(cantidadExtra) || 0);
+    const nivel = obtenerNivelMayoristaVentasGestion(cantidadFinal);
+    if (nivel === 0) return minorista;
 
-
-    if (!categoria) {
-
-        return Number(
-            producto.precio_minorista
-        ) || 0;
-
-    }
-
-
-    if (!categoria.tieneMayorista) {
-
-        return Number(
-            producto.precio_minorista
-        ) || 0;
-
-    }
-
-
-    const cantidadActual =
-        obtenerCantidadCategoriaVenta(
-            categoria.clave
-        );
-
-
-    const cantidadFinal =
-        cantidadActual +
-        cantidadExtra;
-
-
-    if (
-        cantidadFinal >=
-        categoria.minimoMayorista
-    ) {
-
-        return Number(
-            producto.precio_mayorista
-        ) || 0;
-
-    }
-
-
-    return Number(
-        producto.precio_minorista
-    ) || 0;
-
+    // Si la cotizacion se esta cargando mostramos minorista provisionalmente.
+    // Nunca se confirma la venta sin precio mayorista valido.
+    return obtenerPrecioListaMayoristaVentasGestion(producto, nivel) ?? minorista;
 }
-
 
 // ========================================
 // DESCUENTOS
@@ -2425,125 +2451,44 @@ ventaDescuentoGeneralValor?.addEventListener(
 // ========================================
 
 function recalcularPreciosAutomaticos() {
+    const cantidadesCategoria = new Map();
+    for (const categoria of CATEGORIAS_STOCK) {
+        cantidadesCategoria.set(
+            categoria.clave,
+            obtenerCantidadCategoriaVenta(categoria.clave)
+        );
+    }
 
-    CATEGORIAS_STOCK.forEach(
-        (categoria) => {
-
-            if (
-                !categoria.tieneMayorista
-            ) {
-                return;
-            }
-
-            const cantidadCategoria =
-                obtenerCantidadCategoriaVenta(
-                    categoria.clave
-                );
-
-            const usaMayorista =
-                cantidadCategoria >=
-                categoria.minimoMayorista;
-
-            itemsVentaActual.forEach(
-                (item) => {
-
-                    if (
-                        item.categoria_clave !==
-                        categoria.clave
-                    ) {
-                        return;
-                    }
-
-                    if (
-                        item.tipo_precio ===
-                        "personalizado"
-                    ) {
-                        aplicarDescuentoItemGestion(
-                            item
-                        );
-                        return;
-                    }
-
-                    const producto =
-                        productosGestion.find(
-                            (producto) =>
-                                Number(producto.id) ===
-                                Number(item.producto_id)
-                        );
-
-                    if (!producto) {
-                        return;
-                    }
-
-                    item.precio_unitario_original =
-                        usaMayorista
-                            ? Number(
-                                producto.precio_mayorista
-                            ) || 0
-                            : Number(
-                                producto.precio_minorista
-                            ) || 0;
-
-                    item.precio_aplicado =
-                        usaMayorista
-                            ? "Mayorista"
-                            : "Minorista";
-
-                    aplicarDescuentoItemGestion(
-                        item
-                    );
-
-                }
-            );
-
+    itemsVentaActual.forEach((item) => {
+        if (item.tipo_precio === "personalizado") {
+            aplicarDescuentoItemGestion(item);
+            return;
         }
-    );
-
-    itemsVentaActual.forEach(
-        (item) => {
-
-            const categoria =
-                obtenerCategoriaPorClave(
-                    item.categoria_clave
-                );
-
-            if (
-                categoria?.tieneMayorista ===
-                false &&
-                item.tipo_precio !==
-                "personalizado"
-            ) {
-
-                const producto =
-                    productosGestion.find(
-                        (producto) =>
-                            Number(producto.id) ===
-                            Number(item.producto_id)
-                    );
-
-                if (!producto) {
-                    return;
-                }
-
-                item.precio_unitario_original =
-                    Number(
-                        producto.precio_minorista
-                    ) || 0;
-
-                item.precio_aplicado =
-                    "Precio único";
-
-            }
-
-            aplicarDescuentoItemGestion(
-                item
-            );
-
+        const producto = productosGestion.find(
+            (p) => Number(p.id) === Number(item.producto_id)
+        );
+        if (!producto) {
+            aplicarDescuentoItemGestion(item);
+            return;
         }
-    );
+        const categoria = obtenerCategoriaPorClave(item.categoria_clave);
+        const cantidad = cantidadesCategoria.get(item.categoria_clave) || 0;
+        const nivel = categoria?.tieneMayorista
+            ? obtenerNivelMayoristaVentasGestion(cantidad)
+            : 0;
 
+        let precioOriginal = Number(producto.precio_minorista) || 0;
+        if (nivel > 0) {
+            const cotizado = obtenerPrecioListaMayoristaVentasGestion(producto, nivel);
+            if (cotizado !== null) precioOriginal = cotizado;
+        }
+        item.precio_unitario_original = precioOriginal;
+        item.precio_aplicado = nivel > 0
+            ? `Mayorista · Lista ${nivel} (${cantidad} u.)${mirekaListasVentasDisponibles ? "" : " · Cargando"}`
+            : "Minorista";
+        aplicarDescuentoItemGestion(item);
+    });
 }
-
 
 // ========================================
 // TOTAL DE VENTA
@@ -3928,6 +3873,12 @@ botonConfirmarVenta?.addEventListener(
 
         renderizarItemsVenta();
 
+
+        const errorMayorista = verificarCotizacionMayoristaVentasGestion();
+        if (errorMayorista) {
+            mostrarMensaje(mensajeConfirmarVenta, errorMayorista);
+            return;
+        }
 
         const total =
             obtenerTotalVentaActual();
@@ -8245,6 +8196,12 @@ botonConfirmarVenta?.addEventListener(
 
         renderizarItemsVenta();
 
+
+        const errorMayorista = verificarCotizacionMayoristaVentasGestion();
+        if (errorMayorista) {
+            mostrarMensaje(mensajeConfirmarVenta, errorMayorista);
+            return;
+        }
 
         const totalNuevo =
             obtenerTotalVentaActual();
@@ -13885,6 +13842,13 @@ botonConfirmarVenta?.addEventListener(
                 : null;
 
 
+        recalcularPreciosAutomaticos();
+        const errorMayorista = verificarCotizacionMayoristaVentasGestion();
+        if (errorMayorista) {
+            mostrarMensaje(mensajeConfirmarVenta, errorMayorista);
+            return;
+        }
+
         const itemsParaSupabase =
                 prepararItemsDescuentoSupabaseGestion();
 
@@ -15768,6 +15732,9 @@ async function cargarProductosGestion() {
                 }
             );
 
+
+    // Refrescar las mismas cuatro listas que usa la web antes de vender.
+    await cargarListasMayoristasVentasGestion();
 
     actualizarCapitalStockGestion();
 
