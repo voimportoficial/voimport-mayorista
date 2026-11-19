@@ -40728,9 +40728,10 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
 
 // =========================================================
 // MIREKA | ESTADÍSTICAS Y GANANCIAS
-// Solo lectura. Calcula resultados desde ventas, costos
-// históricos por ítem, gastos e ingresos extra registrados.
-// No incluye retiros, aportes, pedidos sin confirmar ni stock.
+// Solo lectura. Las ventas suman solamente cuando están cobradas
+// completamente; el resultado se atribuye a la fecha del último
+// pago necesario para completar el cobro. No cuenta deudas ni pagos parciales.
+// Los costos históricos se descuentan una sola vez al completar el cobro.
 // =========================================================
 (() => {
     'use strict';
@@ -40739,6 +40740,10 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
     const acceso = document.getElementById('ver-estadisticas-ganancias');
     const inicio = document.getElementById('mireka-ganancia-hoy-inicio');
     if (!vista || !acceso || !inicio) return;
+    const nota = vista.querySelector('.mireka-ganancias-nota');
+    if (nota) {
+        nota.textContent = 'Estadísticas por fecha de cobro: una venta se incluye solamente cuando está completamente cobrada, aunque se haya registrado antes. Los pagos parciales y las ventas pendientes no suman todavía. Ganancia neta = ventas cobradas − costo histórico de la mercadería − gastos del negocio. Los ingresos extra se muestran por separado. Los retiros y aportes no afectan la ganancia.';
+    }
 
     const hoyClave = () => {
         const piezas = new Intl.DateTimeFormat('en-US', {
@@ -40805,6 +40810,20 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
         return resultado;
     }
 
+    async function leerVentasCobradas(anio) {
+        const todos = [];
+        for (let desde = 0; ; desde += 1000) {
+            const {data, error} = await supabaseClient
+                .rpc('mireka_estadisticas_ventas_cobradas', {p_anio: anio})
+                .range(desde, desde + 999);
+            if (error) throw new Error(`No se pudieron consultar ventas cobradas: ${error.message}`);
+            const filas = Array.isArray(data) ? data : [];
+            todos.push(...filas);
+            if (filas.length < 1000) break;
+        }
+        return todos;
+    }
+
     async function leerItems(ids) {
         const todos = [];
         for (let i = 0; i < ids.length; i += 70) {
@@ -40827,7 +40846,7 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
         const cacheado = cache.get(anio);
         if (!forzar && cacheado && Date.now() - cacheado.cargado < 45000) return cacheado;
         const [ventas, gastos, extras] = await Promise.all([
-            leerPaginado('ventas','id,total,fecha_emision,anulada','fecha_emision',anio,q => q.eq('anulada',false)),
+            leerVentasCobradas(anio),
             leerPaginado('gastos','monto,fecha_gasto,anulado','fecha_gasto',anio,q => q.eq('anulado',false)),
             leerPaginado('ingresos_adicionales','monto,fecha_ingreso,tipo,anulado','fecha_ingreso',anio,q => q.eq('anulado',false).eq('tipo','extra'))
         ]);
@@ -40888,7 +40907,7 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
         resumenInicio.textContent = valorGanancia(dia);
         ayudaInicio.textContent = dia.costoPendiente
             ? 'Falta el costo histórico de una o más ventas.'
-            : `${dia.ventas} ${dia.ventas === 1 ? 'venta' : 'ventas'} hoy · ${f(dia.facturacion)} facturados`;
+            : `${dia.ventas} ${dia.ventas === 1 ? 'venta cobrada' : 'ventas cobradas'} hoy · ${f(dia.facturacion)} cobrados`;
     }
     function etiquetaDia(clave) {
         const [y,m,d] = clave.split('-').map(Number);
@@ -40919,13 +40938,13 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
             : '';
         resumen.innerHTML = `
           <div class="mireka-ganancias-cards">
-            <article><span>Ganancia del ${fecha === hoy ? 'día de hoy' : etiquetaDia(fecha)}</span><strong>${valorGanancia(dia)}</strong><small>${dia.ventas} ventas · ${f(dia.facturacion)} facturados</small></article>
-            <article><span>Ganancia de ${mesTxt}</span><strong>${valorGanancia(totalMes)}</strong><small>${totalMes.ventas} ventas · ${f(totalMes.facturacion)} facturados</small></article>
-            <article><span>Ganancia del año ${anio.anio}</span><strong>${valorGanancia(totalAnio)}</strong><small>${totalAnio.ventas} ventas · ${f(totalAnio.facturacion)} facturados</small></article>
+            <article><span>Ganancia del ${fecha === hoy ? 'día de hoy' : etiquetaDia(fecha)}</span><strong>${valorGanancia(dia)}</strong><small>${dia.ventas} ventas cobradas · ${f(dia.facturacion)} cobrados</small></article>
+            <article><span>Ganancia de ${mesTxt}</span><strong>${valorGanancia(totalMes)}</strong><small>${totalMes.ventas} ventas cobradas · ${f(totalMes.facturacion)} cobrados</small></article>
+            <article><span>Ganancia del año ${anio.anio}</span><strong>${valorGanancia(totalAnio)}</strong><small>${totalAnio.ventas} ventas cobradas · ${f(totalAnio.facturacion)} cobrados</small></article>
           </div>${nota}
           <div class="mireka-ganancias-paneles">
             <article class="mireka-ganancias-panel"><h3>Detalle del ${etiquetaDia(fecha)}</h3>
-              ${fila('Facturación',f(dia.facturacion))}${fila('Costo de mercadería',dia.costoPendiente?mensajePendiente:f(dia.costo))}
+              ${fila('Ventas cobradas',f(dia.facturacion))}${fila('Costo de mercadería',dia.costoPendiente?mensajePendiente:f(dia.costo))}
               ${fila('Gastos del día',f(dia.gastos))}${fila('Ganancia neta',valorGanancia(dia))}
               ${fila('Ingresos extra (separados)',f(dia.extras))}
             </article>
@@ -40953,13 +40972,13 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
         }).join('')}</div><small>Ganancia neta de cada día. Verde: resultado positivo · Rojo: resultado negativo · Gris: sin actividad o costo pendiente.</small>`;
         const ordenados = diasOperativos.slice().sort((a,b)=>b.fecha.localeCompare(a.fecha));
         detalle.innerHTML = ordenados.length
-            ? `<div class="mireka-ganancias-tabla-wrap"><table class="mireka-ganancias-tabla"><thead><tr><th>Fecha</th><th>Ventas</th><th>Facturación</th><th>Gastos</th><th>Ganancia neta</th><th>Balance</th></tr></thead><tbody>${ordenados.map(d => {
+            ? `<div class="mireka-ganancias-tabla-wrap"><table class="mireka-ganancias-tabla"><thead><tr><th>Fecha</th><th>Ventas cobradas</th><th>Importe cobrado</th><th>Gastos</th><th>Ganancia neta</th><th>Balance</th></tr></thead><tbody>${ordenados.map(d => {
                 const valor = neta(d);
                 const balance = valor === null ? 'Costo pendiente' : promedio === null ? 'Sin comparación' : valor >= promedio ? 'Sobre el promedio' : 'Bajo el promedio';
                 return `<tr><td>${etiquetaDia(d.fecha)}</td><td>${d.ventas}</td><td>${f(d.facturacion)}</td><td>${f(d.gastos)}</td><td><strong>${valorGanancia(d)}</strong></td><td>${balance}</td></tr>`;
             }).join('')}</tbody></table></div>`
-            : '<p class="mireka-ganancias-sin-datos">No hay ventas ni gastos registrados en este mes. Se mostrarán a medida que los cargues.</p>';
-        estado.textContent = `Datos del sistema · ${mesTxt}. Se actualizan después de registrar una operación y mientras tenés Gestión abierta.`;
+            : '<p class="mireka-ganancias-sin-datos">No hay ventas completamente cobradas ni gastos registrados en este mes.</p>';
+        estado.textContent = `Datos por fecha de cobro · ${mesTxt}. Los pagos parciales no suman hasta completar el cobro. Se actualizan después de registrar un pago y mientras tenés Gestión abierta.`;
     }
 
     async function refrescar(forzar = false) {
