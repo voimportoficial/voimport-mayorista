@@ -40696,8 +40696,8 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
 // =========================================================
 // MIREKA | ESTADÍSTICAS Y GANANCIAS
 // Solo lectura. Las ventas suman solamente cuando están cobradas
-// completamente; el resultado se atribuye a la fecha del último
-// pago necesario para completar el cobro. No cuenta deudas ni pagos parciales.
+// completamente; el resultado se atribuye a la fecha de emisión
+// original de la venta. No cuenta deudas ni pagos parciales.
 // Los costos históricos se descuentan una sola vez al completar el cobro.
 // =========================================================
 (() => {
@@ -40709,7 +40709,7 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
     if (!vista || !acceso || !inicio) return;
     const nota = vista.querySelector('.mireka-ganancias-nota');
     if (nota) {
-        nota.textContent = 'Estadísticas por fecha de cobro: una venta se incluye solamente cuando está completamente cobrada, aunque se haya registrado antes. Los pagos parciales y las ventas pendientes no suman todavía. Ganancia neta = ventas cobradas − costo histórico de la mercadería − gastos del negocio. Los ingresos extra se muestran por separado. Los retiros y aportes no afectan la ganancia.';
+        nota.textContent = 'Estadísticas por fecha de venta: una venta se incluye solamente cuando está completamente cobrada, conservando la fecha original de emisión. Los pagos parciales y las ventas pendientes no suman todavía. Ganancia neta = ventas cobradas − costo histórico de la mercadería − gastos del negocio. Los ingresos extra se muestran por separado. Los retiros y aportes no afectan la ganancia.';
     }
 
     const hoyClave = () => {
@@ -40945,7 +40945,7 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
                 return `<tr><td>${etiquetaDia(d.fecha)}</td><td>${d.ventas}</td><td>${f(d.facturacion)}</td><td>${f(d.gastos)}</td><td><strong>${valorGanancia(d)}</strong></td><td>${balance}</td></tr>`;
             }).join('')}</tbody></table></div>`
             : '<p class="mireka-ganancias-sin-datos">No hay ventas completamente cobradas ni gastos registrados en este mes.</p>';
-        estado.textContent = `Datos por fecha de cobro · ${mesTxt}. Los pagos parciales no suman hasta completar el cobro. Se actualizan después de registrar un pago y mientras tenés Gestión abierta.`;
+        estado.textContent = `Datos por fecha de venta · ${mesTxt}. Solo se incluyen ventas completamente cobradas; los pagos parciales no suman hasta completar el cobro. Se actualizan después de registrar un pago y mientras tenés Gestión abierta.`;
     }
 
     async function refrescar(forzar = false) {
@@ -41053,4 +41053,155 @@ botonEdicionMasivaStockGestion?.addEventListener('click', () => {
             evento.preventDefault();
         }
     }, true);
+})();
+
+/* =============================================================
+   MIREKA | UNIFICAR RESUMEN GENERAL CON ESTADÍSTICAS
+   Las tarjetas de Inicio deben usar la misma fuente que el panel
+   de Estadísticas: RPC de ventas completamente cobradas,
+   atribuidas a su fecha de emisión original en Buenos Aires.
+   Las ventas impagas, parciales y anuladas se excluyen.
+   No cambia ventas, pagos, stock ni costos en Supabase.
+   ============================================================= */
+(() => {
+    'use strict';
+
+    const TZ = 'America/Argentina/Buenos_Aires';
+    const seleccionarPeriodo = () => {
+        const partes = new Intl.DateTimeFormat('en-US', {
+            timeZone: TZ,
+            year: 'numeric', month: '2-digit'
+        }).formatToParts(new Date());
+        const valores = Object.fromEntries(partes.map(p => [p.type, p.value]));
+        return {anio: Number(valores.year), mes: valores.month,
+            clave: `${valores.year}-${valores.month}`};
+    };
+
+    const fechaLocal = (valor) => {
+        const fecha = new Date(valor);
+        if (!Number.isFinite(fecha.getTime())) return '';
+        const partes = new Intl.DateTimeFormat('en-US', {
+            timeZone: TZ, year: 'numeric', month: '2-digit'
+        }).formatToParts(fecha);
+        const valores = Object.fromEntries(partes.map(p => [p.type, p.value]));
+        return `${valores.year}-${valores.month}`;
+    };
+
+    async function leerTodasLasVentasCobradas(anio) {
+        const resultado = [];
+        for (let desde = 0; ; desde += 1000) {
+            const {data, error} = await supabaseClient
+                .rpc('mireka_estadisticas_ventas_cobradas', {p_anio: anio})
+                .range(desde, desde + 999);
+            if (error) throw new Error(`Error al leer ventas cobradas: ${error.message}`);
+            const filas = Array.isArray(data) ? data : [];
+            resultado.push(...filas);
+            if (filas.length < 1000) break;
+        }
+        return resultado;
+    }
+
+    async function leerCostosDeVentas(ids) {
+        const resultado = [];
+        for (let inicio = 0; inicio < ids.length; inicio += 70) {
+            const bloque = ids.slice(inicio, inicio + 70);
+            for (let desde = 0; ; desde += 1000) {
+                const {data, error} = await supabaseClient.from('venta_items')
+                    .select('venta_id,cantidad,costo_unitario')
+                    .in('venta_id', bloque)
+                    .order('venta_id', {ascending:true})
+                    .range(desde, desde + 999);
+                if (error) throw new Error(`Error al leer costos históricos: ${error.message}`);
+                const filas = Array.isArray(data) ? data : [];
+                resultado.push(...filas);
+                if (filas.length < 1000) break;
+            }
+        }
+        return resultado;
+    }
+
+    async function leerGastosMes(periodo) {
+        const inicio = `${periodo.clave}-01T00:00:00-03:00`;
+        const siguiente = periodo.mes === '12'
+            ? `${periodo.anio + 1}-01-01T00:00:00-03:00`
+            : `${periodo.anio}-${String(Number(periodo.mes)+1).padStart(2,'0')}-01T00:00:00-03:00`;
+        let total = 0;
+        for (let desde = 0; ; desde += 1000) {
+            const {data, error} = await supabaseClient.from('gastos')
+                .select('monto,fecha_gasto,anulado')
+                .gte('fecha_gasto', inicio)
+                .lt('fecha_gasto', siguiente)
+                .eq('anulado', false)
+                .order('fecha_gasto', {ascending:true})
+                .range(desde, desde + 999);
+            if (error) throw new Error(`Error al leer gastos del mes: ${error.message}`);
+            const filas = Array.isArray(data) ? data : [];
+            total += filas.reduce((s, gasto) => s + Number(gasto.monto || 0),0);
+            if (filas.length < 1000) break;
+        }
+        return total;
+    }
+
+    let lecturaEnCurso = null;
+    function obtenerMismoResumenQueEstadisticas() {
+        // Compartir exclusivamente lecturas simultáneas (Ventas del mes y
+        // Ganancia del mes). Nunca cachear entre ventas o cobros distintos.
+        if (lecturaEnCurso) return lecturaEnCurso;
+        const ejecucion = (async () => {
+            const periodo = seleccionarPeriodo();
+            const [ventasAnio, gastosMes] = await Promise.all([
+                leerTodasLasVentasCobradas(periodo.anio),
+                leerGastosMes(periodo)
+            ]);
+            const ventas = ventasAnio.filter(v => fechaLocal(v.fecha_emision) === periodo.clave);
+            const ids = ventas.map(v => Number(v.id));
+            const items = await leerCostosDeVentas(ids);
+            const agrupados = new Map();
+            for (const item of items) {
+                const id = Number(item.venta_id);
+                if (!agrupados.has(id)) agrupados.set(id, []);
+                agrupados.get(id).push(item);
+            }
+            let facturacion = 0;
+            let costo = 0;
+            let costoPendiente = false;
+            for (const venta of ventas) {
+                facturacion += Number(venta.total || 0);
+                const lineas = agrupados.get(Number(venta.id)) || [];
+                if (!lineas.length || lineas.some(item =>
+                    item.costo_unitario === null || item.costo_unitario === undefined ||
+                    item.costo_unitario === '' || !Number.isFinite(Number(item.costo_unitario)) ||
+                    !Number.isFinite(Number(item.cantidad)) || Number(item.cantidad) <= 0
+                )) {
+                    costoPendiente = true;
+                } else {
+                    costo += lineas.reduce((s,item) =>
+                        s + Number(item.cantidad) * Number(item.costo_unitario),0);
+                }
+            }
+            return {facturacion, ganancia:facturacion-costo-gastosMes,
+                costoPendiente, hayVentas:ventas.length > 0, gastosMes};
+        })();
+        lecturaEnCurso = ejecucion;
+        void ejecucion.finally(() => {
+            if (lecturaEnCurso === ejecucion) lecturaEnCurso = null;
+        }).catch(() => {});
+        return ejecucion;
+    }
+
+    // Reutilizar la fuente del panel de Estadísticas, no una segunda consulta
+    // de todas las ventas del mes que incluya ventas no cobradas.
+    calcularVentasMesGestion = async function () {
+        return (await obtenerMismoResumenQueEstadisticas()).facturacion;
+    };
+    calcularGananciaMesGestion = async function () {
+        return await obtenerMismoResumenQueEstadisticas();
+    };
+
+    const etiquetaVentas = document.getElementById('ventas-mes')?.parentElement?.querySelector('span');
+    if (etiquetaVentas) etiquetaVentas.textContent = 'Ventas cobradas del mes';
+    const etiquetaGanancia = document.getElementById('ganancia-mes')?.parentElement?.querySelector('span');
+    if (etiquetaGanancia) etiquetaGanancia.textContent = 'Ganancia de ventas cobradas';
+    const etiquetaTotal = document.getElementById('ganancia-total-generada')?.parentElement?.querySelector('span');
+    if (etiquetaTotal) etiquetaTotal.textContent = 'Ganancia cobrada + extras del mes';
 })();
