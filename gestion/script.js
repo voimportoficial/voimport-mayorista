@@ -21469,7 +21469,7 @@ if (!document.getElementById("seccion-reposicion")) {
                     <h2>Registrar reposición</h2>
                     <p>
                         Cargá lo que compraste. En perfumes importados ingresás el precio pagado en USDT y Gestión calcula el costo automáticamente.
-                        El stock y el costo promedio se actualizan automáticamente.
+                        Podés cargar el pedido ahora y poner la mercadería en stock cuando llegue. El costo promedio y los precios se actualizan al cargar el pedido.
                     </p>
                 </div>
 
@@ -21512,6 +21512,18 @@ if (!document.getElementById("seccion-reposicion")) {
                     </div>
 
                     <div class="campo reposicion-observaciones-campo">
+                        <label for="reposicion-modo">Estado de la mercadería</label>
+                        <select id="reposicion-modo" style="width:100%;padding:12px;border:1px solid #d6dfed;border-radius:9px;background:white;color:#17233c">
+                            <option value="recibido">Ya llegó — sumar stock ahora</option>
+                            <option value="pendiente">Pedido en camino — NO sumar stock todavía</option>
+                        </select>
+                        <small style="display:block;margin-top:6px;color:#64748b">En ambos casos se actualizan el costo promedio y los precios. Si está en camino, el stock no cambia hasta que toques «Poner en stock».</small>
+                    </div>
+                    <div class="campo reposicion-observaciones-campo oculto" id="reposicion-fecha-estimada-contenedor">
+                        <label for="reposicion-fecha-estimada">Fecha estimada de llegada (opcional)</label>
+                        <input type="date" id="reposicion-fecha-estimada" style="width:100%;padding:10px;border:1px solid #d6dfed;border-radius:9px;background:white;color:#17233c">
+                    </div>
+                    <div class="campo reposicion-observaciones-campo">
                         <label for="reposicion-observaciones">
                             Observaciones
                         </label>
@@ -21547,7 +21559,7 @@ if (!document.getElementById("seccion-reposicion")) {
                     </div>
 
                     <div class="reposicion-resumen-fila">
-                        <span>Unidades que ingresan</span>
+                        <span>Unidades del pedido</span>
                         <strong id="reposicion-total-unidades">0</strong>
                     </div>
 
@@ -21559,8 +21571,8 @@ if (!document.getElementById("seccion-reposicion")) {
                     <div class="reposicion-ayuda">
                         <strong>¿Qué hace el sistema?</strong>
                         <p>
-                            Suma el stock, guarda el costo real de esta compra y
-                            recalcula el costo promedio del stock que ya tenías.
+                            Guarda el costo real y recalcula el costo promedio y los precios hoy.
+                            Si elegís «Pedido en camino», las unidades solo se suman cuando confirmás su llegada.
                         </p>
                     </div>
 
@@ -21572,8 +21584,8 @@ if (!document.getElementById("seccion-reposicion")) {
 
                 <div class="reposicion-historial-encabezado">
                     <div>
-                        <h3>Historial de reposiciones</h3>
-                        <p>Últimas compras registradas.</p>
+                        <h3>Pedidos en camino e historial</h3>
+                        <p>Los pedidos pendientes tienen el botón «Poner en stock».</p>
                     </div>
                 </div>
 
@@ -21666,6 +21678,22 @@ const historialReposicionGestion =
     document.getElementById(
         "reposicion-historial"
     );
+
+const modoReposicionGestion = document.getElementById("reposicion-modo");
+const fechaEstimadaReposicionGestion = document.getElementById("reposicion-fecha-estimada");
+const contenedorFechaEstimadaReposicionGestion = document.getElementById("reposicion-fecha-estimada-contenedor");
+
+function actualizarModoReposicionGestion() {
+    const pendiente = modoReposicionGestion?.value === "pendiente";
+    contenedorFechaEstimadaReposicionGestion?.classList.toggle("oculto", !pendiente);
+    if (botonGuardarReposicionGestion) {
+        botonGuardarReposicionGestion.textContent = pendiente
+            ? "Guardar pedido en camino"
+            : "Registrar reposición y sumar stock";
+    }
+}
+modoReposicionGestion?.addEventListener("change", actualizarModoReposicionGestion);
+actualizarModoReposicionGestion();
 
 
 let itemsReposicionGestion = [];
@@ -22665,6 +22693,9 @@ async function cargarHistorialReposicionesGestion() {
                     id,
                     created_at,
                     observaciones,
+                    estado,
+                    fecha_estimada,
+                    recibido_at,
                     reposicion_items (
                         id,
                         producto_nombre,
@@ -22676,13 +22707,9 @@ async function cargarHistorialReposicionesGestion() {
                         subtotal
                     )
                 `)
-                .order(
-                    "created_at",
-                    {
-                        ascending: false
-                    }
-                )
-                .limit(50);
+                .order("estado", { ascending: true })
+                .order("created_at", { ascending: false })
+                .limit(80);
 
 
         if (error) {
@@ -22760,6 +22787,12 @@ async function cargarHistorialReposicionesGestion() {
                                                 reposicion.created_at
                                             )}
                                         </span>
+                                        <strong style="display:inline-block;margin-top:5px;color:${reposicion.estado === "pendiente" ? "#a66b00" : "#166534"}">
+                                            ${reposicion.estado === "pendiente" ? "🚚 En camino — sin sumar stock" : "✓ En stock"}
+                                        </strong>
+                                        ${reposicion.estado === "pendiente" && reposicion.fecha_estimada
+                                            ? `<span style="display:block;color:#64748b">Llegada estimada: ${escaparHTML(reposicion.fecha_estimada.split("-").reverse().join("/"))}</span>`
+                                            : ""}
                                     </div>
 
                                     <div class="reposicion-historial-totales">
@@ -22823,6 +22856,12 @@ async function cargarHistorialReposicionesGestion() {
                                     }
                                 </div>
 
+                                ${reposicion.estado === "pendiente"
+                                  ? `<button type="button" class="guardar-reposicion poner-stock-pendiente" data-reposicion-id="${reposicion.id}" style="margin-top:12px;width:auto;min-width:190px">
+                                       ✓ Poner en stock
+                                     </button>`
+                                  : ""}
+
                                 ${
                                     reposicion.observaciones
                                         ? `
@@ -22877,7 +22916,7 @@ async function abrirReposicionGestion() {
 
 
     renderizarItemsReposicionGestion();
-
+    actualizarModoReposicionGestion();
 
     await cargarHistorialReposicionesGestion();
 
@@ -23357,13 +23396,15 @@ botonGuardarReposicionGestion
                 );
 
 
-            const confirmar =
-                window.confirm(
-                    `¿Registrar esta reposición?\n\n` +
-                    `${totalUnidades} unidades\n` +
-                    `Total de compra: ${formatearPrecio(totalCompra)}\n\n` +
-                    "Se sumará el stock y se actualizarán los costos promedio y precios."
-                );
+            const esPedidoPendiente = modoReposicionGestion?.value === "pendiente";
+            const confirmar = window.confirm(
+                `${esPedidoPendiente ? "¿Guardar pedido en camino?" : "¿Registrar esta reposición?"}\n\n` +
+                `${totalUnidades} unidades\n` +
+                `Total de compra: ${formatearPrecio(totalCompra)}\n\n` +
+                (esPedidoPendiente
+                    ? "Se actualizan costo promedio y precios AHORA, pero el stock NO cambia hasta confirmar la recepción."
+                    : "Se sumará el stock ahora y se actualizarán los costos promedio y precios.")
+            );
 
 
             if (!confirmar) {
@@ -23386,15 +23427,13 @@ botonGuardarReposicionGestion
                     error
                 } =
                     await supabaseClient.rpc(
-                        "registrar_reposicion",
+                        esPedidoPendiente ? "registrar_reposicion_pendiente" : "registrar_reposicion",
                         {
-                            p_items:
-                                itemsValidos,
-                            p_observaciones:
-                                observacionesReposicionGestion
-                                    ?.value
-                                    ?.trim() ||
-                                null
+                            p_items: itemsValidos,
+                            p_observaciones: observacionesReposicionGestion?.value?.trim() || null,
+                            ...(esPedidoPendiente
+                                ? {p_fecha_estimada: fechaEstimadaReposicionGestion?.value || null}
+                                : {})
                         }
                     );
 
@@ -23416,6 +23455,8 @@ botonGuardarReposicionGestion
                 }
 
 
+                if (fechaEstimadaReposicionGestion) fechaEstimadaReposicionGestion.value = "";
+
                 await cargarProductosGestion();
 
                 renderizarStock();
@@ -23429,7 +23470,9 @@ botonGuardarReposicionGestion
 
                 mostrarMensaje(
                     mensajeReposicionGestion,
-                    `Reposición #${data} registrada correctamente. Stock, costo promedio y precios actualizados.`,
+                    esPedidoPendiente
+                        ? `Pedido #${data} guardado en camino. Se actualizaron costos y precios; el stock NO cambió. Cuando llegue, tocá «Poner en stock».`
+                        : `Reposición #${data} registrada correctamente. Stock, costo promedio y precios actualizados.`,
                     "exito"
                 );
 
@@ -23453,14 +23496,50 @@ botonGuardarReposicionGestion
                     false;
 
 
-                botonGuardarReposicionGestion.textContent =
-                    "Registrar reposición";
+                actualizarModoReposicionGestion();
 
             }
 
         }
     );
 
+
+
+// =========================================================
+// ACTIVAR STOCK SOLO CUANDO LLEGA LA MERCADERÍA
+// =========================================================
+historialReposicionGestion?.addEventListener("click", async (evento) => {
+    const boton = evento.target.closest(".poner-stock-pendiente");
+    if (!boton) return;
+    const id = Number(boton.dataset.reposicionId);
+    if (!Number.isInteger(id) || id <= 0) return;
+    const ok = window.confirm(
+        `¿Llegó completa la mercadería del pedido #${id}?\n\n` +
+        "Se van a sumar TODAS sus unidades al stock disponible de Mireka. " +
+        "Los costos y precios NO se recalculan otra vez.\n\n" +
+        "Esta acción no se puede ejecutar dos veces."
+    );
+    if (!ok) return;
+    boton.disabled = true;
+    const textoOriginal = boton.textContent;
+    boton.textContent = "Sumando al stock...";
+    try {
+        const { error } = await supabaseClient.rpc(
+            "confirmar_reposicion_pendiente", { p_reposicion_id: id }
+        );
+        if (error) throw error;
+        await cargarProductosGestion();
+        renderizarStock();
+        await cargarHistorialReposicionesGestion();
+        await actualizarResumenGeneral();
+        mostrarMensaje(mensajeReposicionGestion, `Pedido #${id}: stock recibido y disponible. No se recalcularon los costos.`, "exito");
+    } catch (error) {
+        console.error("Error al activar stock del pedido", error);
+        mostrarMensaje(mensajeReposicionGestion, error.message || "No se pudo sumar el pedido al stock.");
+        boton.disabled = false;
+        boton.textContent = textoOriginal;
+    }
+});
 
 // =========================================================
 // VINCULAR DECANTS AUTOMÁTICAMENTE CON SU PERFUME BASE
