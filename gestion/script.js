@@ -21489,13 +21489,13 @@ if (!document.getElementById("seccion-reposicion")) {
 
                     <div class="campo reposicion-buscador-campo">
                         <label for="reposicion-buscador-producto">
-                            Buscar producto
+                            Buscar perfume grande o Maison 30 ml
                         </label>
 
                         <input
                             type="text"
                             id="reposicion-buscador-producto"
-                            placeholder="Nombre, marca o código de barras..."
+                            placeholder="Nombre, marca o código de barras (sin decants)..."
                             autocomplete="off"
                         >
 
@@ -21774,7 +21774,8 @@ function obtenerProductosBusquedaReposicion(
     return productosGestion
         .filter(
             (producto) =>
-                producto.retirado !== true
+                producto.retirado !== true &&
+                productoEsReponibleGestion(producto)
         )
         .filter(
             (producto) => {
@@ -21967,6 +21968,15 @@ function actualizarCostoItemReposicionGestion(
 }
 
 
+// Solamente estas dos categorías se reponen como unidades físicas.
+// Los decants se generan a partir del perfume base.
+function productoEsReponibleGestion(producto) {
+    return ["perfumes-grandes", "maison-30ml"].includes(
+        String(producto?.categoria || "").trim().toLowerCase()
+    );
+}
+
+
 // =========================================================
 // RESULTADOS DEL BUSCADOR
 // =========================================================
@@ -22108,7 +22118,8 @@ function agregarProductoReposicionGestion(
 
     if (
         !producto ||
-        producto.retirado === true
+        producto.retirado === true ||
+        !productoEsReponibleGestion(producto)
     ) {
         return;
     }
