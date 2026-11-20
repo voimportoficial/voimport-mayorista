@@ -22588,6 +22588,52 @@ function renderizarItemsReposicionGestion() {
 }
 
 
+// Actualizamos solamente los resultados de una línea mientras se escribe.
+// No se reemplazan los inputs: de otro modo se pierde el foco, la selección
+// y la posición de scroll en cada tecla o al ingresar un decimal.
+function actualizarPreviewItemReposicionGestion(item, producto) {
+    if (!contenedorItemsReposicionGestion || !item || !producto) {
+        return;
+    }
+
+    const tarjeta = contenedorItemsReposicionGestion.querySelector(
+        `.reposicion-item[data-producto-id="${producto.id}"]`
+    );
+    if (!tarjeta) {
+        return;
+    }
+
+    const cantidad = Math.max(0, obtenerNumeroReposicion(item.cantidad));
+    const costoCompra = item.costo_unitario === "" ||
+        item.costo_unitario === null ||
+        item.costo_unitario === undefined
+        ? null
+        : Math.max(0, obtenerNumeroReposicion(item.costo_unitario));
+
+    const campoCostoCalculado = tarjeta.querySelector(".reposicion-item-costo-calculado");
+    if (campoCostoCalculado) {
+        campoCostoCalculado.value = costoCompra === null
+            ? ""
+            : formatearPrecio(costoCompra);
+    }
+
+    const valoresPreview = tarjeta.querySelectorAll(".reposicion-item-preview > div > strong");
+    if (valoresPreview.length === 3) {
+        const stockNuevo = obtenerNumeroReposicion(producto.stock) + cantidad;
+        const costoPromedio = costoCompra === null
+            ? null
+            : calcularCostoPromedioPreviewReposicion(producto, cantidad, costoCompra);
+        const subtotal = costoCompra === null ? 0 : cantidad * costoCompra;
+
+        valoresPreview[0].textContent = String(stockNuevo);
+        valoresPreview[1].textContent = costoPromedio === null
+            ? "—"
+            : formatearPrecio(costoPromedio);
+        valoresPreview[2].textContent = formatearPrecio(subtotal);
+    }
+}
+
+
 function actualizarResumenReposicionGestion() {
 
     const totalProductos =
@@ -23139,7 +23185,9 @@ contenedorItemsReposicionGestion
             }
 
 
-            renderizarItemsReposicionGestion();
+            // El formulario permanece intacto mientras se escribe.
+            actualizarPreviewItemReposicionGestion(item, producto);
+            actualizarResumenReposicionGestion();
 
         }
     );
